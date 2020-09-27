@@ -21,8 +21,6 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --cov=mEncoder --cov-report=xml
-    - name: Lint with pylint
-      run: pylint --rcfile=./common/pylintrc --fail-under=9 mEncoder
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
