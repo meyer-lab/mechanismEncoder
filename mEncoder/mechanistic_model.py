@@ -1,4 +1,5 @@
 import sympy as sp
+import re
 
 from typing import Sequence, Iterable, Optional
 from pysb import Monomer, Expression, Parameter, Rule, Model, Observable
@@ -43,7 +44,9 @@ def add_monomer_synth_deg(m_name: str,
         }
     )
 
-    ksyn = Parameter(f'{m_name}_synthesis_ksyn', 1.0)
+    kdeg = Parameter(f'{m_name}_degradation_kdeg', 1.0)
+    t = Parameter(f'{m_name}_eq', 100.0)
+    ksyn = Expression(f'{m_name}_synthesis_ksyn', t*kdeg)
     syn_rate = Expression(f'{m_name}_synthesis_rate',
                           ksyn * get_autoencoder_modulator())
 
@@ -55,7 +58,7 @@ def add_monomer_synth_deg(m_name: str,
            for site in sites}
     ), syn_rate)
 
-    kdeg = Parameter(f'{m_name}_degradation_kdeg', 1.0)
+
     deg_rate = Expression(f'{m_name}_degradation_rate',
                           kdeg * get_autoencoder_modulator())
     Rule(f'degradation_{m_name}', m() >> None, deg_rate)
@@ -199,3 +202,27 @@ def get_autoencoder_modulator():
             + Parameter(f'autoencoder_modulator_{input_index}_bias', 0.0)
         ))
     )
+
+
+def add_abundance_observables(model):
+    for monomer in model.monomers:
+        obs = Observable(f'total_{monomer.name}', monomer())
+        scale = Parameter(f't{monomer.name}_scale')
+        offset = Parameter(f't{monomer.name}_offset')
+        Expression(f't{monomer.name}_obs', sp.log(scale * (obs + offset)))
+
+
+def add_phospho_observables(model):
+    for monomer in model.monomers:
+        for site in monomer.site_states:
+            if re.match(r'[YTS][0-9]+$', site):
+                obs = Observable(f'p{monomer.name}_{site}',
+                                 monomer(**{site: 'p'}))
+                scale = Parameter(f'p{monomer.name}_{site}_scale')
+                offset = Parameter(f'p{monomer.name}_{site}_offset')
+                Expression(f'p{monomer.name}_{site}_obs',
+                           sp.log(scale * (obs + offset)))
+
+
+
+

@@ -1,5 +1,6 @@
 from .mechanistic_model import (
-    add_monomer_synth_deg, generate_pathway, add_activation
+    add_monomer_synth_deg, generate_pathway, add_activation,
+    add_abundance_observables, add_phospho_observables
 )
 from pysb import Model
 
@@ -57,3 +58,6 @@ akt_cascade = [
                 'S473':      ['PIK3CA__pip2_p']}),
 ]
 generate_pathway(model, akt_cascade)
+
+add_abundance_observables(model)
+add_phospho_observables(model)
