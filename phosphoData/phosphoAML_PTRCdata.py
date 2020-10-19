@@ -5,7 +5,7 @@ with time course treatment to my knowledge
 '''
 
 
-import synapseclient as sc
+import synapseclient
 import pandas as pd
 
 def getBeatAMLPatientData(syn):
@@ -20,7 +20,7 @@ def getCellLinePilotData(syn):
 
     tabid = 'syn22255396'
     tab = syn.tableQuery('select * from '+tabid).asDataFrame()
-    tab = tab.rename(columns={'Sample':'sample','LogFoldChange':'logRatio'})
+    tab = tab.rename(columns={'Sample':'sample', 'LogFoldChange':'logRatio'})
     #we need to update the time points for this to be just minutes
     return tab
 
@@ -32,8 +32,8 @@ def getTramData(syn):
     '''
     tabid = 'syn22986341'
     tab = syn.tableQuery('select * from '+tabid).asDataFrame()
-    tab = tab.rename(columns={'CellType':'cellLine',"LogRatio":'logRatio',\
-                      'TimePoint':'timePoint','Treatment':'treatment'})
+    tab = tab.rename(columns={'CellType':'cellLine', "LogRatio":'logRatio',\
+                      'TimePoint':'timePoint', 'Treatment':'treatment'})
     return tab
 
 
@@ -43,13 +43,19 @@ def getAllData(syn):
     harmonizes data from diverse experimental setups
     to have phospho, treatment, and time data
     '''
+    tram = getTramData(syn)
+    cl = getCellLinePilotData(syn)
+    res = pd.concat([tram, cl]) #TODO if we're printing, get rid of dumb row index
+    return res
 
 def main():
     '''
     main method
     '''
-    syn = sc.login()
-    getAllData(syn)
+    syn = synapseclient.Synapse()
+    syn.login()
+    res = getAllData(syn)
+    res.to_csv('combinedPhosphoData.csv')
 
 if __name__=='__main__':
     main()
