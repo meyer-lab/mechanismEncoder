@@ -36,3 +36,15 @@ def load_model(force_compile: bool = True) -> Tuple[amici.AmiciModel,
     amici_model = model_module.getModel()
 
     return amici_model, amici_model.getSolver()
+
+
+parameter_boundaries_scales = {
+    'kdeg': (-3, -1, 'log10'),      # [1/[t]]
+    'eq': (1, 2, 'log10'),          # [[c]]
+    'bias': (-10, 10, 'lin'),       # [-]
+    'kcat': (1, 3, 'log10'),        # [1/([t]*[c])]
+    'scale': (-3, 0, 'log10'),      # [1/[c]]
+    'offset': (0, 1, 'log10'),      # [[c]]
+}
+
+MODEL_FEATURE_PREFIX = 'INPUT_'

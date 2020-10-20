@@ -1,11 +1,22 @@
 import sympy as sp
 import re
 
-from typing import Sequence, Iterable, Optional
+from typing import Iterable, Optional, Dict, Tuple
 from pysb import Monomer, Expression, Parameter, Rule, Model, Observable
 
 
-def generate_pathway(model, proteins):
+def generate_pathway(model: Model,
+                     proteins: Iterable[Tuple[str, Dict[str, str]]]):
+    """
+    Adds synthesis and phospho-signal transduction rules to the model
+    based on the input specifications
+
+    :param model:
+        model to which rules will be added
+
+    :param proteins:
+        pathway specification
+    """
     for p_name, site_activators in proteins:
         add_monomer_synth_deg(p_name, psites=site_activators.keys())
         for site, activators in site_activators.items():
@@ -13,9 +24,25 @@ def generate_pathway(model, proteins):
 
 
 def add_monomer_synth_deg(m_name: str,
-                          psites: Optional[Sequence[str]] = None,
-                          nsites: Optional[Sequence[str]] = None,
-                          asites: Optional[Sequence[str]] = None,):
+                          psites: Optional[Iterable[str]] = None,
+                          nsites: Optional[Iterable[str]] = None,
+                          asites: Optional[Iterable[str]] = None,):
+    """
+    Adds the respective monomer plus synthesis rules and basal
+    activation/deactivation rules for all activateable sites
+
+    :param m_name:
+        monomer name
+
+    :param psites:
+        phospho sites
+
+    :param nsites:
+        nucleotide sites
+
+    :param asites:
+        other activity encoding sites
+    """
 
     if psites is None:
         psites = []
@@ -90,6 +117,16 @@ def add_monomer_synth_deg(m_name: str,
 
 
 def add_or_get_modulator_obs(model: Model, modulator: str):
+    """
+    Adds an observable to the model that tracks the specified modulator
+
+    :param model:
+        model to which the observable will be added
+
+    :param modulator:
+        string definition of an observable in format
+        `{monomer_name}__{site}_{site_condition}`
+    """
     mod_name = f'{modulator}_obs'
     if mod_name in model.observables.keys():
         modulator_obs = model.observables[f'{modulator}_obs']
@@ -122,6 +159,31 @@ def add_activation(
         activators: Optional[Iterable[str]] = None,
         deactivators: Optional[Iterable[str]] = None
 ):
+    """
+    Adds activation/deactivation rules to a specific site
+
+    :param model:
+        model to which the rules will be added
+
+    :param m_name:
+        monomer name
+
+    :param site:
+        site name
+
+    :param activation_type:
+        type of activation, valid values are
+        {`phosphorylation`, `nucleotide_exchange`, `tf_activation`}
+
+    :param activators:
+        molecular species that activate the respective site, format
+        according to modulator format in :py:func:`add_or_get_modulator_obs`
+
+    :param deactivators:
+        molecular species that deactivate the respective site, format
+        according to modulator format in :py:func:`add_or_get_modulator_obs`
+
+    """
 
     if activators is None:
         activators = []
@@ -194,6 +256,10 @@ _input_count = _autoinc()
 
 
 def get_autoencoder_modulator():
+    """
+    Generate a new expression that allows modulation of a rate according to
+    input parameter. Applies a sigmoid transformation.
+    """
     input_index = next(_input_count)
     return Expression(
         f'autoencoder_modulator_{input_index}',
@@ -205,6 +271,10 @@ def get_autoencoder_modulator():
 
 
 def add_abundance_observables(model):
+    """
+    Adds an observable that tracks the normalized absolute abundance of a
+    protein
+    """
     for monomer in model.monomers:
         obs = Observable(f'total_{monomer.name}', monomer())
         scale = Parameter(f't{monomer.name}_scale')
@@ -213,6 +283,10 @@ def add_abundance_observables(model):
 
 
 def add_phospho_observables(model):
+    """
+    Adds an observable that tracks the normalized absolute abundance of a
+    phosphorylated site
+    """
     for monomer in model.monomers:
         for site in monomer.site_states:
             if re.match(r'[YTS][0-9]+$', site):
