@@ -9,15 +9,24 @@ from amici.petab_import import PysbPetabProblem
 from pypesto.petab.pysb_importer import PetabImporterPysb
 from pypesto.sample.theano import TheanoLogProbability
 
-from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX
+from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, load_pathway
 
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 
+MODEL_FILE = os.path.join(os.path.dirname(__file__),
+                          'pathway_FLT3_MAPK_AKT_STAT')
 
-def load_petab(datafile):
+
+def load_petab(datafile: str, pathway_name: str):
     """
     Imports data from a csv and converts it to the petab format
+
+    :param datafile:
+        path to data csv
+
+    :param pathway_name:
+        name of pathway to use for model
     """
     data_df = pd.read_csv(datafile, index_col=[0])
 
@@ -42,7 +51,7 @@ def load_petab(datafile):
     ].apply(lambda x: observable_id_to_model_expr(x.replace('-', '_')))
     measurement_table[petab.TIME] = np.inf
 
-    from .pathway_FLT3_MAPK_AKT_STAT import model
+    model = load_pathway(pathway_name)
 
     # filter for whats available in the model:
     measurement_table = measurement_table.loc[
@@ -101,11 +110,17 @@ def observable_id_to_model_expr(obs_id: str):
             else obs_id) + '_obs'
 
 
-def load_theano(datafile: str):
+def load_theano(datafile: str, pathway_name: str):
     """
     loads the mechanistic model as theano operator with loss as output and
     decoder output as input
+
+    :param datafile:
+        path to data csv
+
+    :param pathway_name:
+        name of pathway to use for model
     """
-    petab_importer = load_petab(datafile)
+    petab_importer = load_petab(datafile, pathway_name)
     pypesto_problem = petab_importer.create_problem()
     return TheanoLogProbability(pypesto_problem)

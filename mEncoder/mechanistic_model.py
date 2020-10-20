@@ -1,12 +1,28 @@
 import sympy as sp
 import re
 
-from typing import Iterable, Optional, Dict, Tuple
+from typing import Iterable, Optional, Dict, Tuple, Sequence
 from pysb import Monomer, Expression, Parameter, Rule, Model, Observable
 
 
+def _autoinc():
+    i = 0
+    while True:
+        yield i
+        i += 1
+
+
+_input_count = _autoinc()
+
+
+def create_model(name):
+    global _input_count
+
+    _input_count = _autoinc()
+    return Model(name)
+
 def generate_pathway(model: Model,
-                     proteins: Iterable[Tuple[str, Dict[str, str]]]):
+                     proteins: Iterable[Tuple[str, Dict[str, Iterable[str]]]]):
     """
     Adds synthesis and phospho-signal transduction rules to the model
     based on the input specifications
@@ -243,16 +259,6 @@ def add_activation(
 
             Rule(F'{m_name}_{label}_{site}_{modulator}', educts >> products,
                  rate)
-
-
-def _autoinc():
-    i = 0
-    while True:
-        yield i
-        i += 1
-
-
-_input_count = _autoinc()
 
 
 def get_autoencoder_modulator():

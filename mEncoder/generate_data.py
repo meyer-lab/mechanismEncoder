@@ -10,10 +10,14 @@ import os
 basedir = os.path.dirname(os.path.dirname(__file__))
 
 
-def generate_synthetic_data(latent_dimension: int = 5,
+def generate_synthetic_data(pathway_name: str,
+                            latent_dimension: int = 5,
                             n_samples: int = 20) -> str:
     """
     Generates sample data using the mechanistic model.
+
+    :param pathway_name:
+        name of pathway to use for model
 
     :param latent_dimension:
         number of latent dimensions that is used to generate the parameters
@@ -25,7 +29,7 @@ def generate_synthetic_data(latent_dimension: int = 5,
     :return:
         path to csv where generated data was saved
     """
-    model, solver = load_model(force_compile=False)
+    model, solver = load_model(pathway_name, force_compile=False)
 
     # setup model parameter scales
     model.setParameterScale(amici.parameterScalingFromIntVector([

@@ -7,11 +7,19 @@ import amici
 import pysb.export
 from typing import Tuple
 
+basedir = os.path.dirname(os.path.dirname(__file__))
 
-def load_model(force_compile: bool = True) -> Tuple[amici.AmiciModel,
+
+def load_pathway(pathway_name: str) -> pysb.Model:
+    model_file = os.path.join(basedir, 'pathways', pathway_name + '.py')
+    return amici.pysb_import.pysb_model_from_path(model_file)
+
+
+def load_model(pathway_name: str,
+               force_compile: bool = True) -> Tuple[amici.AmiciModel,
                                                     amici.AmiciSolver]:
-    from .pathway_FLT3_MAPK_AKT_STAT import model
-    basedir = os.path.dirname(os.path.dirname(__file__))
+
+    model = load_pathway(pathway_name)
     outdir = os.path.join(basedir, 'amici_models', model.name)
     with open(os.path.join(basedir, 'pysb_models',
                            model.name + '.py'), 'w') as file:
