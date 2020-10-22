@@ -56,6 +56,8 @@ def main():
     syn.login()
     res = getAllData(syn)
     res.to_csv('combinedPhosphoData.csv')
+    tab = synapseclient.build_table('Combined CTRP Cell Line Phospho data','syn17084058',res)
+    syn.store(tab)
 
 if __name__=='__main__':
     main()
