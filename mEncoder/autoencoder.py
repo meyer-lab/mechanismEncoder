@@ -136,54 +136,62 @@ def observable_id_to_model_expr(obs_id: str):
             else obs_id) + '_obs'
 
 
-def load_theano(datafile: str,
-                pathway_name: str,
-                n_hidden: int = 10):
-    """
-    loads the mechanistic model as theano operator with loss as output and
-    decoder output as input
+class MechanisticAutoEncoder(dA):
+    def __init__(self,
+                 n_hidden: int,
+                 datafile: str,
+                 pathway_name: str,):
+        """
+        loads the mechanistic model as theano operator with loss as output and
+        decoder output as input
 
-    :param datafile:
-        path to data csv
+        :param datafile:
+            path to data csv
 
-    :param pathway_name:
-        name of pathway to use for model
+        :param pathway_name:
+            name of pathway to use for model
 
-    :param n_hidden:
-        number of nodes in the hidden layer of the encoder
-    """
-    petab_importer = load_petab(datafile, pathway_name)
-    pypesto_problem = petab_importer.create_problem()
+        :param n_hidden:
+            number of nodes in the hidden layer of the encoder
+        """
+        self.petab_importer = load_petab(datafile, pathway_name)
+        self.pypesto_problem = self.petab_importer.create_problem()
 
-    n_samples = len(petab_importer.petab_problem.condition_df)
-    n_visible = len(petab_importer.petab_problem.observable_df)
-    n_model_inputs = int(sum(name.startswith(MODEL_FEATURE_PREFIX)
-                             for name in pypesto_problem.x_names)/n_samples)
-    n_kin_params = pypesto_problem.dim - n_model_inputs
+        self.n_samples = len(self.petab_importer.petab_problem.condition_df)
+        self.n_visible = len(self.petab_importer.petab_problem.observable_df)
+        self.n_model_inputs = int(sum(name.startswith(MODEL_FEATURE_PREFIX)
+                                      for name in
+                                      self.pypesto_problem.x_names) /
+                                  self.n_samples)
+        self.n_kin_params = self.pypesto_problem.dim - \
+                            self.n_model_inputs * self.n_samples
 
-    encoder = dA(n_visible=n_visible,
-                 n_hidden=n_hidden,
-                 n_params=n_model_inputs)
+        super().__init__(n_visible=self.n_visible,
+                         n_hidden=n_hidden,
+                         n_params=self.n_model_inputs)
 
-    # define model theano op
-    loss = TheanoLogProbability(pypesto_problem)
+        # define model theano op
+        self.loss = TheanoLogProbability(self.pypesto_problem)
 
-    # encode data
-    data = theano.shared(np.zeros((n_samples, n_visible),
-                                  dtype=theano.config.floatX),
-                         name='data_input')
+        # encode data
+        self.data = theano.shared(np.zeros((self.n_samples, self.n_visible),
+                                           dtype=theano.config.floatX),
+                                  name='data_input')
 
-    # these are the kinetic parameters that are shared across all samples
-    kin_pars = T.specify_shape(T.vector('kinetic_parameters'),
-                               (n_kin_params,))
+        # these are the kinetic parameters that are shared across all samples
+        self.kin_pars = T.specify_shape(T.vector('kinetic_parameters'),
+                                        (self.n_kin_params,))
 
-    # assemble input to model theano op
-    encoded_pars = encoder.encode_params(data)
-    model_pars = T.concatenate([
-        kin_pars, T.reshape(encoded_pars, (n_model_inputs * n_samples,))],
-        axis=0
-    )
-    return theano.function(
-        [encoder.encoder_pars, encoder.inflate_pars, kin_pars],
-        loss(model_pars)
-    )
+        # assemble input to model theano op
+        encoded_pars = self.encode_params(self.data)
+        self.model_pars = T.concatenate([
+            self.kin_pars,
+            T.reshape(encoded_pars, (self.n_model_inputs * self.n_samples,))],
+            axis=0
+        )
+
+    def compile_loss(self):
+        return theano.function(
+            [self.encoder_pars, self.inflate_pars, self.kin_pars],
+            self.loss(self.model_pars)
+        )
