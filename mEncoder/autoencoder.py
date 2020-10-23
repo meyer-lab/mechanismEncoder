@@ -174,6 +174,7 @@ class MechanisticAutoEncoder(dA):
         self.loss = TheanoLogProbability(self.pypesto_problem)
 
         # encode data
+        # TODO: actually parse input data here
         self.data = theano.shared(np.zeros((self.n_samples, self.n_visible),
                                            dtype=theano.config.floatX),
                                   name='data_input')
