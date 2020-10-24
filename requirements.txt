@@ -1,9 +1,9 @@
 numpy==1.19.2
-scipy==1.5.2
-pytest==6.0.2
+scipy==1.5.3
+pytest==6.1.1
 pytest-cov==2.10.1
 manubot==0.4.1
-pandas==1.1.2
+pandas==1.1.3
 pandoc-fignos==2.3.1
 pandoc-eqnos==2.3.0
 pandoc-tablenos==2.2.2
@@ -11,6 +11,7 @@ matplotlib==3.3.2
 seaborn==0.11.0
 Theano==1.0.5
 git+https://github.com/pysb/pysb
-amici==0.11.7
+amici==0.11.8
 petab==0.1.11
+sympy==1.6.2
 git+https://github.com/ICB-DCM/pyPESTO@feature_pysb_petab_dw
