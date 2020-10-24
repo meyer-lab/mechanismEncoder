@@ -7,29 +7,27 @@ import theano.tensor as T
 class dA:
     """A simple linear autoencoder. """
 
-    def __init__(self, n_visible=50, n_hidden=10, n_params=12):
-        assert n_hidden < n_visible
-        self.n_visible = n_visible
+    def __init__(self, input_data, n_hidden=1, n_params=12):
+        self.n_visible = input_data.shape[1]
+        assert n_hidden < self.n_visible
+        assert n_hidden <= n_params
+        assert input_data.ndim == 2
+        self.data = input_data
         self.n_hidden = n_hidden
         self.n_params = n_params
-        self.n_encoder_pars = self.n_visible * self.n_hidden
-        self.encoder_pars = T.specify_shape(T.vector('W'),
-                                            (self.n_encoder_pars,))
-        self.W = T.reshape(self.encoder_pars, (n_visible, n_hidden))
-        self.n_inflate_pars = self.n_hidden * self.n_params
-        self.inflate_pars = T.specify_shape(T.vector('W_p'),
-                                            (self.n_inflate_pars,))
+        self.n_encoder_pars = self.n_visible * self.n_hidden + self.n_hidden * self.n_params
 
-        self.W_p = T.reshape(self.inflate_pars, (n_hidden, n_params))
-
-    def encode(self, input_data):
+    def encode(self, pIn):
         """ Run the input through the encoder. """
-        return T.dot(input_data, self.W)
+        W = T.reshape(pIn[0:self.n_visible*self.n_hidden], (self.n_visible, self.n_hidden))
+        return T.dot(self.data, W)
 
-    def encode_params(self, input_data):
+    def encode_params(self, pIn):
         """ Run the encoder and then inflate to parameters. """
-        return T.dot(self.encode(input_data), self.W_p)
+        W_p = T.reshape(pIn[self.n_visible*self.n_hidden:self.n_encoder_pars], (self.n_hidden, self.n_params))
+        return T.dot(self.encode(pIn[0:self.n_visible*self.n_hidden]), W_p)
     
-    def decode(self, embedded_data):
+    def decode(self, embedded_data, pIn):
         """ Run the input through the analytical decoder. """
-        return T.dot(embedded_data, T.nlinalg.pinv(self.W))
+        W = T.reshape(pIn[0:self.n_visible*self.n_hidden], (self.n_visible, self.n_hidden))
+        return T.dot(embedded_data, T.nlinalg.pinv(W))
