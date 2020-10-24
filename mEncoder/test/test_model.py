@@ -38,5 +38,4 @@ def test_theano_objective():
     mae = MechanisticAutoEncoder(n_hidden, datafile, pathway_model)
     loss = mae.compile_loss()
     loss(np.random.random((mae.n_encoder_pars,)),
-         np.random.random((mae.n_inflate_pars,)),
          np.random.random((mae.n_kin_params,)),)

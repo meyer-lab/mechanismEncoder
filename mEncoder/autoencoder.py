@@ -166,25 +166,22 @@ class MechanisticAutoEncoder(dA):
         self.n_kin_params = self.pypesto_problem.dim - \
                             self.n_model_inputs * self.n_samples
 
-        super().__init__(n_visible=self.n_visible,
-                         n_hidden=n_hidden,
+        # TODO: actually parse input data here
+        input_data = np.zeros((self.n_samples, self.n_visible))
+        super().__init__(input_data=input_data, n_hidden=n_hidden,
                          n_params=self.n_model_inputs)
 
         # define model theano op
         self.loss = TheanoLogProbability(self.pypesto_problem)
 
-        # encode data
-        # TODO: actually parse input data here
-        self.data = theano.shared(np.zeros((self.n_samples, self.n_visible),
-                                           dtype=theano.config.floatX),
-                                  name='data_input')
-
         # these are the kinetic parameters that are shared across all samples
         self.kin_pars = T.specify_shape(T.vector('kinetic_parameters'),
                                         (self.n_kin_params,))
+        self.encoder_pars = T.specify_shape(T.vector('encoder_pars'),
+                                            (self.n_encoder_pars,))
 
         # assemble input to model theano op
-        encoded_pars = self.encode_params(self.data)
+        encoded_pars = self.encode_params(self.encoder_pars)
         self.model_pars = T.concatenate([
             self.kin_pars,
             T.reshape(encoded_pars, (self.n_model_inputs * self.n_samples,))],
@@ -193,6 +190,6 @@ class MechanisticAutoEncoder(dA):
 
     def compile_loss(self):
         return theano.function(
-            [self.encoder_pars, self.inflate_pars, self.kin_pars],
+            [self.encoder_pars, self.kin_pars],
             self.loss(self.model_pars)
         )
