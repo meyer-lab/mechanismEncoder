@@ -21,6 +21,7 @@ def create_model(name):
     _input_count = _autoinc()
     return Model(name)
 
+
 def generate_pathway(model: Model,
                      proteins: Iterable[Tuple[str, Dict[str, Iterable[str]]]]):
     """
@@ -100,7 +101,6 @@ def add_monomer_synth_deg(m_name: str,
            else 'inactive'
            for site in sites}
     ), syn_rate)
-
 
     deg_rate = Expression(f'{m_name}_degradation_rate',
                           kdeg * get_autoencoder_modulator())

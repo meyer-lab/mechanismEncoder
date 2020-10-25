@@ -10,20 +10,14 @@ def test_encoder():
     """
     Test that the linear encoder at least runs.
     """
-    enc = dA()
-    unk = np.ones(enc.n_visible)
+    data = np.random.rand(100, 10)
+    enc = dA(data)
+    unk = np.ones(enc.n_encoder_pars)
 
     a = T.dvector("tempVar")
     fexpr = enc.encode(a)
 
-    # Calculate the Jacobian
-    J = theano.scan(lambda i, y, x: T.grad(fexpr[i], a), sequences=T.arange(fexpr.shape[0]), non_sequences=[fexpr, a])[0]
-
     f = theano.function([a], fexpr)
-    fprime = theano.function([a], J)
-
     output = f(unk)
-    Doutput = fprime(unk)
 
-    assert output.size == enc.n_hidden
-    np.testing.assert_allclose(Doutput.T, enc.W.get_value())
+    assert output.shape == (data.shape[0], enc.n_hidden)
