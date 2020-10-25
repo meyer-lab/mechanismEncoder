@@ -164,10 +164,13 @@ class MechanisticAutoEncoder(dA):
                                       self.pypesto_problem.x_names) /
                                   self.n_samples)
         self.n_kin_params = self.pypesto_problem.dim - \
-                            self.n_model_inputs * self.n_samples
+            self.n_model_inputs * self.n_samples
 
-        # TODO: actually parse input data here
-        input_data = np.zeros((self.n_samples, self.n_visible))
+        input_data = self.petab_importer.petab_problem.measurement_df.pivot(
+            index=petab.SIMULATION_CONDITION_ID,
+            columns=petab.OBSERVABLE_ID,
+            values=petab.MEASUREMENT
+        ).values
         super().__init__(input_data=input_data, n_hidden=n_hidden,
                          n_params=self.n_model_inputs)
 
