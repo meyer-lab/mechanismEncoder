@@ -10,6 +10,7 @@ import petab
 from amici.petab_import import PysbPetabProblem
 from pypesto.petab.pysb_importer import PetabImporterPysb
 from pypesto.sample.theano import TheanoLogProbability
+from pypesto.objective import Objective
 
 from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, load_pathway
 from .encoder import dA
@@ -195,4 +196,38 @@ class MechanisticAutoEncoder(dA):
         return theano.function(
             [self.encoder_pars, self.kin_pars],
             self.loss(self.model_pars)
+        )
+
+    def compile_loss_grad(self):
+        return theano.function(
+            [self.encoder_pars, self.kin_pars],
+            T.concatenate(
+                [theano.grad(self.loss(self.model_pars), self.encoder_pars),
+                 theano.grad(self.loss(self.model_pars), self.kin_pars)],
+                axis=0
+            )
+        )
+
+    def compute_inflated_pars(self, encoder_pars):
+        return theano.function(
+            [self.encoder_pars],
+            self.encode_params(self.encoder_pars)
+        )(encoder_pars)
+
+    def generate_pypesto_objective(self):
+        loss = self.compile_loss()
+        loss_grad = self.compile_loss_grad()
+
+        def fun(x: np.ndarray) -> float:
+            encoder_pars = x[0:self.n_encoder_pars]
+            kinetic_pars = x[self.n_encoder_pars:]
+            return float(loss(encoder_pars, kinetic_pars))
+
+        def grad(x: np.ndarray) -> np.ndarray:
+            encoder_pars = x[0:self.n_encoder_pars]
+            kinetic_pars = x[self.n_encoder_pars:]
+            return loss_grad(encoder_pars, kinetic_pars)
+
+        return Objective(
+            fun=fun, grad=grad,
         )

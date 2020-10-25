@@ -1,10 +1,10 @@
 from .. import load_model
 from ..autoencoder import load_petab, MechanisticAutoEncoder
 from ..generate_data import generate_synthetic_data
-from .. import MODEL_FEATURE_PREFIX
 
 import amici
 import petab
+import itertools as itt
 
 import numpy as np
 
@@ -28,7 +28,7 @@ def test_petab_loading():
     petab.lint.lint_problem(petab_importer.petab_problem)
 
 
-def test_theano_objective():
+def test_pypesto_objective():
     """
     Test that we can load the theano objective for the mechanistic model
     """
@@ -36,6 +36,15 @@ def test_theano_objective():
     n_hidden = 10
 
     mae = MechanisticAutoEncoder(n_hidden, datafile, pathway_model)
-    loss = mae.compile_loss()
-    loss(np.random.random((mae.n_encoder_pars,)),
-         np.random.random((mae.n_kin_params,)),)
+    objective = mae.generate_pypesto_objective()
+    x = np.random.random((mae.n_encoder_pars + mae.n_kin_params,))
+    x[0:mae.n_encoder_pars] /= 10
+    assert np.isfinite(objective.get_fval(x))
+    assert not any(np.isnan(objective.get_grad(x)))
+    fd_df = objective.check_grad(
+        x, eps=1e-3,
+        x_indices=itt.chain(range(5), range(mae.n_encoder_pars,
+                                            mae.n_encoder_pars+5))
+    )
+    assert (fd_df['abs_err'] < 1e-2).all()
+
