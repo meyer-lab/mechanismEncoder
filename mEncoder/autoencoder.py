@@ -133,7 +133,7 @@ def load_petab(datafile: str, pathway_name: str):
         pysb_model=model,
     ), output_folder=os.path.join(
         basedir, 'amici_models',
-        f'{model.name}_{os.path.basename(datafile)}_petab'
+        f'{model.name}_{os.path.splitext(os.path.basename(datafile))[0]}_petab'
     ))
 
 
