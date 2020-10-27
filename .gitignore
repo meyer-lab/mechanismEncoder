@@ -143,3 +143,5 @@ venv
 amici_models/*
 mEncoder/amici_models/FLT3_MAPK_AKT_STAT_petab/y.h
 traces/*
+.snakemake/*
+*.csv

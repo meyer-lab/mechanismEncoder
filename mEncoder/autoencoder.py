@@ -130,11 +130,11 @@ def load_petab(datafile: str, pathway_name: str):
         condition_df=condition_table,
         observable_df=observable_table,
         parameter_df=parameter_table,
-        pysb_model=model
+        pysb_model=model,
     ), output_folder=os.path.join(
         basedir, 'amici_models',
-        f'{model.name}_{os.path.basename(datafile)}_petab')
-    )
+        f'{model.name}_{os.path.basename(datafile)}_petab'
+    ))
 
 
 def observable_id_to_model_expr(obs_id: str):

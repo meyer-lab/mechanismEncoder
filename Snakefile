@@ -30,7 +30,8 @@ rule compile_mechanistic_model:
         script='compile_model.py',
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
         autoencoder_code=os.path.join('mEncoder', 'autoencoder.py'),
-        pathway=os.path.join('pathways', 'pw_{model}.py')
+        pathway=os.path.join('pathways', 'pw_{model}.py'),
+        data=os.path.join('data', '{data}.csv')
     output:
         model=os.path.join('amici_models', '{model}_{data}_petab', '{model}',
                            '{model}.py'),

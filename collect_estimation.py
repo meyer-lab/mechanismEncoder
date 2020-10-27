@@ -14,7 +14,8 @@ DATA = sys.argv[2]
 N_HIDDEN = int(sys.argv[3])
 OPTIMIZER = sys.argv[4]
 
-mae = MechanisticAutoEncoder(N_HIDDEN, os.path.join('data', DATA), MODEL)
+mae = MechanisticAutoEncoder(N_HIDDEN, os.path.join('data', DATA + '.csv'),
+                             MODEL)
 problem = mae.create_pypesto_problem()
 
 optimizer_results = []

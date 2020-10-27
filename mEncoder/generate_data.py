@@ -29,7 +29,7 @@ def generate_synthetic_data(pathway_name: str,
     :return:
         path to csv where generated data was saved
     """
-    model, solver = load_model(pathway_name, force_compile=False)
+    model, solver = load_model('pw_' + pathway_name, force_compile=False)
 
     # setup model parameter scales
     model.setParameterScale(amici.parameterScalingFromIntVector([
