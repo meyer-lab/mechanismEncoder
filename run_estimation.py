@@ -12,7 +12,7 @@ JOB = int(sys.argv[5])
 
 mae = MechanisticAutoEncoder(N_HIDDEN,
                              os.path.join('data', DATA + '.csv'),
-                             PATHWAY_MODEL)
+                             'pw_' + PATHWAY_MODEL)
 result = mae.train(maxiter=int(1e3),
                    n_starts=1,
                    seed=JOB,
