@@ -111,7 +111,7 @@ def generate_synthetic_data(pathway_name: str,
     # save to csv
     datadir = os.path.join(basedir, 'data')
     os.makedirs(datadir, exist_ok=True)
-    datafile = os.path.join(datadir, 'synthetic_data.csv')
+    datafile = os.path.join(datadir, 'synthetic.csv')
     formatted_df.to_csv(datafile)
     return datafile
 

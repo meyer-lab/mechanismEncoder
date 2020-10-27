@@ -22,6 +22,9 @@ from .encoder import dA
 TheanoFunction = theano.compile.function_module.Function
 
 basedir = os.path.dirname(os.path.dirname(__file__))
+trace_path = os.path.join(basedir, 'traces')
+TRACE_FILE_FORMAT = '{pathway}__{data}__{optimizer}__{n_hidden}__{job}__' \
+                    '{{id}}.csv'
 
 MODEL_FILE = os.path.join(os.path.dirname(__file__),
                           'pathway_FLT3_MAPK_AKT_STAT')
@@ -128,8 +131,10 @@ def load_petab(datafile: str, pathway_name: str):
         observable_df=observable_table,
         parameter_df=parameter_table,
         pysb_model=model
-    ), output_folder=os.path.join(basedir, 'amici_models',
-                                  model.name + '_petab'))
+    ), output_folder=os.path.join(
+        basedir, 'amici_models',
+        f'{model.name}_{os.path.basename(datafile)}_petab')
+    )
 
 
 def observable_id_to_model_expr(obs_id: str):
@@ -249,14 +254,8 @@ class MechanisticAutoEncoder(dA):
             fun=fun, grad=grad,
         )
 
-    def train(self,
-              optimizer: str = 'L-BFGS-B',
-              ftol: float = 1e-3,
-              gtol: float = 1e-3,
-              maxiter: int = 100,
-              n_starts: int = 1,
-              seed: int = 0):
-        pypesto_problem = Problem(
+    def create_pypesto_problem(self) -> Problem:
+        return Problem(
             objective=self.generate_pypesto_objective(),
             x_names=self.x_names,
             lb=[parameter_boundaries_scales[name.split('_')[-1]][0]
@@ -264,6 +263,15 @@ class MechanisticAutoEncoder(dA):
             ub=[parameter_boundaries_scales[name.split('_')[-1]][1]
                 for name in self.x_names],
         )
+
+    def train(self,
+              optimizer: str = 'L-BFGS-B',
+              ftol: float = 1e-3,
+              gtol: float = 1e-3,
+              maxiter: int = 100,
+              n_starts: int = 1,
+              seed: int = 0):
+        pypesto_problem = self.create_pypesto_problem()
 
         if optimizer == 'ipopt':
             opt = IpoptOptimizer(
@@ -284,7 +292,6 @@ class MechanisticAutoEncoder(dA):
                 }
             )
 
-        trace_path = os.path.join(basedir, 'traces')
         os.makedirs(trace_path, exist_ok=True)
 
         history_options = HistoryOptions(
@@ -295,7 +302,11 @@ class MechanisticAutoEncoder(dA):
             trace_record_schi2=False,
             storage_file=os.path.join(
                 trace_path,
-                f'{self.pathway_name}__{self.data_name}__{seed}__{{id}}.csv',
+                TRACE_FILE_FORMAT.format(pathway=self.pathway_name,
+                                         data=self.data_name,
+                                         optimizer=optimizer,
+                                         n_hidden=self.n_hidden,
+                                         job=seed)
             ),
             trace_save_iter=1
         )

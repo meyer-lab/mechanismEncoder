@@ -42,3 +42,8 @@ jobs:
         env_vars: OS,PYTHON
         name: codecov-umbrella
         fail_ci_if_error: true
+
+    - name: Dryrun Snakemake
+      run: |
+        pip install snakemake
+        snakemake -n collect_estimation --config num_starts=2 --verbose
