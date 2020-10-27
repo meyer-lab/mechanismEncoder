@@ -30,7 +30,8 @@ def test_petab_loading():
 
 def test_pypesto_objective():
     """
-    Test that we can load the theano objective for the mechanistic model
+    Test that we can load and evaluate the theano loss function and gradient
+    for the full autoencoder model
     """
     datafile = generate_synthetic_data(pathway_model)
     n_hidden = 10
@@ -43,8 +44,15 @@ def test_pypesto_objective():
     assert not any(np.isnan(objective.get_grad(x)))
     fd_df = objective.check_grad(
         x, eps=1e-3,
-        x_indices=itt.chain(range(5), range(mae.n_encoder_pars,
-                                            mae.n_encoder_pars+5))
+        x_indices=list(itt.chain(range(5), range(mae.n_encoder_pars,
+                                                 mae.n_encoder_pars+5)))
     )
     assert (fd_df['abs_err'] < 1e-2).all()
 
+
+def test_pypesto_optimization():
+    datafile = generate_synthetic_data(pathway_model)
+    n_hidden = 10
+
+    mae = MechanisticAutoEncoder(n_hidden, datafile, pathway_model)
+    mae.train(maxiter=5)

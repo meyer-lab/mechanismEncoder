@@ -53,6 +53,7 @@ parameter_boundaries_scales = {
     'kcat': (1, 3, 'log10'),        # [1/([t]*[c])]
     'scale': (-3, 0, 'log10'),      # [1/[c]]
     'offset': (0, 1, 'log10'),      # [[c]]
+    'weight': (-0.1, 0.1, 'lin'),
 }
 
 MODEL_FEATURE_PREFIX = 'INPUT_'
