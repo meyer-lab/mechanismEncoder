@@ -254,6 +254,7 @@ class MechanisticAutoEncoder(dA):
               ftol: float = 1e-3,
               gtol: float = 1e-3,
               maxiter: int = 100,
+              n_starts: int = 1,
               seed: int = 0):
         pypesto_problem = Problem(
             objective=self.generate_pypesto_objective(),
@@ -309,7 +310,7 @@ class MechanisticAutoEncoder(dA):
         return minimize(
             pypesto_problem,
             opt,
-            n_starts=1,
+            n_starts=n_starts,
             startpoint_method=pypesto.startpoint.uniform,
             options=optimize_options,
             history_options=history_options
