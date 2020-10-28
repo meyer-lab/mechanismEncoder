@@ -8,14 +8,14 @@ import itertools as itt
 
 import numpy as np
 
-pathway_model = 'pw_FLT3_MAPK_AKT_STAT'
+pathway_model = 'FLT3_MAPK_AKT_STAT'
 
 
 def test_model_compilation():
     """
     Test that we can load and simulate the mechanistic model in AMICI
     """
-    model, solver = load_model(pathway_model)
+    model, solver = load_model('pw_' + pathway_model)
     amici.runAmiciSimulation(model, solver)
 
 
@@ -24,7 +24,7 @@ def test_petab_loading():
     Test that we can load the mechanistic model plus data in PEtab
     """
     datafile = generate_synthetic_data(pathway_model)
-    petab_importer = load_petab(datafile, pathway_model)
+    petab_importer = load_petab(datafile, 'pw_' + pathway_model)
     petab.lint.lint_problem(petab_importer.petab_problem)
 
 
