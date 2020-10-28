@@ -165,10 +165,10 @@ class MechanisticAutoEncoder(dA):
         :param n_hidden:
             number of nodes in the hidden layer of the encoder
         """
-        self.data_name = os.path.basename(datafile)
+        self.data_name = os.path.splitext(os.path.basename(datafile))[0]
         self.pathway_name = pathway_name
 
-        self.petab_importer = load_petab(datafile, pathway_name)
+        self.petab_importer = load_petab(datafile, 'pw_' + pathway_name)
         self.pypesto_subproblem = self.petab_importer.create_problem()
 
         self.n_samples = len(self.petab_importer.petab_problem.condition_df)
