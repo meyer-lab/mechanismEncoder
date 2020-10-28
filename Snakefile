@@ -82,7 +82,7 @@ rule collect_estimation_results:
          ), job=STARTS)
     output:
         result=os.path.join('results', '{model}', '{data}',
-                            '{optimizer}__{n_hidden})__full.pickle'),
+                            '{optimizer}__{n_hidden}__full.pickle'),
     wildcard_constraints:
         model='[\w_]+',
         data='[\w_]+',

@@ -97,8 +97,8 @@ for file in trace_files:
             optimizer_results.append(result)
 
 
-outfile = os.path.join('results', '{model}', '{data}',
-                       f'{OPTIMIZER}__{N_HIDDEN})__full.pickle')
+outfile = os.path.join('results', MODEL, DATA,
+                       f'{OPTIMIZER}__{N_HIDDEN}__full.pickle')
 
 print(sorted([
     r['fval']
