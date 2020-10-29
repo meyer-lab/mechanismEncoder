@@ -267,13 +267,7 @@ def get_autoencoder_modulator():
     input parameter. Applies a sigmoid transformation.
     """
     input_index = next(_input_count)
-    return Expression(
-        f'autoencoder_modulator_{input_index}',
-        1 / (1 + sp.exp(
-            Parameter(f'INPUT_{input_index}', 0.0)
-            + Parameter(f'autoencoder_modulator_{input_index}_bias', 0.0)
-        ))
-    )
+    return Parameter(f'INPUT_{input_index}', 0.0)
 
 
 def add_abundance_observables(model):

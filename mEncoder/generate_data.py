@@ -1,4 +1,5 @@
 from . import load_model, parameter_boundaries_scales, MODEL_FEATURE_PREFIX
+from .encoder import dA
 
 import numpy as np
 import pandas as pd
@@ -6,6 +7,8 @@ import matplotlib.pyplot as plt
 
 import amici
 import os
+import theano
+import theano.tensor as T
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 
@@ -58,13 +61,24 @@ def generate_synthetic_data(pathway_name: str,
                    if par_id.startswith(MODEL_FEATURE_PREFIX)]
 
     # set up linear projection from specified latent space to parameter space
-    decoder_mat = np.random.random((latent_dimension, len(sample_pars)))
+    encoder = dA(np.zeros((n_samples, 10)),
+                 n_hidden=latent_dimension, n_params=len(sample_pars))
+    tt_pars = np.random.random(encoder.n_encoder_pars)
+    for ip, name in enumerate(encoder.x_names):
+        lb, ub, _ = parameter_boundaries_scales[name.split('_')[-1]]
+        tt_pars[ip] = tt_pars[ip] * (ub - lb) + lb
+
+    tt_data = T.specify_shape(T.vector('embedded_data'),
+                              (encoder.n_hidden,))
+    inflate_fun = theano.function(
+        [tt_data], encoder.inflate_params(tt_data, tt_pars)
+    )
 
     samples = []
     while len(samples) < n_samples:
         # project from low dim
-        sample_par_vals = \
-            np.random.random(latent_dimension).dot(decoder_mat) * 10 - 10
+        embedded_sample_pars = np.random.random(latent_dimension) * 2 - 1
+        sample_par_vals = inflate_fun(embedded_sample_pars,)
         sample_pars = dict(zip(sample_pars, sample_par_vals))
 
         # set parameters in model
