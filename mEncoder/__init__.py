@@ -5,9 +5,11 @@ import importlib
 import sys
 import amici
 import pysb.export
+import matplotlib.pyplot as plt
 from typing import Tuple
 
 basedir = os.path.dirname(os.path.dirname(__file__))
+figures_path = os.path.join(basedir, 'figures')
 
 
 def load_pathway(pathway_name: str) -> pysb.Model:
@@ -44,6 +46,15 @@ def load_model(pathway_name: str,
     amici_model = model_module.getModel()
 
     return amici_model, amici_model.getSolver()
+
+
+def plot_and_save_fig(filename):
+    plt.tight_layout()
+    if not os.path.exists(figures_path):
+        os.mkdir(figures_path)
+
+    if filename is not None:
+        plt.savefig(os.path.join(figures_path, filename))
 
 
 parameter_boundaries_scales = {

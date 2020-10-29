@@ -93,10 +93,38 @@ rule collect_estimation_results:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
         '{wildcards.n_hidden} {wildcards.optimizer}'
 
+rule visualize_estimation_results:
+    input:
+        script='visualize_results.py',
+        estimation=rules.collect_estimation_results.output.result
+    output:
+        plots=expand(os.path.join(
+            'figures',
+            '__'.join(['{{model}}', '{{data}}', '{{optimizer}}',
+                       '{{n_hidden}}']) + '__{plot}.pdf'
+        ), plot=['waterfall', 'optimizer_trace', 'embedding'])
+    wildcard_constraints:
+        model='[\w_]+',
+        data='[\w_]+',
+        optimzer='[\w-]+',
+        n_hidden='[0-9]+',
+        job='[0-9]+',
+    shell:
+        'python3 {input.script} {wildcards.model} {wildcards.data} '
+        '{wildcards.n_hidden} {wildcards.optimizer}'
+
 rule collect_estimation:
     input:
          expand(
              rules.collect_estimation_results.output.result,
+             model=PATHWAYS, data=DATASETS, optimizer=OPTIMIZERS,
+             n_hidden=HIDDEN_LAYERS,
+         )
+
+rule visualize_estimation:
+    input:
+         expand(
+             rules.visualize_estimation_results.output.plots,
              model=PATHWAYS, data=DATASETS, optimizer=OPTIMIZERS,
              n_hidden=HIDDEN_LAYERS,
          )
