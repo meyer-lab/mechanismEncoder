@@ -77,7 +77,7 @@ def generate_synthetic_data(pathway_name: str,
     samples = []
     while len(samples) < n_samples:
         # project from low dim
-        embedded_sample_pars = np.random.random(latent_dimension) * 2 - 1
+        embedded_sample_pars = np.random.random(latent_dimension) * 10 - 5
         sample_par_vals = inflate_fun(embedded_sample_pars,)
         sample_pars = dict(zip(sample_pars, sample_par_vals))
 
