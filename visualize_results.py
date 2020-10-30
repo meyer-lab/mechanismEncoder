@@ -39,6 +39,8 @@ for opt_result, names in zip(optimizer_result, par_names):
 
 result.optimize_result.sort()
 
+print(result.optimize_result.get_for_key('fval'))
+
 waterfall(result, scale_y='log10')
 plot_and_save_fig(
     '__'.join([MODEL, DATA, N_HIDDEN, OPTIMIZER]) + '__waterfall.pdf'
