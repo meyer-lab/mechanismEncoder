@@ -27,7 +27,16 @@ with open(outfile, 'rb') as f:
     optimizer_result, par_names = pickle.load(f)
 
 result = pypesto.Result(problem)
-result.optimize_result = optimizer_result
+for opt_result, names in zip(optimizer_result, par_names):
+    sorted_par_idx = [
+        names.index(name)
+        for name in problem.x_names
+    ]
+    x_sorted = [opt_result['x'][sorted_par_idx[ix]] for ix in
+                range(len(problem.x_names))]
+    opt_result['x'] = x_sorted
+    result.optimize_result.append(opt_result)
+
 result.optimize_result.sort()
 
 waterfall(result, scale_y='log10')
