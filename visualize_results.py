@@ -24,7 +24,7 @@ mae = MechanisticAutoEncoder(N_HIDDEN, os.path.join('data', DATA + '.csv'),
 problem = mae.create_pypesto_problem()
 
 with open(outfile, 'rb') as f:
-    optimizer_result = pickle.load(f)
+    optimizer_result, par_names = pickle.load(f)
 
 result = pypesto.Result(problem)
 result.optimize_result = optimizer_result

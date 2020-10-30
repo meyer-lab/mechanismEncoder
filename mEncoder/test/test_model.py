@@ -31,7 +31,8 @@ def test_petab_loading():
 def test_pypesto_objective():
     """
     Test that we can load and evaluate the theano loss function and gradient
-    for the full autoencoder model
+    for the full autoencoder model, checks accuracy of gradient via finite
+    differences
     """
     datafile = generate_synthetic_data(pathway_model)
     n_hidden = 10
@@ -51,6 +52,9 @@ def test_pypesto_objective():
 
 
 def test_pypesto_optimization():
+    """
+    Test that we can minimize the loss using pypesto
+    """
     datafile = generate_synthetic_data(pathway_model)
     n_hidden = 10
 
