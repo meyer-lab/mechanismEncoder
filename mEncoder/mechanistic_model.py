@@ -102,8 +102,7 @@ def add_monomer_synth_deg(m_name: str,
            for site in sites}
     ), syn_rate)
 
-    deg_rate = Expression(f'{m_name}_degradation_rate',
-                          kdeg * get_autoencoder_modulator())
+    deg_rate = Expression(f'{m_name}_degradation_rate', kdeg)
     Rule(f'degradation_{m_name}', m() >> None, deg_rate)
 
     # basal activation
@@ -267,6 +266,7 @@ def get_autoencoder_modulator():
     input parameter. Applies a sigmoid transformation.
     """
     input_index = next(_input_count)
+    return Parameter(f'INPUT_{input_index}', 0.0)
     return Parameter(f'INPUT_{input_index}', 0.0)
 
 
