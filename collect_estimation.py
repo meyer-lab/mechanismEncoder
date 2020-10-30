@@ -29,7 +29,8 @@ result_files = os.listdir(result_path)
 trace_files = os.listdir(trace_path)
 
 for file in trace_files:
-    if re.match(f'{OPTIMIZER}__{N_HIDDEN}__[0-9]*__0.csv', file):
+    if re.match(f'{MODEL}__{DATA}__{OPTIMIZER}__{N_HIDDEN}__[0-9]*__0.csv',
+                file):
         splitted = [int(s) for s in file.split('__') if s.isdigit()]
         run = splitted[0]
         start = splitted[1]
