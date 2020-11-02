@@ -24,7 +24,7 @@ TheanoFunction = theano.compile.function_module.Function
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 trace_path = os.path.join(basedir, 'traces')
-TRACE_FILE_FORMAT = '{pathway}__{data}__{optimizer}__{n_hidden}__{job}__' \
+TRACE_FILE_TEMPLATE = '{pathway}__{data}__{optimizer}__{n_hidden}__{job}__' \
                     '{{id}}.csv'
 
 MODEL_FILE = os.path.join(os.path.dirname(__file__),
@@ -306,11 +306,11 @@ class MechanisticAutoEncoder(dA):
             trace_record_schi2=False,
             storage_file=os.path.join(
                 trace_path,
-                TRACE_FILE_FORMAT.format(pathway=self.pathway_name,
-                                         data=self.data_name,
-                                         optimizer=optimizer,
-                                         n_hidden=self.n_hidden,
-                                         job=seed)
+                TRACE_FILE_TEMPLATE.format(pathway=self.pathway_name,
+                                           data=self.data_name,
+                                           optimizer=optimizer,
+                                           n_hidden=self.n_hidden,
+                                           job=seed)
             ),
             trace_save_iter=1
         )

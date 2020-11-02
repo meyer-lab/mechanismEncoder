@@ -1,6 +1,6 @@
 import os
 
-from mEncoder.autoencoder import trace_path, TRACE_FILE_FORMAT
+from mEncoder.autoencoder import trace_path, TRACE_FILE_TEMPLATE
 
 HIDDEN_LAYERS = [2, 5, 10]
 PATHWAYS = ['FLT3_MAPK_AKT_STAT']
@@ -53,11 +53,11 @@ rule estimate_parameters:
                             '{optimizer}__{n_hidden}__{job}.pickle'),
         trace=os.path.join(
             trace_path,
-            TRACE_FILE_FORMAT.format(pathway='{model}',
-                                     data='{data}',
-                                     optimizer='{optimizer}',
-                                     n_hidden='{n_hidden}',
-                                     job='{job}').replace('{id}', '0')
+            TRACE_FILE_TEMPLATE.format(pathway='{model}',
+                                       data='{data}',
+                                       optimizer='{optimizer}',
+                                       n_hidden='{n_hidden}',
+                                       job='{job}').replace('{id}', '0')
          )
     wildcard_constraints:
         model='[\w_]+',
@@ -74,11 +74,11 @@ rule collect_estimation_results:
         script='collect_estimation.py',
         trace=expand(os.path.join(
             trace_path,
-            TRACE_FILE_FORMAT.format(pathway='{{model}}',
-                                     data='{{data}}',
-                                     optimizer='{{optimizer}}',
-                                     n_hidden='{{n_hidden}}',
-                                     job='{job}').replace('{id}', '0')
+            TRACE_FILE_TEMPLATE.format(pathway='{{model}}',
+                                       data='{{data}}',
+                                       optimizer='{{optimizer}}',
+                                       n_hidden='{{n_hidden}}',
+                                       job='{job}').replace('{id}', '0')
          ), job=STARTS)
     output:
         result=os.path.join('results', '{model}', '{data}',

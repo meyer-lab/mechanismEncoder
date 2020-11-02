@@ -4,7 +4,9 @@ import pickle
 import re
 
 from pypesto.optimize.optimizer import read_result_from_file
-from mEncoder.autoencoder import MechanisticAutoEncoder, trace_path
+from mEncoder.autoencoder import (
+    MechanisticAutoEncoder, trace_path, TRACE_FILE_TEMPLATE
+)
 import pypesto.visualize
 
 MODEL = sys.argv[1]
@@ -27,8 +29,10 @@ result_files = os.listdir(result_path)
 trace_files = os.listdir(trace_path)
 
 for file in trace_files:
-    if re.match(f'{MODEL}__{DATA}__{OPTIMIZER}__{N_HIDDEN}__[0-9]*__0.csv',
-                file):
+    if re.match(TRACE_FILE_TEMPLATE.format(
+        pathway=MODEL, data=DATA, optimizer=OPTIMIZER,
+        n_hidden=N_HIDDEN, job=r'[0-9]*'
+    ).replace('{id}', '0'), file):
         splitted = [int(s) for s in os.path.splitext(file)[0].split('__')
                     if s.isdigit()]
         run = splitted[-2]
@@ -73,8 +77,10 @@ for file in trace_files:
                 trace_record_schi2=False,
                 storage_file=os.path.join(
                     trace_path,
-                    f'{MODEL}__{DATA}__{OPTIMIZER}__{N_HIDDEN}__{run}'
-                    f'__{{id}}.csv',
+                    TRACE_FILE_TEMPLATE.format(
+                        pathway=MODEL, data=DATA, optimizer=OPTIMIZER,
+                        n_hidden=N_HIDDEN, job=run
+                    ),
                 ),
                 trace_save_iter=1
             )
