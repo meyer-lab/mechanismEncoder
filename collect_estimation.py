@@ -3,8 +3,6 @@ import os
 import pickle
 import re
 
-import pandas as pd
-
 from pypesto.optimize.optimizer import read_result_from_file
 from mEncoder.autoencoder import MechanisticAutoEncoder, trace_path
 import pypesto.visualize
@@ -31,9 +29,10 @@ trace_files = os.listdir(trace_path)
 for file in trace_files:
     if re.match(f'{MODEL}__{DATA}__{OPTIMIZER}__{N_HIDDEN}__[0-9]*__0.csv',
                 file):
-        splitted = [int(s) for s in file.split('__') if s.isdigit()]
-        run = splitted[0]
-        start = splitted[1]
+        splitted = [int(s) for s in os.path.splitext(file)[0].split('__')
+                    if s.isdigit()]
+        run = splitted[-2]
+        start = splitted[-1]
 
         rfile = os.path.join(result_path,
                              f'{OPTIMIZER}__{N_HIDDEN}__{run}.pickle')
@@ -74,17 +73,13 @@ for file in trace_files:
                 trace_record_schi2=False,
                 storage_file=os.path.join(
                     trace_path,
-                    f'{OPTIMIZER}__{N_HIDDEN}__{run}__{{id}}.csv',
+                    f'{MODEL}__{DATA}__{OPTIMIZER}__{N_HIDDEN}__{run}'
+                    f'__{{id}}.csv',
                 ),
                 trace_save_iter=1
             )
-            try:
-                result = read_result_from_file(problem, history_options,
-                                               str(start))
-            except (pd.errors.EmptyDataError, pd.errors.ParserError):
-                print(f'corrupt file '
-                      f'{OPTIMIZER}__{N_HIDDEN}__{run}__{{id}}.csv',)
-                continue
+            result = read_result_from_file(problem, history_options,
+                                           str(start))
 
             par_names.append([
                 problem.x_names[ix]
