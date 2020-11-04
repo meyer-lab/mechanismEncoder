@@ -57,14 +57,24 @@ def plot_and_save_fig(filename):
         plt.savefig(os.path.join(figures_path, filename))
 
 
-parameter_boundaries_scales = {
+parameter_gen_boundaries_scales = {
     'kdeg': (-3, -1, 'log10'),      # [1/[t]]
     'eq': (1, 2, 'log10'),          # [[c]]
     'bias': (-10, 10, 'lin'),       # [-]
     'kcat': (1, 3, 'log10'),        # [1/([t]*[c])]
-    'scale': (-3, 0, 'log10'),      # [1/[c]]
-    'offset': (0, 1, 'log10'),      # [[c]]
+    'scale': (0, 0, 'log10'),      # [1/[c]]
+    'offset': (0, 0, 'log10'),      # [[c]]
     'weight': (-1, 1, 'lin'),
+}
+
+parameter_fit_boundaries_scales = {
+    'kdeg': (-3, -1, 'log10'),      # [1/[t]]
+    'eq': (1, 2, 'log10'),          # [[c]]
+    'bias': (-100, 100, 'lin'),       # [-]
+    'kcat': (1, 3, 'log10'),        # [1/([t]*[c])]
+    'scale': (0, 0, 'log10'),      # [1/[c]]
+    'offset': (0, 0, 'log10'),      # [[c]]
+    'weight': (-10, 10, 'lin'),
 }
 
 MODEL_FEATURE_PREFIX = 'INPUT_'

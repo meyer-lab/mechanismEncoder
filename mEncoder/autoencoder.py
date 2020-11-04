@@ -8,16 +8,18 @@ import numpy as np
 
 import petab
 import amici
+import nlopt
+
 from amici.petab_import import PysbPetabProblem
 from pypesto.petab.pysb_importer import PetabImporterPysb
 from pypesto.sample.theano import TheanoLogProbability
 from pypesto.objective import Objective
 from pypesto import Problem, HistoryOptions
-from pypesto.optimize import (ScipyOptimizer, IpoptOptimizer, minimize,
+from pypesto.optimize import (NLoptOptimizer, IpoptOptimizer, minimize,
                               OptimizeOptions)
 import pypesto
 
-from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, load_pathway
+from . import parameter_fit_boundaries_scales, MODEL_FEATURE_PREFIX, load_pathway
 from .encoder import dA
 
 TheanoFunction = theano.compile.function_module.Function
@@ -104,14 +106,13 @@ def load_petab(datafile: str, pathway_name: str):
               if not par.name.startswith(MODEL_FEATURE_PREFIX)]
     param_defs = [{
         petab.PARAMETER_ID: par.name,
-        petab.LOWER_BOUND: parameter_boundaries_scales[
+        petab.LOWER_BOUND: parameter_fit_boundaries_scales[
             par.name.split('_')[-1]][0],
-        petab.UPPER_BOUND: parameter_boundaries_scales[
+        petab.UPPER_BOUND: parameter_fit_boundaries_scales[
             par.name.split('_')[-1]][1],
-        petab.PARAMETER_SCALE: parameter_boundaries_scales[
+        petab.PARAMETER_SCALE: parameter_fit_boundaries_scales[
             par.name.split('_')[-1]][2],
         petab.NOMINAL_VALUE: par.value,
-        petab.ESTIMATE: 1
     } for par in params]
 
     for cond in condition_table.index.values:
@@ -121,10 +122,13 @@ def load_petab(datafile: str, pathway_name: str):
             petab.UPPER_BOUND: 100,
             petab.PARAMETER_SCALE: 'lin',
             petab.NOMINAL_VALUE: par.value,
-            petab.ESTIMATE: 1
         } for par in features])
 
     parameter_table = pd.DataFrame(param_defs).set_index(petab.PARAMETER_ID)
+    parameter_table[petab.ESTIMATE] = (
+        parameter_table[petab.LOWER_BOUND] !=
+        parameter_table[petab.UPPER_BOUND]
+    ).apply(lambda x: int(x))
 
     return PetabImporterPysb(PysbPetabProblem(
         measurement_df=measurement_table,
@@ -178,8 +182,8 @@ class MechanisticAutoEncoder(dA):
                                       for name in
                                       self.pypesto_subproblem.x_names) /
                                   self.n_samples)
-        self.n_kin_params = self.pypesto_subproblem.dim - \
-                            self.n_model_inputs * self.n_samples
+        self.n_kin_params = \
+            self.pypesto_subproblem.dim - self.n_model_inputs * self.n_samples
 
         input_data = self.petab_importer.petab_problem.measurement_df.pivot(
             index=petab.SIMULATION_CONDITION_ID,
@@ -204,16 +208,17 @@ class MechanisticAutoEncoder(dA):
         self.x_names = [
             f'ecoder_{ip}_weight' for ip in range(self.n_encoder_pars)
         ] + [
-            name for name in
-            self.pypesto_subproblem.x_names
+            name for ix, name in enumerate(self.pypesto_subproblem.x_names)
             if not name.startswith(MODEL_FEATURE_PREFIX)
+            and ix in self.pypesto_subproblem.x_free_indices
         ]
 
         # assemble input to model theano op
         encoded_pars = self.encode_params(self.encoder_pars)
         self.model_pars = T.concatenate([
             self.kin_pars,
-            T.reshape(encoded_pars, (self.n_model_inputs * self.n_samples,))],
+            T.reshape(encoded_pars,
+                      (self.n_model_inputs * self.n_samples,))],
             axis=0
         )
 
@@ -250,7 +255,7 @@ class MechanisticAutoEncoder(dA):
             return - float(loss(encoder_pars, kinetic_pars))
 
         def grad(x: np.ndarray) -> np.ndarray:
-            encoder_pars = x[0:self.n_encoder_pars]
+            encoder_pars = x[:self.n_encoder_pars]
             kinetic_pars = x[self.n_encoder_pars:]
             return - np.asarray(loss_grad(encoder_pars, kinetic_pars))
 
@@ -262,14 +267,14 @@ class MechanisticAutoEncoder(dA):
         return Problem(
             objective=self.generate_pypesto_objective(),
             x_names=self.x_names,
-            lb=[parameter_boundaries_scales[name.split('_')[-1]][0]
+            lb=[parameter_fit_boundaries_scales[name.split('_')[-1]][0]
                 for name in self.x_names],
-            ub=[parameter_boundaries_scales[name.split('_')[-1]][1]
+            ub=[parameter_fit_boundaries_scales[name.split('_')[-1]][1]
                 for name in self.x_names],
         )
 
     def train(self,
-              optimizer: str = 'L-BFGS-B',
+              optimizer: str = 'NLOpt_LD_LBFGS',
               ftol: float = 1e-3,
               gtol: float = 1e-3,
               maxiter: int = 100,
@@ -285,14 +290,12 @@ class MechanisticAutoEncoder(dA):
                     'disp': 5,
                 }
             )
-        else:
-            opt = ScipyOptimizer(
-                method=optimizer,
+        elif optimizer.startswith('NLOpt_'):
+            opt = NLoptOptimizer(
+                method=getattr(nlopt, optimizer.replace('NLOpt_', '')),
                 options={
-                    'maxiter': maxiter,
-                    'ftol': ftol,
-                    'gtol': gtol,
-                    'disp': True,
+                    'maxtime': 3600,
+                    'ftol_abs': ftol,
                 }
             )
 
@@ -312,7 +315,7 @@ class MechanisticAutoEncoder(dA):
                                            n_hidden=self.n_hidden,
                                            job=seed)
             ),
-            trace_save_iter=1
+            trace_save_iter=10
         )
 
         np.random.seed(seed)

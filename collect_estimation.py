@@ -14,7 +14,8 @@ DATA = sys.argv[2]
 N_HIDDEN = int(sys.argv[3])
 OPTIMIZER = sys.argv[4]
 
-mae = MechanisticAutoEncoder(N_HIDDEN, os.path.join('data', DATA + '.csv'),
+mae = MechanisticAutoEncoder(N_HIDDEN, os.path.join('data',
+                                                    f'{DATA}__{MODEL}.csv'),
                              MODEL)
 problem = mae.create_pypesto_problem()
 
@@ -30,7 +31,7 @@ trace_files = os.listdir(trace_path)
 
 for file in trace_files:
     if re.match(TRACE_FILE_TEMPLATE.format(
-        pathway=MODEL, data=DATA, optimizer=OPTIMIZER,
+        pathway=MODEL, data=f'{DATA}__{MODEL}', optimizer=OPTIMIZER,
         n_hidden=N_HIDDEN, job=r'[0-9]*'
     ).replace('{id}', '0'), file):
         splitted = [int(s) for s in os.path.splitext(file)[0].split('__')
@@ -78,8 +79,8 @@ for file in trace_files:
                 storage_file=os.path.join(
                     trace_path,
                     TRACE_FILE_TEMPLATE.format(
-                        pathway=MODEL, data=DATA, optimizer=OPTIMIZER,
-                        n_hidden=N_HIDDEN, job=run
+                        pathway=MODEL, data=f'{DATA}__{MODEL}',
+                        optimizer=OPTIMIZER, n_hidden=N_HIDDEN, job=run
                     ),
                 ),
                 trace_save_iter=1

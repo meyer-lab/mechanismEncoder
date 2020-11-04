@@ -19,8 +19,8 @@ class dA:
         self.n_encode_weights = self.n_visible * self.n_hidden
         self.n_inflate_weights = self.n_hidden * self.n_params
         self.n_inflate_bias = self.n_params
-        self.n_encoder_pars = self.n_encode_weights + self.n_inflate_weights \
-                              + self.n_inflate_bias
+        self.n_encoder_pars = self.n_encode_weights + \
+            self.n_inflate_weights + self.n_inflate_bias
         self.x_names = [
             f'ecoder_{iw}_weight' for iw in range(self.n_encode_weights)
         ] + [

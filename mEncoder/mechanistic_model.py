@@ -267,7 +267,6 @@ def get_autoencoder_modulator():
     """
     input_index = next(_input_count)
     return Parameter(f'INPUT_{input_index}', 0.0)
-    return Parameter(f'INPUT_{input_index}', 0.0)
 
 
 def add_abundance_observables(model):
@@ -277,8 +276,8 @@ def add_abundance_observables(model):
     """
     for monomer in model.monomers:
         obs = Observable(f'total_{monomer.name}', monomer())
-        scale = Parameter(f't{monomer.name}_scale')
-        offset = Parameter(f't{monomer.name}_offset')
+        scale = Parameter(f't{monomer.name}_scale', 1.0)
+        offset = Parameter(f't{monomer.name}_offset', 1.0)
         Expression(f't{monomer.name}_obs', sp.log(scale * (obs + offset)))
 
 
@@ -292,8 +291,8 @@ def add_phospho_observables(model):
             if re.match(r'[YTS][0-9]+$', site):
                 obs = Observable(f'p{monomer.name}_{site}',
                                  monomer(**{site: 'p'}))
-                scale = Parameter(f'p{monomer.name}_{site}_scale')
-                offset = Parameter(f'p{monomer.name}_{site}_offset')
+                scale = Parameter(f'p{monomer.name}_{site}_scale', 1.0)
+                offset = Parameter(f'p{monomer.name}_{site}_offset', 1.0)
                 Expression(f'p{monomer.name}_{site}_obs',
                            sp.log(scale * (obs + offset)))
 

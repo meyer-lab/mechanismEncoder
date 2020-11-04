@@ -2,10 +2,11 @@ import os
 
 from mEncoder.autoencoder import trace_path, TRACE_FILE_TEMPLATE
 
-HIDDEN_LAYERS = [2, 5, 10]
-PATHWAYS = ['FLT3_MAPK_AKT_STAT']
+HIDDEN_LAYERS = [2]
+PATHWAYS = ['FLT3_MAPK']
 DATASETS = ['synthetic']
-OPTIMIZERS = ['L-BFGS-B', 'ipopt']
+OPTIMIZERS = ['ipopt', 'NLOpt_LD_LBFGS', 'NLOpt_LD_MMA', 'NLOpt_LD_SLSQP',
+              'NLOpt_VAR1', 'NLOpt_VAR2']
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
 
@@ -18,12 +19,13 @@ rule process_data:
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
         pathway=os.path.join('pathways', 'pw_FLT3_MAPK_AKT_STAT.py')
     output:
-        datafile=os.path.join('data', '{data}.csv')
+        datafile=os.path.join('data', '{data}__{model}.csv'),
+        datafigure=os.path.join('data', '{data}__{model}.pdf')
     wildcard_constraints:
         model='[\w_]+',
         data='[\w]+',
     shell:
-        'python3 {input.script} {wildcards.data}'
+        'python3 {input.script} {wildcards.data} {wildcards.model}'
 
 rule compile_mechanistic_model:
     input:
@@ -31,10 +33,10 @@ rule compile_mechanistic_model:
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
         autoencoder_code=os.path.join('mEncoder', 'autoencoder.py'),
         pathway=os.path.join('pathways', 'pw_{model}.py'),
-        data=os.path.join('data', '{data}.csv')
+        data=os.path.join('data', '{data}__{model}.csv')
     output:
-        model=os.path.join('amici_models', '{model}_{data}_petab', '{model}',
-                           '{model}.py'),
+        model=os.path.join('amici_models', '{model}_{data}__{model}_petab',
+                           '{model}', '{model}.py'),
     wildcard_constraints:
         model='[\w_]+',
         data='[\w]+',
@@ -54,7 +56,7 @@ rule estimate_parameters:
         trace=os.path.join(
             trace_path,
             TRACE_FILE_TEMPLATE.format(pathway='{model}',
-                                       data='{data}',
+                                       data='{data}__{model}',
                                        optimizer='{optimizer}',
                                        n_hidden='{n_hidden}',
                                        job='{job}').replace('{id}', '0')
@@ -75,7 +77,7 @@ rule collect_estimation_results:
         trace=expand(os.path.join(
             trace_path,
             TRACE_FILE_TEMPLATE.format(pathway='{{model}}',
-                                       data='{{data}}',
+                                       data='{{data}}__{{model}}',
                                        optimizer='{{optimizer}}',
                                        n_hidden='{{n_hidden}}',
                                        job='{job}').replace('{id}', '0')
@@ -100,9 +102,10 @@ rule visualize_estimation_results:
     output:
         plots=expand(os.path.join(
             'figures',
-            '__'.join(['{{model}}', '{{data}}', '{{optimizer}}',
-                       '{{n_hidden}}']) + '__{plot}.pdf'
-        ), plot=['waterfall', 'optimizer_trace', 'embedding'])
+            '__'.join(['{{model}}', '{{data}}', '{{n_hidden}}',
+                       '{{optimizer}}']) + '__{plot}.pdf'
+        ), plot=['waterfall', 'optimizer_trace', 'embedding', 'fit',
+                 'optimizer_convergence'])
     wildcard_constraints:
         model='[\w_]+',
         data='[\w_]+',

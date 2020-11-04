@@ -11,7 +11,8 @@ import theano
 from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder import plot_and_save_fig
 
-from pypesto.visualize import waterfall, optimizer_history
+from pypesto.visualize import waterfall, optimizer_history, \
+    optimizer_convergence
 
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
@@ -22,7 +23,8 @@ N_STARTS = 5
 
 outfile = os.path.join('results', MODEL, DATA,
                        f'{OPTIMIZER}__{N_HIDDEN}__full.pickle')
-mae = MechanisticAutoEncoder(N_HIDDEN, os.path.join('data', DATA + '.csv'),
+mae = MechanisticAutoEncoder(N_HIDDEN, os.path.join('data',
+                                                    f'{DATA}__{MODEL}.csv'),
                              MODEL)
 problem = mae.create_pypesto_problem()
 
@@ -45,11 +47,14 @@ result.optimize_result.sort()
 
 prefix = '__'.join([MODEL, DATA, str(N_HIDDEN), OPTIMIZER])
 
-waterfall(result, scale_y='log10')
+waterfall(result, scale_y='log10', offset_y=0.0)
 plot_and_save_fig(prefix + '__waterfall.pdf')
 
 optimizer_history(result, scale_y='log10')
 plot_and_save_fig(prefix + '__optimizer_trace.pdf')
+
+optimizer_convergence(result)
+plot_and_save_fig(prefix + '__optimizer_convergence.pdf')
 
 fig_embedding, axes_embedding = plt.subplots(1, N_STARTS,
                                              figsize=(18.5, 10.5))
@@ -65,11 +70,12 @@ inflate_fun = theano.function(
 
 data_dicts = []
 for ir, r in enumerate(result.optimize_result.list[1:N_STARTS]):
-    embedding = embedding_fun(r['x'])
+    embedding = embedding_fun(r['x'][mae.n_encoder_pars:])
     axes_embedding[ir].plot(embedding[:, 0], embedding[:, 1], 'k*')
 
     rdatas = mae.pypesto_subproblem.objective(
-        np.hstack([r['x'][:mae.n_kin_params], inflate_fun(r['x']).flatten()]),
+        np.hstack([r['x'][mae.n_encoder_pars:],
+                   inflate_fun(r['x'][:mae.n_encoder_pars]).flatten()]),
         return_dict=True
     )[
         pypesto.objective.constants.RDATAS
@@ -82,8 +88,7 @@ for ir, r in enumerate(result.optimize_result.list[1:N_STARTS]):
         y = rdata['y']
 
         for iy, name in enumerate(
-                mae.pypesto_subproblem.objective.amici_model
-                        .getObservableNames()
+            mae.pypesto_subproblem.objective.amici_model.getObservableNames()
         ):
             data_dicts.append({
                 'start_index': ir,
