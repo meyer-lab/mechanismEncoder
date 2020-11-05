@@ -6,7 +6,7 @@ HIDDEN_LAYERS = [2]
 PATHWAYS = ['FLT3_MAPK']
 DATASETS = ['synthetic']
 OPTIMIZERS = ['ipopt', 'NLOpt_LD_LBFGS', 'NLOpt_LD_MMA', 'NLOpt_LD_SLSQP',
-              'NLOpt_VAR1', 'NLOpt_VAR2']
+              'NLOpt_LD_VAR1', 'NLOpt_LD_VAR2']
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
 
