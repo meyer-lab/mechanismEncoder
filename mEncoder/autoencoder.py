@@ -7,7 +7,6 @@ import pandas as pd
 import numpy as np
 
 import petab
-import amici
 import nlopt
 
 from amici.petab_import import PysbPetabProblem
@@ -194,9 +193,17 @@ class MechanisticAutoEncoder(dA):
                          n_params=self.n_model_inputs)
 
         # define model theano op
-        self.pypesto_subproblem.objective.amici_solver.setSensitivityMethod(
-            amici.SensitivityMethod.adjoint
-        )
+        #self.pypesto_subproblem.objective.amici_solver.setSensitivityMethod(
+        #    amici.SensitivityMethod.adjoint
+        #)
+        self.pypesto_subproblem.objective.amici_solver\
+            .setAbsoluteTolerance(1e-12)
+        self.pypesto_subproblem.objective.amici_solver\
+            .setRelativeTolerance(1e-10)
+        self.pypesto_subproblem.objective.amici_solver\
+            .setAbsoluteToleranceSteadyState(1e-10)
+        self.pypesto_subproblem.objective.amici_solver\
+            .setRelativeToleranceSteadyState(1e-8)
         self.loss = TheanoLogProbability(self.pypesto_subproblem)
 
         # these are the kinetic parameters that are shared across all samples
@@ -276,7 +283,6 @@ class MechanisticAutoEncoder(dA):
     def train(self,
               optimizer: str = 'NLOpt_LD_LBFGS',
               ftol: float = 1e-3,
-              gtol: float = 1e-3,
               maxiter: int = 100,
               n_starts: int = 1,
               seed: int = 0):

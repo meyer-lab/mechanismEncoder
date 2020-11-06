@@ -16,6 +16,7 @@ rule process_data:
     input:
         script='process_data.py',
         data_code=os.path.join('mEncoder', 'generate_data.py'),
+        enc_code=os.path.join('mEncoder', 'encoder.py'),
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
         pathway=os.path.join('pathways', 'pw_FLT3_MAPK_AKT_STAT.py')
     output:
@@ -31,6 +32,7 @@ rule compile_mechanistic_model:
     input:
         script='compile_model.py',
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
+        enc_code=os.path.join('mEncoder', 'encoder.py'),
         autoencoder_code=os.path.join('mEncoder', 'autoencoder.py'),
         pathway=os.path.join('pathways', 'pw_{model}.py'),
         data=os.path.join('data', '{data}__{model}.csv')

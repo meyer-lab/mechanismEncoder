@@ -68,13 +68,13 @@ parameter_gen_boundaries_scales = {
 }
 
 parameter_fit_boundaries_scales = {
-    'kdeg': (-3, -1, 'log10'),      # [1/[t]]
-    'eq': (1, 2, 'log10'),          # [[c]]
+    'kdeg': (-4, 0, 'log10'),      # [1/[t]]
+    'eq': (0, 3, 'log10'),          # [[c]]
     'bias': (-100, 100, 'lin'),       # [-]
-    'kcat': (1, 3, 'log10'),        # [1/([t]*[c])]
+    'kcat': (0, 4, 'log10'),        # [1/([t]*[c])]
     'scale': (0, 0, 'log10'),      # [1/[c]]
     'offset': (0, 0, 'log10'),      # [[c]]
-    'weight': (-10, 10, 'lin'),
+    'weight': (-1, 1, 'lin'),
 }
 
 MODEL_FEATURE_PREFIX = 'INPUT_'

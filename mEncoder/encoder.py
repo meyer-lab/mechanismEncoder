@@ -3,6 +3,7 @@ Materials for a simple linear encoder, and its analytical reverse.
 """
 
 import theano.tensor as T
+import numpy as np
 
 
 class dA:
@@ -41,7 +42,9 @@ class dA:
                             self.n_encode_weights+self.n_inflate_weights],
                         (self.n_hidden, self.n_params))
         bias = pIn[-self.n_inflate_bias:]
-        return T.nnet.sigmoid(T.dot(embedded_data, W_p) + bias)
+        return np.power(
+            10, T.nnet.sigmoid(T.dot(embedded_data, W_p) + bias)*2 - 1
+        )
 
     def encode_params(self, pIn):
         """ Run the encoder and then inflate to parameters. """
