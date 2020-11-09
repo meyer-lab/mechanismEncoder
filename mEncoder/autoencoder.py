@@ -16,9 +16,9 @@ from pypesto.objective import Objective
 from pypesto import Problem, HistoryOptions
 from pypesto.optimize import (NLoptOptimizer, IpoptOptimizer, minimize,
                               OptimizeOptions)
-import pypesto
 
-from . import parameter_fit_boundaries_scales, MODEL_FEATURE_PREFIX, load_pathway
+from . import parameter_gen_boundaries_scales, MODEL_FEATURE_PREFIX, \
+    load_pathway
 from .encoder import dA
 
 TheanoFunction = theano.compile.function_module.Function
@@ -105,11 +105,11 @@ def load_petab(datafile: str, pathway_name: str):
               if not par.name.startswith(MODEL_FEATURE_PREFIX)]
     param_defs = [{
         petab.PARAMETER_ID: par.name,
-        petab.LOWER_BOUND: parameter_fit_boundaries_scales[
+        petab.LOWER_BOUND: parameter_gen_boundaries_scales[
             par.name.split('_')[-1]][0],
-        petab.UPPER_BOUND: parameter_fit_boundaries_scales[
+        petab.UPPER_BOUND: parameter_gen_boundaries_scales[
             par.name.split('_')[-1]][1],
-        petab.PARAMETER_SCALE: parameter_fit_boundaries_scales[
+        petab.PARAMETER_SCALE: parameter_gen_boundaries_scales[
             par.name.split('_')[-1]][2],
         petab.NOMINAL_VALUE: par.value,
     } for par in params]
@@ -274,10 +274,8 @@ class MechanisticAutoEncoder(dA):
         return Problem(
             objective=self.generate_pypesto_objective(),
             x_names=self.x_names,
-            lb=[parameter_fit_boundaries_scales[name.split('_')[-1]][0]
-                for name in self.x_names],
-            ub=[parameter_fit_boundaries_scales[name.split('_')[-1]][1]
-                for name in self.x_names],
+            lb=[-np.inf for name in self.x_names],
+            ub=[np.inf for name in self.x_names],
         )
 
     def train(self,
@@ -331,11 +329,24 @@ class MechanisticAutoEncoder(dA):
             allow_failed_starts=False,
         )
 
+        lb = np.asarray([
+            parameter_gen_boundaries_scales[name.split('_')[-1]][0]
+            for name in self.x_names
+        ])
+        ub = np.asarray([
+            parameter_gen_boundaries_scales[name.split('_')[-1]][1]
+            for name in self.x_names
+        ])
+
+        def startpoint(**kwargs):
+            xs = np.random.random((kwargs['n_starts'], lb.shape[0]))
+            return xs * (ub-lb) + lb
+
         return minimize(
             pypesto_problem,
             opt,
             n_starts=n_starts,
-            startpoint_method=pypesto.startpoint.uniform,
             options=optimize_options,
-            history_options=history_options
+            history_options=history_options,
+            startpoint_method=startpoint
         )

@@ -67,14 +67,4 @@ parameter_gen_boundaries_scales = {
     'weight': (-1, 1, 'lin'),
 }
 
-parameter_fit_boundaries_scales = {
-    'kdeg': (-4, 0, 'log10'),      # [1/[t]]
-    'eq': (0, 3, 'log10'),          # [[c]]
-    'bias': (-100, 100, 'lin'),       # [-]
-    'kcat': (0, 4, 'log10'),        # [1/([t]*[c])]
-    'scale': (0, 0, 'log10'),      # [1/[c]]
-    'offset': (0, 0, 'log10'),      # [[c]]
-    'weight': (-1, 1, 'lin'),
-}
-
 MODEL_FEATURE_PREFIX = 'INPUT_'
