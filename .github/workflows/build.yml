@@ -16,8 +16,6 @@ jobs:
       run: |
         git submodule update --init --recursive && make clean
         make venv
-    - name: Build figures
-      run: make all -j 3
     - name: Build manuscript
       run: make output/manuscript.html output/manuscript.docx
     - name: Upload files
