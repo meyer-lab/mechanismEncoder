@@ -147,3 +147,4 @@ traces/*
 *.csv
 *.pickle
 *.pdf
+output
