@@ -17,4 +17,4 @@ sympy==1.6.2
 snakemake==5.26.1
 seaborn==0.11.0
 nlopt==2.6.0
-git+https://github.com/ICB-DCM/pyPESTO@feature_pysb_petab_dw
+git+https://github.com/ICB-DCM/pyPESTO@develop
