@@ -18,13 +18,13 @@ output/manuscript.md: venv manuscript/*.md
 
 output/manuscript.html: venv output/manuscript.md
 	@mkdir -p output
-	. venv/bin/activate && pandoc -v \
+	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
 		--defaults=./common/templates/manubot/pandoc/html.yaml
 
 output/manuscript.docx: venv output/manuscript.md
 	@mkdir -p output
-	. venv/bin/activate && pandoc -v \
+	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
 		--defaults=./common/templates/manubot/pandoc/docx.yaml
 
