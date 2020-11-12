@@ -1,5 +1,6 @@
 from .. import load_model
 from ..autoencoder import load_petab, MechanisticAutoEncoder
+from ..training import generate_pypesto_objective, train
 from ..generate_data import generate_synthetic_data
 
 import amici
@@ -38,7 +39,7 @@ def test_pypesto_objective():
     n_hidden = 10
 
     mae = MechanisticAutoEncoder(n_hidden, datafile, pathway_model)
-    objective = mae.generate_pypesto_objective()
+    objective = generate_pypesto_objective(mae)
     x = np.random.random((mae.n_encoder_pars + mae.n_kin_params,))
     x[0:mae.n_encoder_pars] /= 10
     assert np.isfinite(objective.get_fval(x))
@@ -59,4 +60,4 @@ def test_pypesto_optimization():
     n_hidden = 10
 
     mae = MechanisticAutoEncoder(n_hidden, datafile, pathway_model)
-    mae.train(maxiter=5)
+    train(mae, maxiter=5)
