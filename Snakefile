@@ -49,6 +49,7 @@ rule estimate_parameters:
     input:
         script='run_estimation.py',
         encoder_code=os.path.join('mEncoder', 'encoder.py'),
+        training_code=os.path.join('mEncoder', 'training.py'),
         autoencoder_code=os.path.join('mEncoder', 'autoencoder.py'),
         dataset=rules.process_data.output.datafile,
         model=rules.compile_mechanistic_model.output.model,

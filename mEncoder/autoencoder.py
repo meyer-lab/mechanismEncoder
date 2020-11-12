@@ -7,34 +7,26 @@ import pandas as pd
 import numpy as np
 
 import petab
-import nlopt
 
 from amici.petab_import import PysbPetabProblem
 from pypesto.petab.pysb_importer import PetabImporterPysb
 from pypesto.sample.theano import TheanoLogProbability
-from pypesto.objective import Objective
-from pypesto import Problem, HistoryOptions
-from pypesto.optimize import (NLoptOptimizer, IpoptOptimizer, minimize,
-                              OptimizeOptions)
-
-from . import parameter_gen_boundaries_scales, MODEL_FEATURE_PREFIX, \
+from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, \
     load_pathway
 from .encoder import dA
 
 TheanoFunction = theano.compile.function_module.Function
-
 basedir = os.path.dirname(os.path.dirname(__file__))
-trace_path = os.path.join(basedir, 'traces')
-TRACE_FILE_TEMPLATE = '{pathway}__{data}__{optimizer}__{n_hidden}__{job}__' \
-                    '{{id}}.csv'
-
 MODEL_FILE = os.path.join(os.path.dirname(__file__),
                           'pathway_FLT3_MAPK_AKT_STAT')
 
 
 def load_petab(datafile: str, pathway_name: str):
     """
-    Imports data from a csv and converts it to the petab format
+    Imports data from a csv and converts it to the petab format. This
+    function is used to connect the mechanistic model to the specified data
+    in order to defines the loss function of the autoencoder up to the
+    inflated parameters
 
     :param datafile:
         path to data csv
@@ -105,11 +97,11 @@ def load_petab(datafile: str, pathway_name: str):
               if not par.name.startswith(MODEL_FEATURE_PREFIX)]
     param_defs = [{
         petab.PARAMETER_ID: par.name,
-        petab.LOWER_BOUND: parameter_gen_boundaries_scales[
+        petab.LOWER_BOUND: parameter_boundaries_scales[
             par.name.split('_')[-1]][0],
-        petab.UPPER_BOUND: parameter_gen_boundaries_scales[
+        petab.UPPER_BOUND: parameter_boundaries_scales[
             par.name.split('_')[-1]][1],
-        petab.PARAMETER_SCALE: parameter_gen_boundaries_scales[
+        petab.PARAMETER_SCALE: parameter_boundaries_scales[
             par.name.split('_')[-1]][2],
         petab.NOMINAL_VALUE: par.value,
     } for par in params]
@@ -141,9 +133,15 @@ def load_petab(datafile: str, pathway_name: str):
     ))
 
 
-def observable_id_to_model_expr(obs_id: str):
+def observable_id_to_model_expr(obs_id: str) -> str:
     """
-    Maps site defintions from data to model observables
+    Maps site definitions from data to model observables
+
+    :param obs_id:
+        identifier of the phosphosite in the data table
+
+    :return:
+        the name of the corresponding observable in the model
     """
     phospho_site_pattern = r'_[S|Y|T][0-9]+[s|y|t]$'
     return ('p' if re.search(phospho_site_pattern, obs_id) else 't') + \
@@ -192,10 +190,7 @@ class MechanisticAutoEncoder(dA):
         super().__init__(input_data=input_data, n_hidden=n_hidden,
                          n_params=self.n_model_inputs)
 
-        # define model theano op
-        #self.pypesto_subproblem.objective.amici_solver.setSensitivityMethod(
-        #    amici.SensitivityMethod.adjoint
-        #)
+        # set tolerances
         self.pypesto_subproblem.objective.amici_solver\
             .setAbsoluteTolerance(1e-12)
         self.pypesto_subproblem.objective.amici_solver\
@@ -204,6 +199,8 @@ class MechanisticAutoEncoder(dA):
             .setAbsoluteToleranceSteadyState(1e-10)
         self.pypesto_subproblem.objective.amici_solver\
             .setRelativeToleranceSteadyState(1e-8)
+
+        # define model theano op
         self.loss = TheanoLogProbability(self.pypesto_subproblem)
 
         # these are the kinetic parameters that are shared across all samples
@@ -230,12 +227,19 @@ class MechanisticAutoEncoder(dA):
         )
 
     def compile_loss(self) -> TheanoFunction:
+        """
+        Compile a theano function that evaluates the loss function
+        """
         return theano.function(
             [self.encoder_pars, self.kin_pars],
             self.loss(self.model_pars)
         )
 
     def compile_loss_grad(self) -> TheanoFunction:
+        """
+        Compile a theano function that evaluates the gradient of the loss
+        function
+        """
         return theano.function(
             [self.encoder_pars, self.kin_pars],
             T.concatenate(
@@ -247,106 +251,10 @@ class MechanisticAutoEncoder(dA):
 
     def compute_inflated_pars(self,
                               encoder_pars: T.vector) -> TheanoFunction:
+        """
+        Compile a theano function that computes the inflated parameters
+        """
         return theano.function(
             [self.encoder_pars],
             self.encode_params(self.encoder_pars)
         )(encoder_pars)
-
-    def generate_pypesto_objective(self) -> Objective:
-        loss = self.compile_loss()
-        loss_grad = self.compile_loss_grad()
-
-        def fun(x: np.ndarray) -> float:
-            encoder_pars = x[0:self.n_encoder_pars]
-            kinetic_pars = x[self.n_encoder_pars:]
-            return - float(loss(encoder_pars, kinetic_pars))
-
-        def grad(x: np.ndarray) -> np.ndarray:
-            encoder_pars = x[:self.n_encoder_pars]
-            kinetic_pars = x[self.n_encoder_pars:]
-            return - np.asarray(loss_grad(encoder_pars, kinetic_pars))
-
-        return Objective(
-            fun=fun, grad=grad,
-        )
-
-    def create_pypesto_problem(self) -> Problem:
-        return Problem(
-            objective=self.generate_pypesto_objective(),
-            x_names=self.x_names,
-            lb=[-np.inf for name in self.x_names],
-            ub=[np.inf for name in self.x_names],
-        )
-
-    def train(self,
-              optimizer: str = 'NLOpt_LD_LBFGS',
-              ftol: float = 1e-3,
-              maxiter: int = 100,
-              n_starts: int = 1,
-              seed: int = 0):
-        pypesto_problem = self.create_pypesto_problem()
-
-        if optimizer == 'ipopt':
-            opt = IpoptOptimizer(
-                options={
-                    'maxiter': maxiter,
-                    'tol': ftol,
-                    'disp': 5,
-                }
-            )
-        elif optimizer.startswith('NLOpt_'):
-            opt = NLoptOptimizer(
-                method=getattr(nlopt, optimizer.replace('NLOpt_', '')),
-                options={
-                    'maxtime': 3600,
-                    'ftol_abs': ftol,
-                }
-            )
-
-        os.makedirs(trace_path, exist_ok=True)
-
-        history_options = HistoryOptions(
-            trace_record=True,
-            trace_record_hess=False,
-            trace_record_res=False,
-            trace_record_sres=False,
-            trace_record_schi2=False,
-            storage_file=os.path.join(
-                trace_path,
-                TRACE_FILE_TEMPLATE.format(pathway=self.pathway_name,
-                                           data=self.data_name,
-                                           optimizer=optimizer,
-                                           n_hidden=self.n_hidden,
-                                           job=seed)
-            ),
-            trace_save_iter=10
-        )
-
-        np.random.seed(seed)
-
-        optimize_options = OptimizeOptions(
-            startpoint_resample=True,
-            allow_failed_starts=False,
-        )
-
-        lb = np.asarray([
-            parameter_gen_boundaries_scales[name.split('_')[-1]][0]
-            for name in self.x_names
-        ])
-        ub = np.asarray([
-            parameter_gen_boundaries_scales[name.split('_')[-1]][1]
-            for name in self.x_names
-        ])
-
-        def startpoint(**kwargs):
-            xs = np.random.random((kwargs['n_starts'], lb.shape[0]))
-            return xs * (ub-lb) + lb
-
-        return minimize(
-            pypesto_problem,
-            opt,
-            n_starts=n_starts,
-            options=optimize_options,
-            history_options=history_options,
-            startpoint_method=startpoint
-        )

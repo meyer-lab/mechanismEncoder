@@ -1,5 +1,5 @@
 from . import (
-    load_model, parameter_gen_boundaries_scales, MODEL_FEATURE_PREFIX,
+    load_model, parameter_boundaries_scales, MODEL_FEATURE_PREFIX,
     plot_and_save_fig
 )
 
@@ -42,7 +42,7 @@ def generate_synthetic_data(pathway_name: str,
     model.setParameterScale(amici.parameterScalingFromIntVector([
         amici.ParameterScaling.none
         if par_id.startswith(MODEL_FEATURE_PREFIX)
-        or parameter_gen_boundaries_scales[par_id.split('_')[-1]][2] == 'lin'
+           or parameter_boundaries_scales[par_id.split('_')[-1]][2] == 'lin'
         else amici.ParameterScaling.log10
         for par_id in model.getParameterIds()
     ]))
@@ -57,7 +57,7 @@ def generate_synthetic_data(pathway_name: str,
     for par_id in model.getParameterIds():
         if par_id.startswith(MODEL_FEATURE_PREFIX):
             continue
-        lb, ub, _ = parameter_gen_boundaries_scales[par_id.split('_')[-1]]
+        lb, ub, _ = parameter_boundaries_scales[par_id.split('_')[-1]]
         static_pars[par_id] = np.random.random() * (ub - lb) + lb
 
     # identify which parameters may vary across samples
@@ -69,7 +69,7 @@ def generate_synthetic_data(pathway_name: str,
                  n_hidden=latent_dimension, n_params=len(sample_pars))
     tt_pars = np.random.random(encoder.n_encoder_pars)
     for ip, name in enumerate(encoder.x_names):
-        lb, ub, _ = parameter_gen_boundaries_scales[name.split('_')[-1]]
+        lb, ub, _ = parameter_boundaries_scales[name.split('_')[-1]]
         tt_pars[ip] = tt_pars[ip] * (ub - lb) + lb
 
     tt_data = T.specify_shape(T.vector('embedded_data'),
@@ -105,7 +105,6 @@ def generate_synthetic_data(pathway_name: str,
     df[list(model.getObservableIds())].rename(columns={
         o: o.replace('_obs', '') for o in model.getObservableIds()
     }).boxplot(rot=90)
-
 
     # format according to reference example
     formatted_df = pd.melt(df[list(model.getObservableIds()) + ['Sample']],
