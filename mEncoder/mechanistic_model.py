@@ -102,8 +102,7 @@ def add_monomer_synth_deg(m_name: str,
            for site in sites}
     ), syn_rate)
 
-    deg_rate = Expression(f'{m_name}_degradation_rate',
-                          kdeg * get_autoencoder_modulator())
+    deg_rate = Expression(f'{m_name}_degradation_rate', kdeg)
     Rule(f'degradation_{m_name}', m() >> None, deg_rate)
 
     # basal activation
@@ -267,13 +266,7 @@ def get_autoencoder_modulator():
     input parameter. Applies a sigmoid transformation.
     """
     input_index = next(_input_count)
-    return Expression(
-        f'autoencoder_modulator_{input_index}',
-        1 / (1 + sp.exp(
-            Parameter(f'INPUT_{input_index}', 0.0)
-            + Parameter(f'autoencoder_modulator_{input_index}_bias', 0.0)
-        ))
-    )
+    return Parameter(f'INPUT_{input_index}', 0.0)
 
 
 def add_abundance_observables(model):
@@ -283,8 +276,8 @@ def add_abundance_observables(model):
     """
     for monomer in model.monomers:
         obs = Observable(f'total_{monomer.name}', monomer())
-        scale = Parameter(f't{monomer.name}_scale')
-        offset = Parameter(f't{monomer.name}_offset')
+        scale = Parameter(f't{monomer.name}_scale', 1.0)
+        offset = Parameter(f't{monomer.name}_offset', 1.0)
         Expression(f't{monomer.name}_obs', sp.log(scale * (obs + offset)))
 
 
@@ -298,8 +291,8 @@ def add_phospho_observables(model):
             if re.match(r'[YTS][0-9]+$', site):
                 obs = Observable(f'p{monomer.name}_{site}',
                                  monomer(**{site: 'p'}))
-                scale = Parameter(f'p{monomer.name}_{site}_scale')
-                offset = Parameter(f'p{monomer.name}_{site}_offset')
+                scale = Parameter(f'p{monomer.name}_{site}_scale', 1.0)
+                offset = Parameter(f'p{monomer.name}_{site}_offset', 1.0)
                 Expression(f'p{monomer.name}_{site}_obs',
                            sp.log(scale * (obs + offset)))
 

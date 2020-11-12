@@ -1,4 +1,9 @@
-from . import load_model, parameter_boundaries_scales, MODEL_FEATURE_PREFIX
+from . import (
+    load_model, parameter_boundaries_scales, MODEL_FEATURE_PREFIX,
+    plot_and_save_fig
+)
+
+from .encoder import dA
 
 import numpy as np
 import pandas as pd
@@ -6,6 +11,8 @@ import matplotlib.pyplot as plt
 
 import amici
 import os
+import theano
+import theano.tensor as T
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 
@@ -29,13 +36,13 @@ def generate_synthetic_data(pathway_name: str,
     :return:
         path to csv where generated data was saved
     """
-    model, solver = load_model(pathway_name, force_compile=False)
+    model, solver = load_model('pw_' + pathway_name, force_compile=True)
 
     # setup model parameter scales
     model.setParameterScale(amici.parameterScalingFromIntVector([
         amici.ParameterScaling.none
         if par_id.startswith(MODEL_FEATURE_PREFIX)
-        or parameter_boundaries_scales[par_id.split('_')[-1]][2] == 'lin'
+           or parameter_boundaries_scales[par_id.split('_')[-1]][2] == 'lin'
         else amici.ParameterScaling.log10
         for par_id in model.getParameterIds()
     ]))
@@ -58,13 +65,24 @@ def generate_synthetic_data(pathway_name: str,
                    if par_id.startswith(MODEL_FEATURE_PREFIX)]
 
     # set up linear projection from specified latent space to parameter space
-    decoder_mat = np.random.random((latent_dimension, len(sample_pars)))
+    encoder = dA(np.zeros((n_samples, 10)),
+                 n_hidden=latent_dimension, n_params=len(sample_pars))
+    tt_pars = np.random.random(encoder.n_encoder_pars)
+    for ip, name in enumerate(encoder.x_names):
+        lb, ub, _ = parameter_boundaries_scales[name.split('_')[-1]]
+        tt_pars[ip] = tt_pars[ip] * (ub - lb) + lb
+
+    tt_data = T.specify_shape(T.vector('embedded_data'),
+                              (encoder.n_hidden,))
+    inflate_fun = theano.function(
+        [tt_data], encoder.inflate_params(tt_data, tt_pars)
+    )
 
     samples = []
     while len(samples) < n_samples:
         # project from low dim
-        sample_par_vals = \
-            np.random.random(latent_dimension).dot(decoder_mat) * 10 - 10
+        embedded_sample_pars = np.random.random(latent_dimension) * 10 - 5
+        sample_par_vals = inflate_fun(embedded_sample_pars,)
         sample_pars = dict(zip(sample_pars, sample_par_vals))
 
         # set parameters in model
@@ -87,7 +105,6 @@ def generate_synthetic_data(pathway_name: str,
     df[list(model.getObservableIds())].rename(columns={
         o: o.replace('_obs', '') for o in model.getObservableIds()
     }).boxplot(rot=90)
-    plt.show()
 
     # format according to reference example
     formatted_df = pd.melt(df[list(model.getObservableIds()) + ['Sample']],
@@ -111,7 +128,10 @@ def generate_synthetic_data(pathway_name: str,
     # save to csv
     datadir = os.path.join(basedir, 'data')
     os.makedirs(datadir, exist_ok=True)
-    datafile = os.path.join(datadir, 'synthetic_data.csv')
+    datafile = os.path.join(datadir,
+                            f'synthetic__{pathway_name}.csv')
+    plot_and_save_fig(os.path.join(datadir,
+                                   f'synthetic__{pathway_name}.pdf'))
     formatted_df.to_csv(datafile)
     return datafile
 

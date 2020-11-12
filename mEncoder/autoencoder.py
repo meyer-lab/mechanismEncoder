@@ -7,23 +7,26 @@ import pandas as pd
 import numpy as np
 
 import petab
+
 from amici.petab_import import PysbPetabProblem
 from pypesto.petab.pysb_importer import PetabImporterPysb
 from pypesto.sample.theano import TheanoLogProbability
-
-from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, load_pathway
+from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, \
+    load_pathway
 from .encoder import dA
 
-
+TheanoFunction = theano.compile.function_module.Function
 basedir = os.path.dirname(os.path.dirname(__file__))
-
 MODEL_FILE = os.path.join(os.path.dirname(__file__),
                           'pathway_FLT3_MAPK_AKT_STAT')
 
 
 def load_petab(datafile: str, pathway_name: str):
     """
-    Imports data from a csv and converts it to the petab format
+    Imports data from a csv and converts it to the petab format. This
+    function is used to connect the mechanistic model to the specified data
+    in order to defines the loss function of the autoencoder up to the
+    inflated parameters
 
     :param datafile:
         path to data csv
@@ -101,7 +104,6 @@ def load_petab(datafile: str, pathway_name: str):
         petab.PARAMETER_SCALE: parameter_boundaries_scales[
             par.name.split('_')[-1]][2],
         petab.NOMINAL_VALUE: par.value,
-        petab.ESTIMATE: 1
     } for par in params]
 
     for cond in condition_table.index.values:
@@ -111,24 +113,35 @@ def load_petab(datafile: str, pathway_name: str):
             petab.UPPER_BOUND: 100,
             petab.PARAMETER_SCALE: 'lin',
             petab.NOMINAL_VALUE: par.value,
-            petab.ESTIMATE: 1
         } for par in features])
 
     parameter_table = pd.DataFrame(param_defs).set_index(petab.PARAMETER_ID)
+    parameter_table[petab.ESTIMATE] = (
+        parameter_table[petab.LOWER_BOUND] !=
+        parameter_table[petab.UPPER_BOUND]
+    ).apply(lambda x: int(x))
 
     return PetabImporterPysb(PysbPetabProblem(
         measurement_df=measurement_table,
         condition_df=condition_table,
         observable_df=observable_table,
         parameter_df=parameter_table,
-        pysb_model=model
-    ), output_folder=os.path.join(basedir, 'amici_models',
-                                  model.name + '_petab'))
+        pysb_model=model,
+    ), output_folder=os.path.join(
+        basedir, 'amici_models',
+        f'{model.name}_{os.path.splitext(os.path.basename(datafile))[0]}_petab'
+    ))
 
 
-def observable_id_to_model_expr(obs_id: str):
+def observable_id_to_model_expr(obs_id: str) -> str:
     """
-    Maps site defintions from data to model observables
+    Maps site definitions from data to model observables
+
+    :param obs_id:
+        identifier of the phosphosite in the data table
+
+    :return:
+        the name of the corresponding observable in the model
     """
     phospho_site_pattern = r'_[S|Y|T][0-9]+[s|y|t]$'
     return ('p' if re.search(phospho_site_pattern, obs_id) else 't') + \
@@ -154,17 +167,20 @@ class MechanisticAutoEncoder(dA):
         :param n_hidden:
             number of nodes in the hidden layer of the encoder
         """
-        self.petab_importer = load_petab(datafile, pathway_name)
-        self.pypesto_problem = self.petab_importer.create_problem()
+        self.data_name = os.path.splitext(os.path.basename(datafile))[0]
+        self.pathway_name = pathway_name
+
+        self.petab_importer = load_petab(datafile, 'pw_' + pathway_name)
+        self.pypesto_subproblem = self.petab_importer.create_problem()
 
         self.n_samples = len(self.petab_importer.petab_problem.condition_df)
         self.n_visible = len(self.petab_importer.petab_problem.observable_df)
         self.n_model_inputs = int(sum(name.startswith(MODEL_FEATURE_PREFIX)
                                       for name in
-                                      self.pypesto_problem.x_names) /
+                                      self.pypesto_subproblem.x_names) /
                                   self.n_samples)
-        self.n_kin_params = self.pypesto_problem.dim - \
-            self.n_model_inputs * self.n_samples
+        self.n_kin_params = \
+            self.pypesto_subproblem.dim - self.n_model_inputs * self.n_samples
 
         input_data = self.petab_importer.petab_problem.measurement_df.pivot(
             index=petab.SIMULATION_CONDITION_ID,
@@ -174,8 +190,18 @@ class MechanisticAutoEncoder(dA):
         super().__init__(input_data=input_data, n_hidden=n_hidden,
                          n_params=self.n_model_inputs)
 
+        # set tolerances
+        self.pypesto_subproblem.objective.amici_solver\
+            .setAbsoluteTolerance(1e-12)
+        self.pypesto_subproblem.objective.amici_solver\
+            .setRelativeTolerance(1e-10)
+        self.pypesto_subproblem.objective.amici_solver\
+            .setAbsoluteToleranceSteadyState(1e-10)
+        self.pypesto_subproblem.objective.amici_solver\
+            .setRelativeToleranceSteadyState(1e-8)
+
         # define model theano op
-        self.loss = TheanoLogProbability(self.pypesto_problem)
+        self.loss = TheanoLogProbability(self.pypesto_subproblem)
 
         # these are the kinetic parameters that are shared across all samples
         self.kin_pars = T.specify_shape(T.vector('kinetic_parameters'),
@@ -183,16 +209,52 @@ class MechanisticAutoEncoder(dA):
         self.encoder_pars = T.specify_shape(T.vector('encoder_pars'),
                                             (self.n_encoder_pars,))
 
+        self.x_names = [
+            f'ecoder_{ip}_weight' for ip in range(self.n_encoder_pars)
+        ] + [
+            name for ix, name in enumerate(self.pypesto_subproblem.x_names)
+            if not name.startswith(MODEL_FEATURE_PREFIX)
+            and ix in self.pypesto_subproblem.x_free_indices
+        ]
+
         # assemble input to model theano op
         encoded_pars = self.encode_params(self.encoder_pars)
         self.model_pars = T.concatenate([
             self.kin_pars,
-            T.reshape(encoded_pars, (self.n_model_inputs * self.n_samples,))],
+            T.reshape(encoded_pars,
+                      (self.n_model_inputs * self.n_samples,))],
             axis=0
         )
 
-    def compile_loss(self):
+    def compile_loss(self) -> TheanoFunction:
+        """
+        Compile a theano function that evaluates the loss function
+        """
         return theano.function(
             [self.encoder_pars, self.kin_pars],
             self.loss(self.model_pars)
         )
+
+    def compile_loss_grad(self) -> TheanoFunction:
+        """
+        Compile a theano function that evaluates the gradient of the loss
+        function
+        """
+        return theano.function(
+            [self.encoder_pars, self.kin_pars],
+            T.concatenate(
+                [theano.grad(self.loss(self.model_pars), self.encoder_pars),
+                 theano.grad(self.loss(self.model_pars), self.kin_pars)],
+                axis=0
+            )
+        )
+
+    def compute_inflated_pars(self,
+                              encoder_pars: T.vector) -> TheanoFunction:
+        """
+        Compile a theano function that computes the inflated parameters
+        """
+        return theano.function(
+            [self.encoder_pars],
+            self.encode_params(self.encoder_pars)
+        )(encoder_pars)
