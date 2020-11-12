@@ -2,11 +2,13 @@ import numpy as np
 import pypesto
 import os
 import nlopt
+import fides
 
 from .autoencoder import MechanisticAutoEncoder, parameter_boundaries_scales
 
 from pypesto.optimize import (
-    IpoptOptimizer, NLoptOptimizer, minimize, OptimizeOptions
+    IpoptOptimizer, NLoptOptimizer, FidesOptimizer,
+    minimize, OptimizeOptions
 )
 from pypesto.objective import Objective
 from pypesto import Problem, HistoryOptions, Result
@@ -72,7 +74,7 @@ def create_pypesto_problem(
 def train(ae: MechanisticAutoEncoder,
           optimizer: str = 'NLOpt_LD_LBFGS',
           ftol: float = 1e-3,
-          maxiter: int = 100,
+          maxiter: int = 1e4,
           n_starts: int = 1,
           seed: int = 0) -> Result:
     """
@@ -111,7 +113,19 @@ def train(ae: MechanisticAutoEncoder,
             method=getattr(nlopt, optimizer.replace('NLOpt_', '')),
             options={
                 'maxtime': 3600,
+
                 'ftol_abs': ftol,
+            }
+        )
+    elif optimizer == 'fides':
+        opt = FidesOptimizer(
+            hessian_update=fides.BFGS(pypesto_problem.dim),
+            options={
+                'maxtime': 3600,
+                fides.Options.FATOL: ftol,
+                fides.Options.MAXTIME: 3600,
+                fides.Options.MAXITER: maxiter,
+                fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.FULL
             }
         )
 

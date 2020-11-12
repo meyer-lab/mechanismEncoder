@@ -1,12 +1,12 @@
 import os
 
-from mEncoder.autoencoder import trace_path, TRACE_FILE_TEMPLATE
+from mEncoder.training import trace_path, TRACE_FILE_TEMPLATE
 
 HIDDEN_LAYERS = [2]
 PATHWAYS = ['FLT3_MAPK']
 DATASETS = ['synthetic']
-OPTIMIZERS = ['ipopt', 'NLOpt_LD_LBFGS', 'NLOpt_LD_MMA', 'NLOpt_LD_SLSQP',
-              'NLOpt_LD_VAR1', 'NLOpt_LD_VAR2']
+OPTIMIZERS = ['ipopt', 'fides', 'NLOpt_LD_LBFGS', 'NLOpt_LD_MMA',
+              'NLOpt_LD_SLSQP', 'NLOpt_LD_VAR1', 'NLOpt_LD_VAR2']
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
 
