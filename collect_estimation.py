@@ -4,9 +4,8 @@ import pickle
 import re
 
 from pypesto.optimize.optimizer import read_result_from_file
-from mEncoder.autoencoder import (
-    MechanisticAutoEncoder, trace_path, TRACE_FILE_TEMPLATE
-)
+from mEncoder.autoencoder import MechanisticAutoEncoder
+from mEncoder.training import trace_path, TRACE_FILE_TEMPLATE
 import pypesto.visualize
 
 MODEL = sys.argv[1]
