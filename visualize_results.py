@@ -9,6 +9,7 @@ import pandas as pd
 import theano
 
 from mEncoder.autoencoder import MechanisticAutoEncoder
+from mEncoder.training import create_pypesto_problem
 from mEncoder import plot_and_save_fig
 
 from pypesto.visualize import waterfall, optimizer_history, \
@@ -26,7 +27,7 @@ outfile = os.path.join('results', MODEL, DATA,
 mae = MechanisticAutoEncoder(N_HIDDEN, os.path.join('data',
                                                     f'{DATA}__{MODEL}.csv'),
                              MODEL)
-problem = mae.create_pypesto_problem()
+problem = create_pypesto_problem(mae)
 
 with open(outfile, 'rb') as f:
     optimizer_result, par_names = pickle.load(f)
