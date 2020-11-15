@@ -5,7 +5,9 @@ import re
 
 from pypesto.optimize.optimizer import read_result_from_file
 from mEncoder.autoencoder import MechanisticAutoEncoder
-from mEncoder.training import trace_path, TRACE_FILE_TEMPLATE
+from mEncoder.training import (
+    trace_path, TRACE_FILE_TEMPLATE, create_pypesto_problem
+)
 import pypesto.visualize
 
 MODEL = sys.argv[1]
@@ -16,7 +18,7 @@ OPTIMIZER = sys.argv[4]
 mae = MechanisticAutoEncoder(N_HIDDEN, os.path.join('data',
                                                     f'{DATA}__{MODEL}.csv'),
                              MODEL)
-problem = mae.create_pypesto_problem()
+problem = create_pypesto_problem(mae)
 
 optimizer_results = []
 
