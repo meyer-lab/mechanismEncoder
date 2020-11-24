@@ -198,13 +198,11 @@ def train(ae: MechanisticAutoEncoder,
         xs = np.vstack([
             np.hstack([
                 select_start(decoder_pars) if has_decoder_par_pretraing
-                else np.random.random((kwargs['n_starts'],
-                                       (ae.n_encoder_pars,)))
-                * (ub[:ae.n_encoder_pars] - lb[:ae.n_encoder_pars]) 
+                else np.random.random((ae.n_encoder_pars,))
+                * (ub[:ae.n_encoder_pars] - lb[:ae.n_encoder_pars])
                 + lb[:ae.n_encoder_pars],
                 select_start(kinetic_pars) if has_kinetic_par_pretraing
-                else np.random.random((kwargs['n_starts'],
-                                       (ae.n_encoder_pars,)))
+                else np.random.random((ae.n_kin_params,))
                 * (ub[-ae.n_kin_params:] - lb[-ae.n_kin_params:])
                 + lb[-ae.n_kin_params:],
             ])
