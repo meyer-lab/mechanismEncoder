@@ -149,3 +149,5 @@ traces/*
 *.pdf
 output
 cache
+*.hdf5
+pretraining/*

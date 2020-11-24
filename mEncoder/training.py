@@ -1,8 +1,9 @@
 import numpy as np
-import pypesto
+import pandas as pd
 import os
 import nlopt
 import fides
+import logging
 
 from .autoencoder import MechanisticAutoEncoder, parameter_boundaries_scales
 
@@ -10,8 +11,7 @@ from pypesto.optimize import (
     IpoptOptimizer, NLoptOptimizer, FidesOptimizer,
     minimize, OptimizeOptions
 )
-from pypesto.objective import Objective
-from pypesto import Problem, HistoryOptions, Result
+from pypesto import Problem, HistoryOptions, Result, Objective
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 trace_path = os.path.join(basedir, 'traces')
@@ -45,7 +45,7 @@ def generate_pypesto_objective(
         kinetic_pars = x[ae.n_encoder_pars:]
         return - np.asarray(loss_grad(encoder_pars, kinetic_pars))
 
-    return pypesto.Objective(
+    return Objective(
         fun=fun, grad=grad,
     )
 
@@ -63,7 +63,7 @@ def create_pypesto_problem(
     :returns:
         Optimization problem that needs to be solved for training.
     """
-    return pypesto.Problem(
+    return Problem(
         objective=generate_pypesto_objective(ae),
         x_names=ae.x_names,
         lb=[-np.inf for _ in ae.x_names],
@@ -72,7 +72,7 @@ def create_pypesto_problem(
 
 
 def train(ae: MechanisticAutoEncoder,
-          optimizer: str = 'NLOpt_LD_LBFGS',
+          optimizer: str = 'fides',
           ftol: float = 1e-3,
           maxiter: int = 1e4,
           n_starts: int = 1,
@@ -119,14 +119,15 @@ def train(ae: MechanisticAutoEncoder,
         )
     elif optimizer == 'fides':
         opt = FidesOptimizer(
-            hessian_update=fides.BFGS(pypesto_problem.dim),
+            hessian_update=fides.BFGS(),
             options={
                 'maxtime': 3600,
                 fides.Options.FATOL: ftol,
                 fides.Options.MAXTIME: 3600,
                 fides.Options.MAXITER: maxiter,
                 fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.FULL
-            }
+            },
+            verbose=logging.INFO
         )
 
     os.makedirs(trace_path, exist_ok=True)
@@ -155,18 +156,33 @@ def train(ae: MechanisticAutoEncoder,
         allow_failed_starts=False,
     )
 
-    lb = np.asarray([
-        parameter_boundaries_scales[name.split('_')[-1]][0]
-        for name in pypesto_problem.x_names
-    ])
-    ub = np.asarray([
-        parameter_boundaries_scales[name.split('_')[-1]][1]
-        for name in pypesto_problem.x_names
-    ])
+    kinetic_pars = pd.read_csv(os.path.join(
+        'pretraining', f'{ae.pathway_name}__{ae.data_name}'
+                       f'__input.csv'
+    ))[ae.x_names[-ae.n_kin_params:]]
+    decoder_pars = pd.read_csv(os.path.join(
+        'pretraining', f'{ae.pathway_name}__{ae.data_name}__{ae.n_hidden}'
+                       f'__decoder_inflate.csv'
+    ))[ae.x_names[:ae.n_encoder_pars]]
 
     def startpoint(**kwargs):
-        xs = np.random.random((kwargs['n_starts'], lb.shape[0]))
-        return xs * (ub - lb) + lb
+        # cdf 1 - (1-p)^k == X
+        #  =>  p = 1 - (1 - X)^(1/k)
+
+        def select_start(df):
+            istart = min(
+                np.random.geometric(1 - (1 / len(df)) ** (1 / len(df))),
+                len(df) - 1
+            )
+            return df.iloc[istart, :]
+        xs = np.vstack([
+            np.hstack([
+                select_start(decoder_pars),
+                select_start(kinetic_pars),
+            ])
+            for _ in range(kwargs['n_starts'])
+        ])
+        return xs
 
     return minimize(
         pypesto_problem,

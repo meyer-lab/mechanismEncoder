@@ -1,9 +1,11 @@
+from pysb import Model
+
 from mEncoder.mechanistic_model import (
-    create_model, add_monomer_synth_deg, generate_pathway, add_activation,
+    add_monomer_synth_deg, generate_pathway, add_activation,
     add_abundance_observables, add_phospho_observables
 )
 
-model = create_model('FLT3_MAPK')
+model = Model('FLT3_MAPK')
 
 # FLT3
 for rtkf_name in ['FL']:

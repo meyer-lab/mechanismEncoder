@@ -11,6 +11,8 @@ import petab
 from amici.petab_import import PysbPetabProblem
 from pypesto.petab.pysb_importer import PetabImporterPysb
 from pypesto.sample.theano import TheanoLogProbability
+from typing import List
+
 from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, \
     load_pathway
 from .encoder import dA
@@ -95,12 +97,20 @@ def load_petab(datafile: str, pathway_name: str):
     # PARAMETER TABLE
     params = [par for par in model.parameters
               if not par.name.startswith(MODEL_FEATURE_PREFIX)]
+
+    transforms = {
+        'lin': lambda x: x,
+        'log10': lambda x: np.power(10.0, x)
+    }
+
     param_defs = [{
         petab.PARAMETER_ID: par.name,
-        petab.LOWER_BOUND: parameter_boundaries_scales[
-            par.name.split('_')[-1]][0],
-        petab.UPPER_BOUND: parameter_boundaries_scales[
-            par.name.split('_')[-1]][1],
+        petab.LOWER_BOUND: transforms[parameter_boundaries_scales[
+            par.name.split('_')[-1]][2]
+        ](parameter_boundaries_scales[par.name.split('_')[-1]][0]),
+        petab.UPPER_BOUND: transforms[parameter_boundaries_scales[
+            par.name.split('_')[-1]][2]
+        ](parameter_boundaries_scales[par.name.split('_')[-1]][1]),
         petab.PARAMETER_SCALE: parameter_boundaries_scales[
             par.name.split('_')[-1]][2],
         petab.NOMINAL_VALUE: par.value,
@@ -109,10 +119,10 @@ def load_petab(datafile: str, pathway_name: str):
     for cond in condition_table.index.values:
         param_defs.extend([{
             petab.PARAMETER_ID: f'{par.name}_{cond}',
-            petab.LOWER_BOUND: -100,
-            petab.UPPER_BOUND: 100,
-            petab.PARAMETER_SCALE: 'lin',
-            petab.NOMINAL_VALUE: par.value,
+            petab.LOWER_BOUND: 10**-1,
+            petab.UPPER_BOUND: 10**1,
+            petab.PARAMETER_SCALE: 'log10',
+            petab.NOMINAL_VALUE: 1.0,
         } for par in features])
 
     parameter_table = pd.DataFrame(param_defs).set_index(petab.PARAMETER_ID)
@@ -209,9 +219,7 @@ class MechanisticAutoEncoder(dA):
         self.encoder_pars = T.specify_shape(T.vector('encoder_pars'),
                                             (self.n_encoder_pars,))
 
-        self.x_names = [
-            f'ecoder_{ip}_weight' for ip in range(self.n_encoder_pars)
-        ] + [
+        self.x_names = self.x_names + [
             name for ix, name in enumerate(self.pypesto_subproblem.x_names)
             if not name.startswith(MODEL_FEATURE_PREFIX)
             and ix in self.pypesto_subproblem.x_free_indices
@@ -249,12 +257,18 @@ class MechanisticAutoEncoder(dA):
             )
         )
 
-    def compute_inflated_pars(self,
-                              encoder_pars: T.vector) -> TheanoFunction:
+    def compile_inflate_pars(self) -> TheanoFunction:
         """
         Compile a theano function that computes the inflated parameters
         """
         return theano.function(
             [self.encoder_pars],
             self.encode_params(self.encoder_pars)
-        )(encoder_pars)
+        )
+
+    def compute_inflated_pars(self,
+                              encoder_pars: np.ndarray) -> List:
+        """
+        Compute the inflated parameters
+        """
+        return self.compile_inflate_pars()(encoder_pars)

@@ -1,25 +1,8 @@
 import sympy as sp
 import re
 
-from typing import Iterable, Optional, Dict, Tuple, Sequence
+from typing import Iterable, Optional, Dict, Tuple, Union
 from pysb import Monomer, Expression, Parameter, Rule, Model, Observable
-
-
-def _autoinc():
-    i = 0
-    while True:
-        yield i
-        i += 1
-
-
-_input_count = _autoinc()
-
-
-def create_model(name):
-    global _input_count
-
-    _input_count = _autoinc()
-    return Model(name)
 
 
 def generate_pathway(model: Model,
@@ -92,7 +75,7 @@ def add_monomer_synth_deg(m_name: str,
     t = Parameter(f'{m_name}_eq', 100.0)
     ksyn = Expression(f'{m_name}_synthesis_ksyn', t*kdeg)
     syn_rate = Expression(f'{m_name}_synthesis_rate',
-                          ksyn * get_autoencoder_modulator())
+                          ksyn * get_autoencoder_modulator(t))
 
     Rule(f'synthesis_{m_name}', None >> m(
         **{site:
@@ -121,7 +104,7 @@ def add_monomer_synth_deg(m_name: str,
             ]
             rates = [
                 Expression(f'{m_name}_{label}_{site}_base_rate',
-                           kcat * get_autoencoder_modulator())
+                           kcat * get_autoencoder_modulator(kcat))
                 for kcat, label in zip(kcats, labels)
             ]
 
@@ -254,19 +237,18 @@ def add_activation(
             rate = Expression(f'{m_name}_{label}_{site}_{modulator}_rate',
                               kcat
                               * add_or_get_modulator_obs(model, modulator)
-                              * get_autoencoder_modulator())
+                              * get_autoencoder_modulator(kcat))
 
             Rule(F'{m_name}_{label}_{site}_{modulator}', educts >> products,
                  rate)
 
 
-def get_autoencoder_modulator():
+def get_autoencoder_modulator(par: Parameter):
     """
     Generate a new expression that allows modulation of a rate according to
     input parameter. Applies a sigmoid transformation.
     """
-    input_index = next(_input_count)
-    return Parameter(f'INPUT_{input_index}', 0.0)
+    return Parameter(f'INPUT_{par.name}', 0.0)
 
 
 def add_abundance_observables(model):
