@@ -156,14 +156,34 @@ def train(ae: MechanisticAutoEncoder,
         allow_failed_starts=False,
     )
 
-    kinetic_pars = pd.read_csv(os.path.join(
+    kinetic_par_pretraing = os.path.join(
         'pretraining', f'{ae.pathway_name}__{ae.data_name}'
                        f'__input.csv'
-    ))[ae.x_names[-ae.n_kin_params:]]
-    decoder_pars = pd.read_csv(os.path.join(
+    )
+    has_kinetic_par_pretraing = os.path.exists(kinetic_par_pretraing)
+    if has_kinetic_par_pretraing:
+        kinetic_pars = pd.read_csv(kinetic_par_pretraing)[
+            ae.x_names[-ae.n_kin_params:]
+        ]
+
+    decoder_par_pretraining = os.path.join(
         'pretraining', f'{ae.pathway_name}__{ae.data_name}__{ae.n_hidden}'
                        f'__decoder_inflate.csv'
-    ))[ae.x_names[:ae.n_encoder_pars]]
+    )
+    has_decoder_par_pretraing = os.path.exists(decoder_par_pretraining)
+    if has_decoder_par_pretraing:
+        decoder_pars = pd.read_csv(decoder_par_pretraining)[
+            ae.x_names[:ae.n_encoder_pars]
+        ]
+
+    lb = np.asarray([
+        parameter_boundaries_scales[name.split('_')[-1]][0]
+        for name in pypesto_problem.x_names
+    ])
+    ub = np.asarray([
+        parameter_boundaries_scales[name.split('_')[-1]][1]
+        for name in pypesto_problem.x_names
+    ])
 
     def startpoint(**kwargs):
         # cdf 1 - (1-p)^k == X
@@ -177,8 +197,16 @@ def train(ae: MechanisticAutoEncoder,
             return df.iloc[istart, :]
         xs = np.vstack([
             np.hstack([
-                select_start(decoder_pars),
-                select_start(kinetic_pars),
+                select_start(decoder_pars) if has_decoder_par_pretraing
+                else np.random.random((kwargs['n_starts'],
+                                       (ae.n_encoder_pars,)))
+                * (ub[:ae.n_encoder_pars] - lb[:ae.n_encoder_pars]) 
+                + lb[:ae.n_encoder_pars],
+                select_start(kinetic_pars) if has_kinetic_par_pretraing
+                else np.random.random((kwargs['n_starts'],
+                                       (ae.n_encoder_pars,)))
+                * (ub[-ae.n_kin_params:] - lb[-ae.n_kin_params:])
+                + lb[-ae.n_kin_params:],
             ])
             for _ in range(kwargs['n_starts'])
         ])
