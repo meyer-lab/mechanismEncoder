@@ -16,6 +16,7 @@ from pysb import Model
 
 from .autoencoder import MechanisticAutoEncoder
 from .autoencoder import load_pathway
+from . import parameter_boundaries_scales
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 
@@ -39,6 +40,8 @@ def generate_patient_sample_pretraining_problems(
         for x in ae.petab_importer.petab_problem.parameter_df.index
     ]
     pp = ae.petab_importer.petab_problem
+    pp.parameter_df[petab.LOWER_BOUND] /= 10 ** ae.par_modulation_scale
+    pp.parameter_df[petab.UPPER_BOUND] *= 10 ** ae.par_modulation_scale
     # create fresh model from scratch since the petab imported one already
     # has the observables added and this might lead to issues.
     clean_model = load_pathway('pw_' + ae.pathway_name)
@@ -83,12 +86,12 @@ def generate_cross_sample_pretraining_problem(
     pp = ae.petab_importer.petab_problem
     # add l2 regularization to input parameters
     pp.parameter_df[petab.OBJECTIVE_PRIOR_TYPE] = [
-        petab.LOG_NORMAL if name.startswith('INPUT')
+        petab.PARAMETER_SCALE_NORMAL if name.startswith('INPUT')
         else petab.PARAMETER_SCALE_UNIFORM
         for name in pp.parameter_df.index
     ]
     pp.parameter_df[petab.OBJECTIVE_PRIOR_PARAMETERS] = [
-        '0.0;2.0' if name.startswith('INPUT')
+        f'0.0;{ae.par_modulation_scale*2}' if name.startswith('INPUT')
         else f'{pp.parameter_df.loc[name, petab.LOWER_BOUND]};'
              f'{pp.parameter_df.loc[name, petab.UPPER_BOUND]}'
         for name in pp.parameter_df.index
@@ -101,9 +104,9 @@ def generate_encoder_inflate_pretraining_problem(
         ae: MechanisticAutoEncoder, pretrained_inputs: pd.DataFrame
 ) -> Problem:
     least_squares = .5*tt.sum(tt.power(
-        np.log10(ae.encode_params(ae.encoder_pars)) -
-        pretrained_inputs.values.T, 2
-    ))
+        ae.encode_params(ae.encoder_pars) -
+        pretrained_inputs[ae.sample_names].values.T, 2
+    )[:])
 
     loss = theano.function([ae.encoder_pars], least_squares)
     loss_grad = theano.function(
@@ -113,8 +116,10 @@ def generate_encoder_inflate_pretraining_problem(
     return Problem(
         objective=Objective(fun=lambda x: np.float(loss(x)),
                             grad=lambda x: loss_grad(x)[0]),
-        ub=[1 for _ in range(ae.n_encoder_pars)],
-        lb=[-1 for _ in range(ae.n_encoder_pars)],
+        lb=[parameter_boundaries_scales[name.split('_')[-1]][0]
+            for name in ae.x_names[:ae.n_encoder_pars]],
+        ub=[parameter_boundaries_scales[name.split('_')[-1]][1]
+            for name in ae.x_names[:ae.n_encoder_pars]],
         x_names=ae.x_names[:ae.n_encoder_pars]
     )
 
@@ -136,7 +141,7 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
     )
 
     optimize_options = OptimizeOptions(
-        startpoint_resample=True, allow_failed_starts=False,
+        startpoint_resample=True, allow_failed_starts=True,
         unbounded_optimization=unbounded
     )
 

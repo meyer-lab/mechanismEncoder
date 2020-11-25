@@ -11,19 +11,20 @@ import petab
 from amici.petab_import import PysbPetabProblem
 from pypesto.petab.pysb_importer import PetabImporterPysb
 from pypesto.sample.theano import TheanoLogProbability
-from typing import List
+
 
 from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, \
     load_pathway
 from .encoder import dA
 
 TheanoFunction = theano.compile.function_module.Function
+
 basedir = os.path.dirname(os.path.dirname(__file__))
 MODEL_FILE = os.path.join(os.path.dirname(__file__),
                           'pathway_FLT3_MAPK_AKT_STAT')
 
 
-def load_petab(datafile: str, pathway_name: str):
+def load_petab(datafile: str, pathway_name: str, par_input_scale: int = 2):
     """
     Imports data from a csv and converts it to the petab format. This
     function is used to connect the mechanistic model to the specified data
@@ -119,8 +120,8 @@ def load_petab(datafile: str, pathway_name: str):
     for cond in condition_table.index.values:
         param_defs.extend([{
             petab.PARAMETER_ID: f'{par.name}_{cond}',
-            petab.LOWER_BOUND: 10**-1,
-            petab.UPPER_BOUND: 10**1,
+            petab.LOWER_BOUND: 10**-par_input_scale,
+            petab.UPPER_BOUND: 10**par_input_scale,
             petab.PARAMETER_SCALE: 'log10',
             petab.NOMINAL_VALUE: 1.0,
         } for par in features])
@@ -163,7 +164,8 @@ class MechanisticAutoEncoder(dA):
     def __init__(self,
                  n_hidden: int,
                  datafile: str,
-                 pathway_name: str,):
+                 pathway_name: str,
+                 par_input_scale: int = 4):
         """
         loads the mechanistic model as theano operator with loss as output and
         decoder output as input
@@ -180,7 +182,8 @@ class MechanisticAutoEncoder(dA):
         self.data_name = os.path.splitext(os.path.basename(datafile))[0]
         self.pathway_name = pathway_name
 
-        self.petab_importer = load_petab(datafile, 'pw_' + pathway_name)
+        self.petab_importer = load_petab(datafile, 'pw_' + pathway_name,
+                                         par_input_scale)
         self.pypesto_subproblem = self.petab_importer.create_problem()
 
         self.n_samples = len(self.petab_importer.petab_problem.condition_df)
@@ -196,9 +199,11 @@ class MechanisticAutoEncoder(dA):
             index=petab.SIMULATION_CONDITION_ID,
             columns=petab.OBSERVABLE_ID,
             values=petab.MEASUREMENT
-        ).values
-        super().__init__(input_data=input_data, n_hidden=n_hidden,
-                         n_params=self.n_model_inputs)
+        )
+        self.sample_names = list(input_data.index)
+        super().__init__(input_data=input_data.values, n_hidden=n_hidden,
+                         n_params=self.n_model_inputs,
+                         par_modulation_scale=par_input_scale)
 
         # set tolerances
         self.pypesto_subproblem.objective.amici_solver\
@@ -216,8 +221,6 @@ class MechanisticAutoEncoder(dA):
         # these are the kinetic parameters that are shared across all samples
         self.kin_pars = T.specify_shape(T.vector('kinetic_parameters'),
                                         (self.n_kin_params,))
-        self.encoder_pars = T.specify_shape(T.vector('encoder_pars'),
-                                            (self.n_encoder_pars,))
 
         self.x_names = self.x_names + [
             name for ix, name in enumerate(self.pypesto_subproblem.x_names)
@@ -256,19 +259,3 @@ class MechanisticAutoEncoder(dA):
                 axis=0
             )
         )
-
-    def compile_inflate_pars(self) -> TheanoFunction:
-        """
-        Compile a theano function that computes the inflated parameters
-        """
-        return theano.function(
-            [self.encoder_pars],
-            self.encode_params(self.encoder_pars)
-        )
-
-    def compute_inflated_pars(self,
-                              encoder_pars: np.ndarray) -> List:
-        """
-        Compute the inflated parameters
-        """
-        return self.compile_inflate_pars()(encoder_pars)

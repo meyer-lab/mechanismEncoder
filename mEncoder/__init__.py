@@ -60,7 +60,7 @@ def plot_and_save_fig(filename):
 parameter_boundaries_scales = {
     'kdeg': (-3, -1, 'log10'),      # [1/[t]]
     'eq': (1, 2, 'log10'),          # [[c]]
-    'bias': (-10, 10, 'lin'),       # [-]
+    'bias': (-1, 1, 'lin'),       # [-]
     'kcat': (1, 3, 'log10'),        # [1/([t]*[c])]
     'scale': (0, 0, 'log10'),       # [1/[c]]
     'offset': (0, 0, 'log10'),      # [[c]]

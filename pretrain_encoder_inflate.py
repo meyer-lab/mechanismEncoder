@@ -1,10 +1,12 @@
 import sys
 import os
 import re
+import theano
 
 import pandas as pd
 import matplotlib.pyplot as plt
 
+import seaborn as sns
 
 from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.pretraining import (
@@ -51,10 +53,11 @@ pretrained_inputs = pd.pivot(inputs, index='par', columns='sample').reindex(
                  input_start:input_start + mae.n_model_inputs]
      ]
 )
+pretrained_inputs.columns = [r[1] for r in pretrained_inputs.columns]
 problem = generate_encoder_inflate_pretraining_problem(mae, pretrained_inputs)
 
 
-result = pretrain(problem, pypesto.startpoint.uniform, 50, fatol=1e-4,
+result = pretrain(problem, pypesto.startpoint.uniform, 10, fatol=1e-4,
                   unbounded=True)
 # store results
 rfile = os.path.join(pretraindir, output_prefix + '.hdf5')
@@ -62,7 +65,8 @@ writer = OptimizationResultHDF5Writer(rfile)
 writer.write(result, overwrite=True)
 
 parameter_df = pd.DataFrame(
-    result.optimize_result.get_for_key('x'),
+    [r for r in result.optimize_result.get_for_key('x')
+     if r is not None],
     columns=problem.x_names
 )
 parameter_df.to_csv(os.path.join(pretraindir, output_prefix + '.csv'))
@@ -74,6 +78,25 @@ plt.savefig(os.path.join(pretraindir, output_prefix + '_waterfall.pdf'))
 parameters(result)
 plt.tight_layout()
 plt.savefig(os.path.join(pretraindir, output_prefix + '_parameters.pdf'))
+
+inflate = theano.function(
+    [mae.encoder_pars],
+    mae.encode_params(mae.encoder_pars),
+)
+
+residuals = pd.melt(pd.concat([
+    pd.DataFrame(
+        inflate(r['x']),
+        columns=pretrained_inputs.index,
+        index=mae.sample_names,
+    ) - pretrained_inputs.T
+    for r in result.optimize_result.list
+]))
+residuals.rename(columns={'par': 'input', 'value': 'residual'}, inplace=True)
+g = sns.FacetGrid(residuals, col='input', col_wrap=5)
+g.map_dataframe(sns.distplot, x='residual')
+plt.tight_layout()
+plt.savefig(os.path.join(pretraindir, output_prefix + '_fit.pdf'))
 
 
 

@@ -34,7 +34,8 @@ for sample, problem in pretraining_problems.items():
     writer.write(result, overwrite=True)
 
     parameter_df = pd.DataFrame(
-        result.optimize_result.get_for_key('x'),
+        [r for r in result.optimize_result.get_for_key('x')
+         if r is not None],
         columns=problem.x_names
     )
     parameter_df.to_csv(os.path.join(pretraindir, output_prefix + '.csv'))

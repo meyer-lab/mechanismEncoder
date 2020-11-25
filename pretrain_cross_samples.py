@@ -3,6 +3,7 @@ import os
 
 import pandas as pd
 import numpy as np
+import seaborn as sns
 import re
 import matplotlib.pyplot as plt
 
@@ -10,9 +11,11 @@ from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.pretraining import (
     generate_cross_sample_pretraining_problem, pretrain
 )
+from mEncoder import plot_and_save_fig
 
 from pypesto.store import OptimizationResultHDF5Writer
 from pypesto.visualize import waterfall, parameters
+import pypesto
 
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
@@ -55,7 +58,7 @@ def startpoints(**kwargs):
     xs = np.empty((n_starts, dim))
 
     def make_feasible(x, ix):
-        return max(min(x, ub[ix]), ub[ix])
+        return max(min(x, ub[ix]), lb[ix])
 
     for istart in range(n_starts):
         # use parameter values from random start for each sample
@@ -77,7 +80,8 @@ def startpoints(**kwargs):
                 par = match.group(1)
                 sample = match.group(2)
                 xs[istart, ix] = make_feasible(
-                    par_combo.loc[sample, par] - means[par], ix
+                    par_combo.loc[sample, par] -
+                    make_feasible(means[par], ix), ix
                 )
             else:
                 xs[istart, ix] = make_feasible(means[xname], ix)
@@ -93,7 +97,8 @@ writer = OptimizationResultHDF5Writer(rfile)
 writer.write(result, overwrite=True)
 
 parameter_df = pd.DataFrame(
-    result.optimize_result.get_for_key('x'),
+    [r for r in result.optimize_result.get_for_key('x')
+     if r is not None],
     columns=problem.x_names
 )
 parameter_df.to_csv(os.path.join(pretraindir, output_prefix + '.csv'))
@@ -106,6 +111,31 @@ parameters(result)
 plt.tight_layout()
 plt.savefig(os.path.join(pretraindir, output_prefix + '_parameters.pdf'))
 
+data_dicts = []
+for ir, r in enumerate(result.optimize_result.list[1:5]):
 
+    rdatas = problem.objective._objectives[0](r['x'], return_dict=True)[
+        pypesto.objective.constants.RDATAS
+    ]
 
+    for idata, rdata in enumerate(rdatas):
+        ym = np.asarray(
+            problem.objective._objectives[0].edatas[idata].getObservedData()
+        )
+        y = rdata['y']
+
+        for iy, name in enumerate(
+            problem.objective._objectives[0].amici_model.getObservableNames()
+        ):
+            data_dicts.append({
+                'start_index': ir,
+                'observable': name,
+                'data': ym[iy],
+                'sim': y[0, iy]
+            })
+
+df_data = pd.DataFrame(data_dicts)
+g = sns.FacetGrid(df_data, col='observable', col_wrap=5)
+g.map_dataframe(sns.scatterplot, x='data', y='sim')
+plot_and_save_fig(output_prefix + '__fit.pdf')
 
