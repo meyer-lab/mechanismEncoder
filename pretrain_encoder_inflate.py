@@ -94,7 +94,7 @@ residuals = pd.melt(pd.concat([
 ]))
 residuals.rename(columns={'par': 'input', 'value': 'residual'}, inplace=True)
 g = sns.FacetGrid(residuals, col='input', col_wrap=5)
-g.map_dataframe(sns.distplot, x='residual')
+g.map_dataframe(sns.kdeplot, x='residual')
 plt.tight_layout()
 plt.savefig(os.path.join(pretraindir, output_prefix + '_fit.pdf'))
 

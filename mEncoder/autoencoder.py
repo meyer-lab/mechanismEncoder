@@ -132,6 +132,19 @@ def load_petab(datafile: str, pathway_name: str, par_input_scale: int = 2):
         parameter_table[petab.UPPER_BOUND]
     ).apply(lambda x: int(x))
 
+    # add l2 regularization to input parameters
+    parameter_table[petab.OBJECTIVE_PRIOR_TYPE] = [
+        petab.PARAMETER_SCALE_NORMAL if name.startswith('INPUT')
+        else petab.PARAMETER_SCALE_UNIFORM
+        for name in parameter_table.index
+    ]
+    parameter_table[petab.OBJECTIVE_PRIOR_PARAMETERS] = [
+        f'0.0;{par_input_scale * 2}' if name.startswith('INPUT')
+        else f'{parameter_table.loc[name, petab.LOWER_BOUND]};'
+             f'{parameter_table.loc[name, petab.UPPER_BOUND]}'
+        for name in parameter_table.index
+    ]
+
     return PetabImporterPysb(PysbPetabProblem(
         measurement_df=measurement_table,
         condition_df=condition_table,

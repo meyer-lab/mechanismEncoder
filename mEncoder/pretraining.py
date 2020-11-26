@@ -84,20 +84,7 @@ def generate_cross_sample_pretraining_problem(
         Objective function that needs to be minimized for training.
     """
     pp = ae.petab_importer.petab_problem
-    # add l2 regularization to input parameters
-    pp.parameter_df[petab.OBJECTIVE_PRIOR_TYPE] = [
-        petab.PARAMETER_SCALE_NORMAL if name.startswith('INPUT')
-        else petab.PARAMETER_SCALE_UNIFORM
-        for name in pp.parameter_df.index
-    ]
-    pp.parameter_df[petab.OBJECTIVE_PRIOR_PARAMETERS] = [
-        f'0.0;{ae.par_modulation_scale*2}' if name.startswith('INPUT')
-        else f'{pp.parameter_df.loc[name, petab.LOWER_BOUND]};'
-             f'{pp.parameter_df.loc[name, petab.UPPER_BOUND]}'
-        for name in pp.parameter_df.index
-    ]
-
-    return ae.petab_importer.create_problem()
+    return pp.create_problem()
 
 
 def generate_encoder_inflate_pretraining_problem(
