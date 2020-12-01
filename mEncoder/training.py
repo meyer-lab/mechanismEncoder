@@ -152,19 +152,9 @@ def train(ae: MechanisticAutoEncoder,
     np.random.seed(seed)
 
     optimize_options = OptimizeOptions(
-        startpoint_resample=True,
-        allow_failed_starts=False,
+        startpoint_resample=False,
+        allow_failed_starts=True,
     )
-
-    kinetic_par_pretraing = os.path.join(
-        'pretraining', f'{ae.pathway_name}__{ae.data_name}'
-                       f'__input.csv'
-    )
-    has_kinetic_par_pretraing = os.path.exists(kinetic_par_pretraing)
-    if has_kinetic_par_pretraing:
-        kinetic_pars = pd.read_csv(kinetic_par_pretraing)[
-            ae.x_names[-ae.n_kin_params:]
-        ]
 
     decoder_par_pretraining = os.path.join(
         'pretraining', f'{ae.pathway_name}__{ae.data_name}__{ae.n_hidden}'
@@ -173,7 +163,7 @@ def train(ae: MechanisticAutoEncoder,
     has_decoder_par_pretraing = os.path.exists(decoder_par_pretraining)
     if has_decoder_par_pretraing:
         decoder_pars = pd.read_csv(decoder_par_pretraining)[
-            ae.x_names[:ae.n_encoder_pars]
+            ae.x_names
         ]
 
     lb = np.asarray([
@@ -186,28 +176,13 @@ def train(ae: MechanisticAutoEncoder,
     ])
 
     def startpoint(**kwargs):
-        # cdf 1 - (1-p)^k == X
-        #  =>  p = 1 - (1 - X)^(1/k)
 
-        def select_start(df):
-            istart = min(
-                np.random.geometric(1 - (1 / len(df)) ** (1 / len(df))),
-                len(df) - 1
-            )
-            return df.iloc[istart, :]
-        xs = np.vstack([
-            np.hstack([
-                select_start(decoder_pars) if has_decoder_par_pretraing
-                else np.random.random((ae.n_encoder_pars,))
-                * (ub[:ae.n_encoder_pars] - lb[:ae.n_encoder_pars])
-                + lb[:ae.n_encoder_pars],
-                select_start(kinetic_pars) if has_kinetic_par_pretraing
-                else np.random.random((ae.n_kin_params,))
-                * (ub[-ae.n_kin_params:] - lb[-ae.n_kin_params:])
-                + lb[-ae.n_kin_params:],
-            ])
-            for _ in range(kwargs['n_starts'])
-        ])
+        if has_decoder_par_pretraing and seed < len(decoder_pars):
+            xs = decoder_pars.iloc[seed, :]
+        else:
+            xs = np.random.random((kwargs['n_starts'],
+                                   ae.n_encoder_pars + ae.n_kin_params)) \
+                * (ub - lb) + lb
         return xs
 
     return minimize(

@@ -11,7 +11,7 @@ from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.pretraining import (
     generate_cross_sample_pretraining_problem, pretrain
 )
-from mEncoder import plot_and_save_fig
+from mEncoder import plot_and_save_fig, MODEL_FEATURE_PREFIX
 
 from pypesto.store import OptimizationResultHDF5Writer
 from pypesto.visualize import waterfall, parameters
@@ -42,7 +42,8 @@ with open(os.path.join(pretraindir, f'{prefix}.txt'), 'r') as f:
             os.path.join(pretraindir, csv), index_col=[0]
         )
         pretrained_samples[sample] = df[[
-            col for col in df.columns if not col.startswith('INPUT_')
+            col for col in df.columns
+            if not col.startswith(MODEL_FEATURE_PREFIX)
         ]]
 
 
@@ -75,16 +76,14 @@ def startpoints(**kwargs):
                 problem.get_reduced_vector(np.asarray(problem.x_names),
                                            problem.x_free_indices)
         ):
-            if xname.startswith('INPUT_'):
-                match = re.match(r'INPUT_([\w_]+)_(sample_[0-9]+)', xname)
+            if xname.startswith(MODEL_FEATURE_PREFIX):
+                match = re.match(fr'{MODEL_FEATURE_PREFIX}([\w_]+)_'
+                                 r'(sample_[0-9]+)', xname)
                 par = match.group(1)
                 sample = match.group(2)
-                xs[istart, ix] = make_feasible(
-                    par_combo.loc[sample, par] -
-                    make_feasible(means[par], ix), ix
-                )
+                xs[istart, ix] = par_combo.loc[sample, par] - means[par]
             else:
-                xs[istart, ix] = make_feasible(means[xname], ix)
+                xs[istart, ix] = means[xname]
 
     return xs
 
@@ -103,7 +102,7 @@ parameter_df = pd.DataFrame(
 )
 parameter_df.to_csv(os.path.join(pretraindir, output_prefix + '.csv'))
 
-waterfall(result)
+waterfall(result, scale_y='log10', offset_y=0.0)
 plt.tight_layout()
 plt.savefig(os.path.join(pretraindir, output_prefix + '_waterfall.pdf'))
 

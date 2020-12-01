@@ -24,7 +24,7 @@ MODEL_FILE = os.path.join(os.path.dirname(__file__),
                           'pathway_FLT3_MAPK_AKT_STAT')
 
 
-def load_petab(datafile: str, pathway_name: str, par_input_scale: int = 2):
+def load_petab(datafile: str, pathway_name: str, par_input_scale: float):
     """
     Imports data from a csv and converts it to the petab format. This
     function is used to connect the mechanistic model to the specified data
@@ -36,6 +36,11 @@ def load_petab(datafile: str, pathway_name: str, par_input_scale: int = 2):
 
     :param pathway_name:
         name of pathway to use for model
+
+    :param par_input_scale:
+        absolute value of upper/lower bounds for input parameters in log10
+        scale, also influence l2 regularization strength (std of gaussian
+        prior is par_input_scale/2)
     """
     data_df = pd.read_csv(datafile, index_col=[0])
 
@@ -178,7 +183,7 @@ class MechanisticAutoEncoder(dA):
                  n_hidden: int,
                  datafile: str,
                  pathway_name: str,
-                 par_input_scale: int = 4):
+                 par_input_scale: float = 1/2):
         """
         loads the mechanistic model as theano operator with loss as output and
         decoder output as input
@@ -219,13 +224,13 @@ class MechanisticAutoEncoder(dA):
                          par_modulation_scale=par_input_scale)
 
         # set tolerances
-        self.pypesto_subproblem.objective.amici_solver\
+        self.pypesto_subproblem.objective._objectives[0].amici_solver\
             .setAbsoluteTolerance(1e-12)
-        self.pypesto_subproblem.objective.amici_solver\
+        self.pypesto_subproblem.objective._objectives[0].amici_solver\
             .setRelativeTolerance(1e-10)
-        self.pypesto_subproblem.objective.amici_solver\
+        self.pypesto_subproblem.objective._objectives[0].amici_solver\
             .setAbsoluteToleranceSteadyState(1e-10)
-        self.pypesto_subproblem.objective.amici_solver\
+        self.pypesto_subproblem.objective._objectives[0].amici_solver\
             .setRelativeToleranceSteadyState(1e-8)
 
         # define model theano op

@@ -23,7 +23,7 @@ class dA:
         self.n_params = n_params
         self.n_encode_weights = self.n_visible * self.n_hidden
         self.n_inflate_weights = self.n_hidden * self.n_params
-        self.n_inflate_bias = self.n_params
+        self.n_inflate_bias = 0  # self.n_params
         self.n_encoder_pars = self.n_encode_weights + \
             self.n_inflate_weights + self.n_inflate_bias
 
@@ -51,9 +51,10 @@ class dA:
         W_p = T.reshape(pIn[self.n_encode_weights:
                             self.n_encode_weights+self.n_inflate_weights],
                         (self.n_hidden, self.n_params))
-        bias = pIn[-self.n_inflate_bias:]
-        return T.nnet.sigmoid(T.dot(embedded_data, W_p) + bias) \
-            * self.par_modulation_scale*2 - self.par_modulation_scale
+        # bias = pIn[-self.n_inflate_bias:]
+        return T.dot(embedded_data, W_p)
+        #return T.nnet.sigmoid(T.dot(embedded_data, W_p) + bias) \
+        #    * self.par_modulation_scale*2 - self.par_modulation_scale
 
     def encode_params(self, pIn):
         """ Run the encoder and then inflate to parameters. """

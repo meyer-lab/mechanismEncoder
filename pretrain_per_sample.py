@@ -41,7 +41,7 @@ for sample, problem in pretraining_problems.items():
     parameter_df.to_csv(os.path.join(pretraindir, output_prefix + '.csv'))
     pretrained_samples.append(output_prefix + '.csv')
 
-    waterfall(result)
+    waterfall(result, scale_y='log10', offset_y=0.0)
     plt.tight_layout()
     plt.savefig(os.path.join(pretraindir, output_prefix + '_waterfall.pdf'))
 

@@ -25,7 +25,7 @@ def test_petab_loading():
     Test that we can load the mechanistic model plus data in PEtab
     """
     datafile = generate_synthetic_data(pathway_model)
-    petab_importer = load_petab(datafile, 'pw_' + pathway_model)
+    petab_importer = load_petab(datafile, 'pw_' + pathway_model, 1.0)
     petab.lint.lint_problem(petab_importer.petab_problem)
 
 

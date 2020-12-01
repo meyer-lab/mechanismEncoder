@@ -5,6 +5,7 @@ from pypesto.optimize import FidesOptimizer, OptimizeOptions, minimize
 
 import petab
 import os
+import re
 import fides
 import pandas as pd
 import numpy as np
@@ -16,7 +17,7 @@ from pysb import Model
 
 from .autoencoder import MechanisticAutoEncoder
 from .autoencoder import load_pathway
-from . import parameter_boundaries_scales
+from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 
@@ -35,7 +36,7 @@ def generate_patient_sample_pretraining_problems(
         Objective function that needs to be minimized for training.
     """
     ae.petab_importer.petab_problem.parameter_df['estimate'] = [
-        not x.startswith('INPUT') and
+        not x.startswith(MODEL_FEATURE_PREFIX) and
         ae.petab_importer.petab_problem.parameter_df['estimate'][x]
         for x in ae.petab_importer.petab_problem.parameter_df.index
     ]
@@ -49,7 +50,8 @@ def generate_patient_sample_pretraining_problems(
     return {
         cond: PetabImporterPysb(PysbPetabProblem(
             parameter_df=pp.parameter_df[[
-                not name.startswith('INPUT_') or name.endswith(cond)
+                not name.startswith(MODEL_FEATURE_PREFIX)
+                or name.endswith(cond)
                 for name in pp.parameter_df.index
             ]],
             observable_df=pp.observable_df,
@@ -83,12 +85,16 @@ def generate_cross_sample_pretraining_problem(
     :returns:
         Objective function that needs to be minimized for training.
     """
-    pp = ae.petab_importer.petab_problem
-    return pp.create_problem()
+    problem = ae.petab_importer.create_problem()
+    # make unbounded
+    problem.ub_full[:] = np.inf
+    problem.lb_full[:] = -np.inf
+    return problem
 
 
 def generate_encoder_inflate_pretraining_problem(
-        ae: MechanisticAutoEncoder, pretrained_inputs: pd.DataFrame
+        ae: MechanisticAutoEncoder, pretrained_inputs: pd.DataFrame,
+        pars: pd.DataFrame
 ) -> Problem:
     least_squares = .5*tt.sum(tt.power(
         ae.encode_params(ae.encoder_pars) -
@@ -101,18 +107,26 @@ def generate_encoder_inflate_pretraining_problem(
     )
 
     return Problem(
-        objective=Objective(fun=lambda x: np.float(loss(x)),
-                            grad=lambda x: loss_grad(x)[0]),
-        lb=[parameter_boundaries_scales[name.split('_')[-1]][0]
-            for name in ae.x_names[:ae.n_encoder_pars]],
-        ub=[parameter_boundaries_scales[name.split('_')[-1]][1]
-            for name in ae.x_names[:ae.n_encoder_pars]],
-        x_names=ae.x_names[:ae.n_encoder_pars]
+        objective=Objective(
+            fun=lambda x: np.float(loss(x[:ae.n_encoder_pars])),
+            grad=lambda x: loss_grad(x[:ae.n_encoder_pars])[0]
+        ),
+        ub=[np.inf for _ in ae.x_names[:ae.n_encoder_pars]],
+        lb=[-np.inf for _ in ae.x_names[:ae.n_encoder_pars]],
+        lb_init=[parameter_boundaries_scales[name.split('_')[-1]][0]
+                 for name in ae.x_names[:ae.n_encoder_pars]],
+        ub_init=[parameter_boundaries_scales[name.split('_')[-1]][1]
+                 for name in ae.x_names[:ae.n_encoder_pars]],
+        x_names=ae.x_names[:ae.n_encoder_pars] + list(pars.index),
+        x_fixed_indices=list(range(ae.n_encoder_pars,
+                                   ae.n_encoder_pars+ae.n_kin_params)),
+        dim_full=ae.n_encoder_pars+ae.n_kin_params,
+        x_fixed_vals=pars.values
     )
 
 
 def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
-             fatol: float = 1e-2, unbounded=False):
+             fatol: float = 1e-2):
     opt = FidesOptimizer(
         hessian_update=fides.BFGS(),
         options={
@@ -129,7 +143,6 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
 
     optimize_options = OptimizeOptions(
         startpoint_resample=True, allow_failed_starts=True,
-        unbounded_optimization=unbounded
     )
 
     return minimize(

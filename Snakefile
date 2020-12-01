@@ -16,6 +16,7 @@ rule process_data:
         script='process_data.py',
         data_code=os.path.join('mEncoder', 'generate_data.py'),
         enc_code=os.path.join('mEncoder', 'encoder.py'),
+        bounds=os.path.join('mEncoder', '__init__.py'),
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
         pathway=os.path.join('pathways', 'pw_FLT3_MAPK_AKT_STAT.py')
     output:
@@ -107,7 +108,6 @@ rule estimate_parameters:
         training_code=os.path.join('mEncoder', 'training.py'),
         autoencoder_code=os.path.join('mEncoder', 'autoencoder.py'),
         dataset=rules.process_data.output.datafile,
-        pretrain_kinetic=rules.pretrain_cross_sample.output.pretraining,
         pretrain_encoder=rules.pretrain_encoder_inflate.output.pretraining,
         model=rules.compile_mechanistic_model.output.model,
     output:
