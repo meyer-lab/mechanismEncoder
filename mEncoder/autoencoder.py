@@ -1,189 +1,29 @@
 import os
-import re
-import theano
-import theano.tensor as T
 
-import pandas as pd
-import numpy as np
+import theano
+import theano.tensor as tt
 
 import petab
 
-from amici.petab_import import PysbPetabProblem
-from pypesto.petab.pysb_importer import PetabImporterPysb
 from pypesto.sample.theano import TheanoLogProbability
 
 
-from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, \
-    load_pathway
-from .encoder import dA
+from . import MODEL_FEATURE_PREFIX
+from .encoder import AutoEncoder
+from .petab_subproblem import load_petab
 
 TheanoFunction = theano.compile.function_module.Function
 
-basedir = os.path.dirname(os.path.dirname(__file__))
 MODEL_FILE = os.path.join(os.path.dirname(__file__),
                           'pathway_FLT3_MAPK_AKT_STAT')
 
 
-def load_petab(datafile: str, pathway_name: str, par_input_scale: float):
-    """
-    Imports data from a csv and converts it to the petab format. This
-    function is used to connect the mechanistic model to the specified data
-    in order to defines the loss function of the autoencoder up to the
-    inflated parameters
-
-    :param datafile:
-        path to data csv
-
-    :param pathway_name:
-        name of pathway to use for model
-
-    :param par_input_scale:
-        absolute value of upper/lower bounds for input parameters in log10
-        scale, also influence l2 regularization strength (std of gaussian
-        prior is par_input_scale/2)
-    """
-    data_df = pd.read_csv(datafile, index_col=[0])
-
-    model = load_pathway(pathway_name)
-
-    features = [par for par in model.parameters
-                if par.name.startswith(MODEL_FEATURE_PREFIX)]
-
-    def condition_id_from_sample(cond_id):
-        return f'sample_{cond_id}'
-
-    # CONDITION TABLE
-    conditions = {
-        petab.CONDITION_ID:  [condition_id_from_sample(x)
-                              for x in data_df.Sample.unique()]
-    }
-    for feature in features:
-        conditions[feature.name] = [
-            f'{feature.name}_{s}' for s in conditions[petab.CONDITION_ID]
-        ]
-
-    condition_table = pd.DataFrame(conditions).set_index(petab.CONDITION_ID)
-
-    # MEASUREMENT TABLE
-
-    measurement_table = data_df[['Sample', 'LogFoldChange', 'site']].copy()
-    measurement_table.rename(columns={
-        'Sample': petab.SIMULATION_CONDITION_ID,
-        'LogFoldChange': petab.MEASUREMENT,
-        'site': petab.OBSERVABLE_ID,
-    }, inplace=True)
-    measurement_table[petab.SIMULATION_CONDITION_ID] = \
-        measurement_table[petab.SIMULATION_CONDITION_ID].apply(
-            condition_id_from_sample
-        )
-    measurement_table[petab.OBSERVABLE_ID] = measurement_table[
-        petab.OBSERVABLE_ID
-    ].apply(lambda x: observable_id_to_model_expr(x.replace('-', '_')))
-    measurement_table[petab.TIME] = np.inf
-
-    # filter for whats available in the model:
-    measurement_table = measurement_table.loc[
-        measurement_table[petab.OBSERVABLE_ID].apply(
-            lambda x: x in [expr.name for expr in model.expressions]
-        ), :
-    ]
-
-    # OBSERVABLE TABLE
-
-    observable_ids = measurement_table[petab.OBSERVABLE_ID].unique()
-
-    observable_table = pd.DataFrame({
-        petab.OBSERVABLE_ID: observable_ids,
-        petab.OBSERVABLE_NAME: observable_ids,
-        petab.OBSERVABLE_FORMULA: ['0.0' for _ in observable_ids],
-    }).set_index(petab.OBSERVABLE_ID)
-    observable_table[petab.NOISE_DISTRIBUTION] = 'normal'
-    observable_table[petab.NOISE_FORMULA] = '1.0'
-
-    # PARAMETER TABLE
-    params = [par for par in model.parameters
-              if not par.name.startswith(MODEL_FEATURE_PREFIX)]
-
-    transforms = {
-        'lin': lambda x: x,
-        'log10': lambda x: np.power(10.0, x)
-    }
-
-    param_defs = [{
-        petab.PARAMETER_ID: par.name,
-        petab.LOWER_BOUND: transforms[parameter_boundaries_scales[
-            par.name.split('_')[-1]][2]
-        ](parameter_boundaries_scales[par.name.split('_')[-1]][0]),
-        petab.UPPER_BOUND: transforms[parameter_boundaries_scales[
-            par.name.split('_')[-1]][2]
-        ](parameter_boundaries_scales[par.name.split('_')[-1]][1]),
-        petab.PARAMETER_SCALE: parameter_boundaries_scales[
-            par.name.split('_')[-1]][2],
-        petab.NOMINAL_VALUE: par.value,
-    } for par in params]
-
-    for cond in condition_table.index.values:
-        param_defs.extend([{
-            petab.PARAMETER_ID: f'{par.name}_{cond}',
-            petab.LOWER_BOUND: 10**-par_input_scale,
-            petab.UPPER_BOUND: 10**par_input_scale,
-            petab.PARAMETER_SCALE: 'log10',
-            petab.NOMINAL_VALUE: 1.0,
-        } for par in features])
-
-    parameter_table = pd.DataFrame(param_defs).set_index(petab.PARAMETER_ID)
-    parameter_table[petab.ESTIMATE] = (
-        parameter_table[petab.LOWER_BOUND] !=
-        parameter_table[petab.UPPER_BOUND]
-    ).apply(lambda x: int(x))
-
-    # add l2 regularization to input parameters
-    parameter_table[petab.OBJECTIVE_PRIOR_TYPE] = [
-        petab.PARAMETER_SCALE_NORMAL if name.startswith('INPUT')
-        else petab.PARAMETER_SCALE_UNIFORM
-        for name in parameter_table.index
-    ]
-    parameter_table[petab.OBJECTIVE_PRIOR_PARAMETERS] = [
-        f'0.0;{par_input_scale * 2}' if name.startswith('INPUT')
-        else f'{parameter_table.loc[name, petab.LOWER_BOUND]};'
-             f'{parameter_table.loc[name, petab.UPPER_BOUND]}'
-        for name in parameter_table.index
-    ]
-
-    return PetabImporterPysb(PysbPetabProblem(
-        measurement_df=measurement_table,
-        condition_df=condition_table,
-        observable_df=observable_table,
-        parameter_df=parameter_table,
-        pysb_model=model,
-    ), output_folder=os.path.join(
-        basedir, 'amici_models',
-        f'{model.name}_{os.path.splitext(os.path.basename(datafile))[0]}_petab'
-    ))
-
-
-def observable_id_to_model_expr(obs_id: str) -> str:
-    """
-    Maps site definitions from data to model observables
-
-    :param obs_id:
-        identifier of the phosphosite in the data table
-
-    :return:
-        the name of the corresponding observable in the model
-    """
-    phospho_site_pattern = r'_[S|Y|T][0-9]+[s|y|t]$'
-    return ('p' if re.search(phospho_site_pattern, obs_id) else 't') + \
-           (obs_id[:-1] if re.search(phospho_site_pattern, obs_id)
-            else obs_id) + '_obs'
-
-
-class MechanisticAutoEncoder(dA):
+class MechanisticAutoEncoder(AutoEncoder):
     def __init__(self,
                  n_hidden: int,
                  datafile: str,
                  pathway_name: str,
-                 par_input_scale: float = 1/2):
+                 par_modulation_scale: float = 1 / 2):
         """
         loads the mechanistic model as theano operator with loss as output and
         decoder output as input
@@ -196,12 +36,21 @@ class MechanisticAutoEncoder(dA):
 
         :param n_hidden:
             number of nodes in the hidden layer of the encoder
+
+        :param par_modulation_scale:
+            currently this parameter only influences the strength of l2
+            regularization on the inflate layer (the respective gaussian
+            prior has its standard deviation defined based on the value of
+            this parameter). For bounded inflate functions, this parameter
+            is also intended to rescale the inputs accordingly.
+
         """
         self.data_name = os.path.splitext(os.path.basename(datafile))[0]
         self.pathway_name = pathway_name
 
+        self.par_modulation_scale = par_modulation_scale
         self.petab_importer = load_petab(datafile, 'pw_' + pathway_name,
-                                         par_input_scale)
+                                         par_modulation_scale)
         self.pypesto_subproblem = self.petab_importer.create_problem()
 
         self.n_samples = len(self.petab_importer.petab_problem.condition_df)
@@ -226,8 +75,7 @@ class MechanisticAutoEncoder(dA):
 
         self.sample_names = list(input_data.index)
         super().__init__(input_data=input_data.values, n_hidden=n_hidden,
-                         n_params=self.n_model_inputs,
-                         par_modulation_scale=par_input_scale)
+                         n_params=self.n_model_inputs)
 
         # set tolerances
         self.pypesto_subproblem.objective._objectives[0].amici_solver\
@@ -243,8 +91,8 @@ class MechanisticAutoEncoder(dA):
         self.loss = TheanoLogProbability(self.pypesto_subproblem)
 
         # these are the kinetic parameters that are shared across all samples
-        self.kin_pars = T.specify_shape(T.vector('kinetic_parameters'),
-                                        (self.n_kin_params,))
+        self.kin_pars = tt.specify_shape(tt.vector('kinetic_parameters'),
+                                         (self.n_kin_params,))
 
         self.x_names = self.x_names + [
             name for ix, name in enumerate(self.pypesto_subproblem.x_names)
@@ -254,10 +102,10 @@ class MechanisticAutoEncoder(dA):
 
         # assemble input to model theano op
         encoded_pars = self.encode_params(self.encoder_pars)
-        self.model_pars = T.concatenate([
+        self.model_pars = tt.concatenate([
             self.kin_pars,
-            T.reshape(encoded_pars,
-                      (self.n_model_inputs * self.n_samples,))],
+            tt.reshape(encoded_pars,
+                       (self.n_model_inputs * self.n_samples,))],
             axis=0
         )
 
@@ -277,7 +125,7 @@ class MechanisticAutoEncoder(dA):
         """
         return theano.function(
             [self.encoder_pars, self.kin_pars],
-            T.concatenate(
+            tt.concatenate(
                 [theano.grad(self.loss(self.model_pars), self.encoder_pars),
                  theano.grad(self.loss(self.model_pars), self.kin_pars)],
                 axis=0

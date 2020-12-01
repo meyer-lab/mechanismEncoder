@@ -18,8 +18,7 @@ from typing import Dict, Callable
 from pysb import Model
 
 from .autoencoder import MechanisticAutoEncoder
-from .autoencoder import load_pathway
-from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX
+from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, load_pathway
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 
@@ -214,7 +213,9 @@ def store_and_plot_pretraining(result: Result, pretraindir: str, prefix: str):
     """
     # store full results as hdf5
     rfile = os.path.join(pretraindir, prefix + '.hdf5')
-    os.remove(rfile)
+    if os.path.exists(rfile):
+        # temp bugfix for https://github.com/ICB-DCM/pyPESTO/issues/529
+        os.remove(rfile)
     writer = OptimizationResultHDF5Writer(rfile)
     writer.write(result, overwrite=True)
 

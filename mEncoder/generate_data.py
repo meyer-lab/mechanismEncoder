@@ -3,7 +3,7 @@ from . import (
     plot_and_save_fig
 )
 
-from .encoder import dA
+from .encoder import AutoEncoder
 
 import numpy as np
 import pandas as pd
@@ -61,9 +61,8 @@ def generate_synthetic_data(pathway_name: str,
     sample_pars = [par_id for par_id in model.getParameterIds()
                    if par_id.startswith(MODEL_FEATURE_PREFIX)]
 
-    encoder = dA(np.zeros((1, model.ny)),
-                 n_hidden=latent_dimension, n_params=len(sample_pars),
-                 par_modulation_scale=2)
+    encoder = AutoEncoder(np.zeros((1, model.ny)),
+                          n_hidden=latent_dimension, n_params=len(sample_pars))
     tt_pars = np.random.random(encoder.n_encoder_pars)
     for ip, name in enumerate(encoder.x_names):
         lb, ub, _ = parameter_boundaries_scales[name.split('_')[-1]]

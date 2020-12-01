@@ -3,7 +3,7 @@ import os
 from mEncoder.training import trace_path, TRACE_FILE_TEMPLATE
 
 HIDDEN_LAYERS = [2]
-PATHWAYS = ['FLT3_MAPK']
+PATHWAYS = ['FLT3_MAPK_AKT_STAT']
 DATASETS = ['synthetic']
 OPTIMIZERS = ['fides']
 

@@ -5,7 +5,8 @@ import nlopt
 import fides
 import logging
 
-from .autoencoder import MechanisticAutoEncoder, parameter_boundaries_scales
+from .autoencoder import MechanisticAutoEncoder
+from . import parameter_boundaries_scales
 
 from pypesto.optimize import (
     IpoptOptimizer, NLoptOptimizer, FidesOptimizer,

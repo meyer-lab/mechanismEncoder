@@ -3,7 +3,7 @@
 import numpy as np
 import theano
 import theano.tensor as T
-from ..encoder import dA
+from ..encoder import AutoEncoder
 
 
 def test_encoder():
@@ -11,7 +11,7 @@ def test_encoder():
     Test that the linear encoder at least runs.
     """
     data = np.random.rand(100, 10)
-    enc = dA(data)
+    enc = AutoEncoder(data)
     unk = np.ones(enc.n_encoder_pars)
 
     a = T.dvector("tempVar")
