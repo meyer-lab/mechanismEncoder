@@ -218,6 +218,12 @@ class MechanisticAutoEncoder(dA):
             columns=petab.OBSERVABLE_ID,
             values=petab.MEASUREMENT
         )
+        # zero center input data, this is equivalent to estimating biases
+        # for linear autoencoders
+        # https://link.springer.com/article/10.1007/BF00332918
+        # https://arxiv.org/pdf/1901.08168.pdf
+        input_data -= input_data.mean()
+
         self.sample_names = list(input_data.index)
         super().__init__(input_data=input_data.values, n_hidden=n_hidden,
                          n_params=self.n_model_inputs,

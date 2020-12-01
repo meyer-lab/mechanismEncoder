@@ -1,3 +1,7 @@
+"""
+Pretraining of encoder/inflate parameters based on cross sample pretraining.
+"""
+
 import sys
 import os
 import re
@@ -9,12 +13,11 @@ import seaborn as sns
 
 from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.pretraining import (
-    generate_encoder_inflate_pretraining_problem, pretrain
+    generate_encoder_inflate_pretraining_problem, pretrain,
+    store_and_plot_pretraining
 )
 from mEncoder import MODEL_FEATURE_PREFIX
 
-from pypesto.store import OptimizationResultHDF5Writer
-from pypesto.visualize import waterfall, parameters
 import pypesto
 
 MODEL = sys.argv[1]
@@ -31,18 +34,26 @@ pretraindir = 'pretraining'
 prefix = f'{mae.pathway_name}__{mae.data_name}'
 input_prefix = f'{prefix}__input'
 output_prefix = f'{prefix}__{N_HIDDEN}__decoder_inflate'
+
+# read the results from cross sample pretraining
 df = pd.read_csv(os.path.join(pretraindir, f'{input_prefix}.csv'))
 results = []
+
+# iterate over local solutions from cross sample pretraining, for each local
+# solution perform multiple optimization runs
 for i_input in range(5):
     inputs = pd.DataFrame(
         df[[
             col for col in df.columns if col.startswith('INPUT_')
         ]].iloc[i_input, :]
     )
+    # extract population parameters, these will be stored alongside
+    # encoder/deflate parameters
     pars = df.loc[i_input, mae.x_names[mae.n_encoder_pars:]]
 
     pattern = fr'{MODEL_FEATURE_PREFIX}([\w_]+)_(sample_[0-9]+)'
 
+    # reshape pretained input vector to sample/parameter Dataframe
     inputs['par'] = inputs.index
     inputs['sample'] = inputs.par.apply(
         lambda x: re.match(pattern, x).group(2)
@@ -62,6 +73,7 @@ for i_input in range(5):
          ]
     )
     pretrained_inputs.columns = [r[1] for r in pretrained_inputs.columns]
+
     problem = generate_encoder_inflate_pretraining_problem(
         mae, pretrained_inputs, pars
     )
@@ -71,8 +83,8 @@ for i_input in range(5):
         r['id'] += f'_{i_input}'
 
     results.append(result)
-# store results
 
+# merge results
 result = pypesto.Result(problem)
 result.optimize_result.list = [
     r
@@ -81,25 +93,10 @@ result.optimize_result.list = [
 ]
 result.optimize_result.sort()
 
-rfile = os.path.join(pretraindir, output_prefix + '.hdf5')
-writer = OptimizationResultHDF5Writer(rfile)
-writer.write(result, overwrite=True)
 
-parameter_df = pd.DataFrame(
-    [r for r in result.optimize_result.get_for_key('x')
-     if r is not None],
-    columns=problem.x_names
-)
-parameter_df.to_csv(os.path.join(pretraindir, output_prefix + '.csv'))
+store_and_plot_pretraining(result, pretraindir, output_prefix)
 
-waterfall(result, scale_y='log10', offset_y=0.0)
-plt.tight_layout()
-plt.savefig(os.path.join(pretraindir, output_prefix + '_waterfall.pdf'))
-
-parameters(result)
-plt.tight_layout()
-plt.savefig(os.path.join(pretraindir, output_prefix + '_parameters.pdf'))
-
+# compute and plot residuals
 inflate = theano.function(
     [mae.encoder_pars],
     mae.encode_params(mae.encoder_pars),
