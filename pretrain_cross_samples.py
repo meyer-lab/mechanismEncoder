@@ -11,6 +11,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import re
+import fides
 
 from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.pretraining import (
@@ -97,7 +98,8 @@ def startpoints(**kwargs):
     return xs
 
 
-result = pretrain(problem, startpoints, 10)
+result = pretrain(problem, startpoints, 10,
+                  subspace=fides.SubSpaceDim.TWO, maxiter=int(1e2))
 
 store_and_plot_pretraining(result, pretraindir, output_prefix)
 

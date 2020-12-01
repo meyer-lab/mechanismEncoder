@@ -154,7 +154,9 @@ def generate_encoder_inflate_pretraining_problem(
 
 
 def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
-             fatol: float = 1e-2):
+             fatol: float = 1e-2,
+             subspace: fides.SubSpaceDim = fides.SubSpaceDim.FULL,
+             maxiter: int = int(1e3)):
     """
     Pretrain the provided problem via optimization.
 
@@ -170,6 +172,13 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
 
     :param fatol:
         absolute function tolerance for termination of optimization
+
+    :param subspace:
+        fides subspace to use, fides.SubSpaceDim.FULL becomes quite slow for
+        for anything with over 1k parameters
+
+    :param maxiter:
+        maximum number of iterations
     """
     opt = FidesOptimizer(
         hessian_update=fides.BFGS(),
@@ -177,8 +186,8 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
             'maxtime': 3600,
             fides.Options.FATOL: fatol,
             fides.Options.MAXTIME: 7200,
-            fides.Options.MAXITER: 1e3,
-            fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.FULL,
+            fides.Options.MAXITER: maxiter,
+            fides.Options.SUBSPACE_DIM: subspace,
             fides.Options.REFINE_STEPBACK: False,
             fides.Options.STEPBACK_STRAT: fides.StepBackStrategy.SINGLE_REFLECT
 

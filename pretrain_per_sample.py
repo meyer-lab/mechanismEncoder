@@ -31,6 +31,7 @@ for sample, problem in pretraining_problems.items():
     output_prefix = f'{prefix}__{sample}'
 
     store_and_plot_pretraining(result, pretraindir, output_prefix)
+    pretrained_samples.append(output_prefix + '.csv')
 
 with open(os.path.join(pretraindir,
                        f'{prefix}.txt'), 'w') as f:
