@@ -234,10 +234,11 @@ def add_activation(
     ):
         for modulator in modulators:
             kcat = Parameter(f'{m_name}_{label}_{site}_{modulator}_kcat', 1.0)
+            rate_expr = kcat * add_or_get_modulator_obs(model, modulator)
+            # if label == forward:
+            rate_expr *= get_autoencoder_modulator(kcat)
             rate = Expression(f'{m_name}_{label}_{site}_{modulator}_rate',
-                              kcat
-                              * add_or_get_modulator_obs(model, modulator)
-                              * get_autoencoder_modulator(kcat))
+                              rate_expr)
 
             Rule(F'{m_name}_{label}_{site}_{modulator}', educts >> products,
                  rate)

@@ -241,6 +241,7 @@ def store_and_plot_pretraining(result: Result, pretraindir: str, prefix: str):
     plt.tight_layout()
     plt.savefig(os.path.join(pretraindir, prefix + '_waterfall.pdf'))
 
-    parameters(result)
-    plt.tight_layout()
-    plt.savefig(os.path.join(pretraindir, prefix + '_parameters.pdf'))
+    if result.problem.dim_full < 2e3:
+        parameters(result)
+        plt.tight_layout()
+        plt.savefig(os.path.join(pretraindir, prefix + '_parameters.pdf'))

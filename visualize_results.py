@@ -11,6 +11,7 @@ import theano
 from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.training import create_pypesto_problem
 from mEncoder import plot_and_save_fig
+from mEncoder.generate_data import plot_embedding
 
 from pypesto.visualize import waterfall, optimizer_history, \
     optimizer_convergence, parameters
@@ -73,9 +74,10 @@ inflate_fun = theano.function(
 )
 
 data_dicts = []
-for ir, r in enumerate(result.optimize_result.list[1:N_STARTS]):
+for ir, r in enumerate(result.optimize_result.list[:N_STARTS]):
     embedding = embedding_fun(r['x'][mae.n_encoder_pars:])
-    axes_embedding[ir].plot(embedding[:, 0], embedding[:, 1], 'k*')
+    middle = int(np.floor(len(embedding) / 2))
+    plot_embedding(embedding, axes_embedding[ir])
 
     rdatas = mae.pypesto_subproblem.objective(
         np.hstack([r['x'][mae.n_encoder_pars:],

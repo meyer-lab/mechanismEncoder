@@ -102,6 +102,22 @@ class AutoEncoder:
                        (self.n_visible, self.n_hidden))
         return tt.dot(embedded_data, tt.nlinalg.pinv(W))
 
+    def compile_embedded_pars(self) -> TheanoFunction:
+        """
+        Compile a theano function that computes the inflated parameters
+        """
+        return theano.function(
+            [self.encoder_pars],
+            self.encode(self.encoder_pars)
+        )
+
+    def compute_embedded_pars(self,
+                              encoder_pars: np.ndarray) -> List:
+        """
+        Compute the inflated parameters
+        """
+        return self.compile_embedded_pars()(encoder_pars)
+
     def compile_inflate_pars(self) -> TheanoFunction:
         """
         Compile a theano function that computes the inflated parameters

@@ -18,6 +18,7 @@ from mEncoder.pretraining import (
     generate_cross_sample_pretraining_problem, pretrain,
     store_and_plot_pretraining
 )
+from mEncoder.generate_data import plot_pca_inputs
 from mEncoder import MODEL_FEATURE_PREFIX
 
 import pypesto
@@ -103,9 +104,13 @@ result = pretrain(problem, startpoints, 10,
 
 store_and_plot_pretraining(result, pretraindir, output_prefix)
 
-# plot residuals for debugging purposes
+N_STARTS = 5
+
+# plot residuals and pca of inputs for debugging purposes
 data_dicts = []
-for ir, r in enumerate(result.optimize_result.list[1:5]):
+fig_pca, axes_pca = plt.subplots(1, N_STARTS, figsize=(18.5, 10.5))
+
+for ir, r in enumerate(result.optimize_result.list[:N_STARTS]):
 
     rdatas = problem.objective._objectives[0](r['x'], return_dict=True)[
         pypesto.objective.constants.RDATAS
@@ -127,6 +132,40 @@ for ir, r in enumerate(result.optimize_result.list[1:5]):
                 'sim': y[0, iy]
             })
 
+    inputs = pd.DataFrame({
+        name: val
+        for name, val in zip(problem.x_names, r['x'])
+        if name.startswith(MODEL_FEATURE_PREFIX)
+    }, index=[0]).T
+
+    pattern = fr'{MODEL_FEATURE_PREFIX}([\w_]+)_(sample_[0-9]+)'
+
+    # reshape pretained input vector to sample/parameter Dataframe
+    inputs['par'] = inputs.index
+    inputs['sample'] = inputs.par.apply(
+        lambda x: re.match(pattern, x).group(2)
+    )
+    inputs['par'] = inputs.par.apply(
+        lambda x: re.match(pattern, x).group(1)
+    )
+    inputs.rename(columns={0: 'value'}, inplace=True)
+    input_start = next(
+        ix for ix, name in enumerate(mae.pypesto_subproblem.x_names)
+        if name.startswith('INPUT_')
+    )
+    pretrained_inputs = pd.pivot(inputs, index='par', columns='sample').reindex(
+        [re.match(pattern, name).group(1)
+         for name in mae.pypesto_subproblem.x_names[
+                     input_start:input_start + mae.n_model_inputs]
+         ]
+    )
+    plot_pca_inputs(pretrained_inputs.values.T, axes_pca[ir])
+
+
+plt.tight_layout()
+plt.savefig(os.path.join(pretraindir, output_prefix + '__pca_inputs.pdf'))
+
+# plot fit with data
 df_data = pd.DataFrame(data_dicts)
 g = sns.FacetGrid(df_data, col='observable', col_wrap=5)
 g.map_dataframe(sns.scatterplot, x='data', y='sim')
