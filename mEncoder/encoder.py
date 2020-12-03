@@ -14,6 +14,7 @@ class dA:
         assert n_hidden < self.n_visible
         assert n_hidden <= n_params
         assert input_data.ndim == 2
+        assert n_hidden < self.n_visible
         self.data = input_data
         self.n_hidden = n_hidden
         self.n_params = n_params
@@ -30,11 +31,23 @@ class dA:
             f'inflate_{iw}_bias' for iw in range(self.n_inflate_bias)
         ]
 
+    def getW(self, pIn):
+        return T.reshape(pIn[0:self.n_encode_weights], (self.n_visible, self.n_hidden))
+
     def encode(self, pIn):
         """ Run the input through the encoder. """
-        W = T.reshape(pIn[0:self.n_encode_weights],
-                      (self.n_visible, self.n_hidden))
-        return T.dot(self.data, W)
+        return T.dot(self.data, self.getW(pIn))
+
+    def initialW(self):
+        """ Calculate an initial encoder parameter set by PCA. """
+        LD = np.linalg.svd(self.data)[2].T
+        assert LD.shape[0] == self.n_visible
+        return (LD[:, 0:self.n_hidden]).flatten()
+
+    def regularize(self, pIn, l2=0.0, ortho=0.0):
+        """ Calculate regularization of encoder. """
+        W = self.getW(pIn)
+        return l2 * T.nlinalg.norm(pIn, None) + ortho * T.nlinalg.norm(T.dot(W.T, W) - T.eye(self.n_hidden), None)
 
     def inflate_params(self, embedded_data, pIn):
         """ Inflate the input to parameters. """
@@ -52,6 +65,4 @@ class dA:
     
     def decode(self, embedded_data, pIn):
         """ Run the input through the analytical decoder. """
-        W = T.reshape(pIn[0:self.n_encode_weights],
-                      (self.n_visible, self.n_hidden))
-        return T.dot(embedded_data, T.nlinalg.pinv(W))
+        return T.dot(embedded_data, T.nlinalg.pinv(self.getW(pIn)))
