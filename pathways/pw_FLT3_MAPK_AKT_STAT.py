@@ -1,10 +1,9 @@
-from .mechanistic_model import (
-    add_monomer_synth_deg, generate_pathway, add_activation,
+from mEncoder.mechanistic_model import (
+    create_model, add_monomer_synth_deg, generate_pathway, add_activation,
     add_abundance_observables, add_phospho_observables
 )
-from pysb import Model
 
-model = Model('FLT3_MAPK_AKT_STAT')
+model = create_model('FLT3_MAPK_AKT_STAT')
 
 # FLT3
 for rtkf_name in ['FL']:

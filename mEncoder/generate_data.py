@@ -1,4 +1,9 @@
-from . import load_model
+from . import (
+    load_model, parameter_boundaries_scales, MODEL_FEATURE_PREFIX,
+    plot_and_save_fig
+)
+
+from .encoder import dA
 
 import numpy as np
 import pandas as pd
@@ -6,85 +11,128 @@ import matplotlib.pyplot as plt
 
 import amici
 import os
+import theano
+import theano.tensor as T
 
-model, solver = load_model(force_compile=False)
+basedir = os.path.dirname(os.path.dirname(__file__))
 
-np.random.seed(0)
 
-LATENT_DIM = 5
-N_SAMPLES = 20
+def generate_synthetic_data(pathway_name: str,
+                            latent_dimension: int = 5,
+                            n_samples: int = 20) -> str:
+    """
+    Generates sample data using the mechanistic model.
 
-MODEL_FEATURE_PREFIX = 'INPUT_'
+    :param pathway_name:
+        name of pathway to use for model
 
-boundaries = {
-    'kdeg': (-3, -1),  # log10       [1/[t]]
-    'eq': (1, 2),  # log10         [[c]]
-    'bias': (-10, 10),  # lin      [-]
-    'kcat': (1, 3),  # log10      [1/([t]*[c])]
-    'scale': (-3, 0),  # log10    [1/[c]]
-    'offset': (0, 1),  # log10     [[c]]
-}
+    :param latent_dimension:
+        number of latent dimensions that is used to generate the parameters
+        that vary across samples
 
-static_pars = dict()
-for par_id in model.getParameterIds():
-    if par_id.startswith(MODEL_FEATURE_PREFIX):
-        continue
-    lb, ub = boundaries[par_id.split('_')[-1]]
-    static_pars[par_id] = np.random.random() * (ub - lb) + lb
+    :param n_samples:
+        number of samples to generate
 
-sample_pars = [par_id for par_id in model.getParameterIds()
-               if par_id.startswith(MODEL_FEATURE_PREFIX)]
+    :return:
+        path to csv where generated data was saved
+    """
+    model, solver = load_model('pw_' + pathway_name, force_compile=True)
 
-decoder_mat = np.random.random((LATENT_DIM, len(sample_pars)))
+    # setup model parameter scales
+    model.setParameterScale(amici.parameterScalingFromIntVector([
+        amici.ParameterScaling.none
+        if par_id.startswith(MODEL_FEATURE_PREFIX)
+           or parameter_boundaries_scales[par_id.split('_')[-1]][2] == 'lin'
+        else amici.ParameterScaling.log10
+        for par_id in model.getParameterIds()
+    ]))
+    # run simulations to equilibrium
+    model.setTimepoints([np.inf])
 
-model.setParameterScale(amici.parameterScalingFromIntVector([
-    amici.ParameterScaling.log10
-    if not par_id.startswith(MODEL_FEATURE_PREFIX)
-    and not par_id.endswith('_bias')
-    else amici.ParameterScaling.none
-    for par_id in model.getParameterIds()
-]))
-model.setTimepoints([np.inf])
+    # set numpy random seed to ensure reproducibility
+    np.random.seed(0)
 
-samples = []
-while len(samples) < N_SAMPLES:
-    sample_par_vals = np.random.random(LATENT_DIM).dot(decoder_mat) * 10 - 10
-    sample_pars = dict(zip(sample_pars, sample_par_vals))
-    for par_id, val in {**static_pars, **sample_pars}.items():
-        model.setParameterById(par_id, val)
+    # generate static parameters that are consistent across samples
+    static_pars = dict()
+    for par_id in model.getParameterIds():
+        if par_id.startswith(MODEL_FEATURE_PREFIX):
+            continue
+        lb, ub, _ = parameter_boundaries_scales[par_id.split('_')[-1]]
+        static_pars[par_id] = np.random.random() * (ub - lb) + lb
 
-    rdata = amici.runAmiciSimulation(model, solver)
-    if rdata['status'] == amici.AMICI_SUCCESS:
-        sample = amici.getSimulationObservablesAsDataFrame(
-            model, [amici.ExpData(model)], [rdata]
-        )
-        sample['Sample'] = len(samples)
-        for pid, val in sample_pars.items():
-            sample[pid] = val
-        samples.append(sample)
+    # identify which parameters may vary across samples
+    sample_pars = [par_id for par_id in model.getParameterIds()
+                   if par_id.startswith(MODEL_FEATURE_PREFIX)]
 
-df = pd.concat(samples)
-df[list(model.getObservableIds())].rename(columns={
-    o: o.replace('_obs', '') for o in model.getObservableIds()
-}).boxplot(rot=90)
-plt.show()
+    # set up linear projection from specified latent space to parameter space
+    encoder = dA(np.zeros((n_samples, 10)),
+                 n_hidden=latent_dimension, n_params=len(sample_pars))
+    tt_pars = np.random.random(encoder.n_encoder_pars)
+    for ip, name in enumerate(encoder.x_names):
+        lb, ub, _ = parameter_boundaries_scales[name.split('_')[-1]]
+        tt_pars[ip] = tt_pars[ip] * (ub - lb) + lb
 
-basedir = os.path.dirname(__file__)
-formatted_df = pd.melt(df[list(model.getObservableIds()) + ['Sample']],
-                       id_vars=['Sample'])
-formatted_df.rename(columns={
-    'variable': 'site',
-    'value': 'LogFoldChange',
-}, inplace=True)
-formatted_df['site'] = formatted_df['site'].apply(lambda x:
-                                                  x.replace('_obs', ''))
-formatted_df['Gene'] = formatted_df['site'].apply(lambda x:
-                                                  x.split('_')[0][1:])
-formatted_df['Peptide'] = 'X.XXXXX*XXXXX.X'
-formatted_df['site'] = formatted_df['site'].apply(
-    lambda x: x.replace('_', '-') +
-    (x.split('_')[1][0].lower() if len(x.split('_')) > 1 else '')
-)
-formatted_df.to_csv(os.path.join(basedir, 'data', 'synthetic_data.csv'))
+    tt_data = T.specify_shape(T.vector('embedded_data'),
+                              (encoder.n_hidden,))
+    inflate_fun = theano.function(
+        [tt_data], encoder.inflate_params(tt_data, tt_pars)
+    )
+
+    samples = []
+    while len(samples) < n_samples:
+        # project from low dim
+        embedded_sample_pars = np.random.random(latent_dimension) * 10 - 5
+        sample_par_vals = inflate_fun(embedded_sample_pars,)
+        sample_pars = dict(zip(sample_pars, sample_par_vals))
+
+        # set parameters in model
+        for par_id, val in {**static_pars, **sample_pars}.items():
+            model.setParameterById(par_id, val)
+
+        # run simulations, only add to samples if no integration error
+        rdata = amici.runAmiciSimulation(model, solver)
+        if rdata['status'] == amici.AMICI_SUCCESS:
+            sample = amici.getSimulationObservablesAsDataFrame(
+                model, [amici.ExpData(model)], [rdata]
+            )
+            sample['Sample'] = len(samples)
+            for pid, val in sample_pars.items():
+                sample[pid] = val
+            samples.append(sample)
+
+    # create dataframe
+    df = pd.concat(samples)
+    df[list(model.getObservableIds())].rename(columns={
+        o: o.replace('_obs', '') for o in model.getObservableIds()
+    }).boxplot(rot=90)
+
+    # format according to reference example
+    formatted_df = pd.melt(df[list(model.getObservableIds()) + ['Sample']],
+                           id_vars=['Sample'])
+    formatted_df.rename(columns={
+        'variable': 'site',
+        'value': 'LogFoldChange',
+    }, inplace=True)
+    formatted_df['site'] = formatted_df['site'].apply(
+        lambda x: x.replace('_obs', '')[1:]
+    )
+    formatted_df['Gene'] = formatted_df['site'].apply(
+        lambda x: x.split('_')[0]
+    )
+    formatted_df['Peptide'] = 'X.XXXXX*XXXXX.X'
+    formatted_df['site'] = formatted_df['site'].apply(
+        lambda x: x.replace('_', '-') +
+        (x.split('_')[1][0].lower() if len(x.split('_')) > 1 else '')
+    )
+
+    # save to csv
+    datadir = os.path.join(basedir, 'data')
+    os.makedirs(datadir, exist_ok=True)
+    datafile = os.path.join(datadir,
+                            f'synthetic__{pathway_name}.csv')
+    plot_and_save_fig(os.path.join(datadir,
+                                   f'synthetic__{pathway_name}.pdf'))
+    formatted_df.to_csv(datafile)
+    return datafile
 
 

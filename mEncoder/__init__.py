@@ -5,13 +5,23 @@ import importlib
 import sys
 import amici
 import pysb.export
+import matplotlib.pyplot as plt
 from typing import Tuple
 
+basedir = os.path.dirname(os.path.dirname(__file__))
+figures_path = os.path.join(basedir, 'figures')
 
-def load_model(force_compile: bool = True) -> Tuple[amici.AmiciModel,
+
+def load_pathway(pathway_name: str) -> pysb.Model:
+    model_file = os.path.join(basedir, 'pathways', pathway_name + '.py')
+    return amici.pysb_import.pysb_model_from_path(model_file)
+
+
+def load_model(pathway_name: str,
+               force_compile: bool = True) -> Tuple[amici.AmiciModel,
                                                     amici.AmiciSolver]:
-    from .pathway_FLT3_MAPK_AKT_STAT import model
-    basedir = os.path.dirname(os.path.dirname(__file__))
+
+    model = load_pathway(pathway_name)
     outdir = os.path.join(basedir, 'amici_models', model.name)
     with open(os.path.join(basedir, 'pysb_models',
                            model.name + '.py'), 'w') as file:
@@ -36,3 +46,25 @@ def load_model(force_compile: bool = True) -> Tuple[amici.AmiciModel,
     amici_model = model_module.getModel()
 
     return amici_model, amici_model.getSolver()
+
+
+def plot_and_save_fig(filename):
+    plt.tight_layout()
+    if not os.path.exists(figures_path):
+        os.mkdir(figures_path)
+
+    if filename is not None:
+        plt.savefig(os.path.join(figures_path, filename))
+
+
+parameter_boundaries_scales = {
+    'kdeg': (-3, -1, 'log10'),      # [1/[t]]
+    'eq': (1, 2, 'log10'),          # [[c]]
+    'bias': (-10, 10, 'lin'),       # [-]
+    'kcat': (1, 3, 'log10'),        # [1/([t]*[c])]
+    'scale': (0, 0, 'log10'),       # [1/[c]]
+    'offset': (0, 0, 'log10'),      # [[c]]
+    'weight': (-1, 1, 'lin'),       # [-]
+}
+
+MODEL_FEATURE_PREFIX = 'INPUT_'

@@ -2,7 +2,6 @@
 Materials for a simple linear encoder, and its analytical reverse.
 """
 
-import theano
 import theano.tensor as T
 import numpy as np
 
@@ -10,33 +9,49 @@ import numpy as np
 class dA:
     """A simple linear autoencoder. """
 
-    def __init__(self, n_visible=50, n_hidden=10, n_params=12, W=None, W_p=None):
-        assert n_hidden < n_visible
-        self.n_visible = n_visible
+    def __init__(self, input_data, n_hidden=1, n_params=12):
+        self.n_visible = input_data.shape[1]
+        assert n_hidden < self.n_visible
+        assert n_hidden <= n_params
+        assert input_data.ndim == 2
+        self.data = input_data
         self.n_hidden = n_hidden
         self.n_params = n_params
+        self.n_encode_weights = self.n_visible * self.n_hidden
+        self.n_inflate_weights = self.n_hidden * self.n_params
+        self.n_inflate_bias = self.n_params
+        self.n_encoder_pars = self.n_encode_weights + \
+            self.n_inflate_weights + self.n_inflate_bias
+        self.x_names = [
+            f'ecoder_{iw}_weight' for iw in range(self.n_encode_weights)
+        ] + [
+            f'inflate_{iw}_weight' for iw in range(self.n_inflate_weights)
+        ] + [
+            f'inflate_{iw}_bias' for iw in range(self.n_inflate_bias)
+        ]
 
-        if W is None:
-            initial_W = np.random.normal(size=(n_visible, n_hidden))
-            initial_W = np.asarray(initial_W, dtype=theano.config.floatX)
-            W = theano.shared(value=initial_W, name='W')
-
-        if W_p is None:
-            initial_W_p = np.random.normal(size=(n_hidden, n_params))
-            initial_W_p = np.asarray(initial_W_p, dtype=theano.config.floatX)
-            W_p = theano.shared(value=initial_W_p, name='W_p')
-
-        self.W = W
-        self.W_p = W_p
-
-    def encode(self, input):
+    def encode(self, pIn):
         """ Run the input through the encoder. """
-        return T.dot(input, self.W)
+        W = T.reshape(pIn[0:self.n_encode_weights],
+                      (self.n_visible, self.n_hidden))
+        return T.dot(self.data, W)
 
-    def encode_params(self, input):
+    def inflate_params(self, embedded_data, pIn):
+        """ Inflate the input to parameters. """
+        W_p = T.reshape(pIn[self.n_encode_weights:
+                            self.n_encode_weights+self.n_inflate_weights],
+                        (self.n_hidden, self.n_params))
+        bias = pIn[-self.n_inflate_bias:]
+        return np.power(
+            10, T.nnet.sigmoid(T.dot(embedded_data, W_p) + bias)*2 - 1
+        )
+
+    def encode_params(self, pIn):
         """ Run the encoder and then inflate to parameters. """
-        return T.dot(self.encode(input), self.W_p)
+        return self.inflate_params(self.encode(pIn), pIn)
     
-    def decode(self, input):
+    def decode(self, embedded_data, pIn):
         """ Run the input through the analytical decoder. """
-        return T.dot(input, T.nlinalg.pinv(self.W))
+        W = T.reshape(pIn[0:self.n_encode_weights],
+                      (self.n_visible, self.n_hidden))
+        return T.dot(embedded_data, T.nlinalg.pinv(W))
