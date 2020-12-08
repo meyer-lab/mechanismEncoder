@@ -10,7 +10,10 @@ venv/bin/activate: requirements.txt
 	touch venv/bin/activate
 
 test: venv
-	. venv/bin/activate && pytest -s -v -x
+	. venv/bin/activate && pytest -s -v -x  --cov=mEncoder --cov-report=xml
+
+coverage.xml: venv
+	. venv/bin/activate && pytest --cov=mEncoder --cov-report=xml
 
 output/manuscript.md: venv manuscript/*.md
 	. venv/bin/activate && manubot process --content-directory=manuscript --output-directory=output --cache-directory=cache --skip-citations --log-level=INFO
