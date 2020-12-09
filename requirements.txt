@@ -19,3 +19,5 @@ seaborn==0.11.0
 nlopt==2.6.2
 fides==0.2.1
 git+https://github.com/ICB-DCM/pyPESTO@develop
+synapseclient==2.2.2
+cptac==0.8.6
