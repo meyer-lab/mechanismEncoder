@@ -32,6 +32,7 @@ class AutoEncoder:
         assert n_hidden < self.n_visible
         assert n_hidden <= n_params
         assert input_data.ndim == 2
+        assert n_hidden < self.n_visible
         self.data = input_data
         self.n_hidden = n_hidden
         self.n_params = n_params
@@ -65,13 +66,25 @@ class AutoEncoder:
                        (self.n_visible, self.n_hidden))
         return tt.dot(self.data, W)
 
-    def inflate_params(self, embedded_data, parameters):
-        """
-        Inflate the input to parameters.
+    def getW(self, pIn):
+        return tt.reshape(pIn[0:self.n_encode_weights], 
+                          (self.n_visible, self.n_hidden))
 
-        :param parameters:
-            parametrization of full autoencoder
-        """
+    def initialW(self):
+        """ Calculate an initial encoder parameter set by PCA. """
+        LD = np.linalg.svd(self.data)[2].T
+        assert LD.shape[0] == self.n_visible
+        return (LD[:, 0:self.n_hidden]).flatten()
+
+    def regularize(self, pIn, l2=0.0, ortho=0.0):
+        """ Calculate regularization of encoder. """
+        W = self.getW(pIn)
+        return l2 * tt.nlinalg.norm(pIn, None) \
+            + ortho * tt.nlinalg.norm(tt.dot(W.T, W) \
+            - tt.eye(self.n_hidden), None)
+
+    def inflate_params(self, embedded_data, pIn):
+        """ Inflate the input to parameters. """
         W_p = tt.reshape(
             parameters[self.n_encode_weights:
                        self.n_encode_weights+self.n_inflate_weights],
