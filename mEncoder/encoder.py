@@ -66,8 +66,8 @@ class AutoEncoder:
                        (self.n_visible, self.n_hidden))
         return tt.dot(self.data, W)
 
-    def getW(self, pIn):
-        return tt.reshape(pIn[0:self.n_encode_weights], 
+    def getW(self, parameters):
+        return tt.reshape(parameters[0:self.n_encode_weights],
                           (self.n_visible, self.n_hidden))
 
     def initialW(self):
@@ -76,14 +76,14 @@ class AutoEncoder:
         assert LD.shape[0] == self.n_visible
         return (LD[:, 0:self.n_hidden]).flatten()
 
-    def regularize(self, pIn, l2=0.0, ortho=0.0):
+    def regularize(self, parameters, l2=0.0, ortho=0.0):
         """ Calculate regularization of encoder. """
-        W = self.getW(pIn)
-        return l2 * tt.nlinalg.norm(pIn, None) \
-            + ortho * tt.nlinalg.norm(tt.dot(W.T, W) \
-            - tt.eye(self.n_hidden), None)
+        W = self.getW(parameters)
+        return l2 * tt.nlinalg.norm(parameters, None) \
+            + ortho * tt.nlinalg.norm(tt.dot(W.T, W) - tt.eye(self.n_hidden),
+                                      None)
 
-    def inflate_params(self, embedded_data, pIn):
+    def inflate_params(self, embedded_data, parameters: tt.vector):
         """ Inflate the input to parameters. """
         W_p = tt.reshape(
             parameters[self.n_encode_weights:
@@ -104,9 +104,12 @@ class AutoEncoder:
         """
         return self.inflate_params(self.encode(parameters), parameters)
     
-    def decode(self, embedded_data, parameters: tt.vector):
+    def decode(self, embedded_data: np.ndarray, parameters: tt.vector):
         """
         Run the input through the analytical decoder.
+
+        :param embedded_data:
+            latent embedding of data
 
         :param parameters:
             parametrization of full autoencoder
