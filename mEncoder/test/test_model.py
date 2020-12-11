@@ -9,7 +9,7 @@ import itertools as itt
 
 import numpy as np
 
-pathway_model = 'FLT3_MAPK_AKT_STAT'
+pathway_model = 'FLT3_MAPK'
 
 
 def test_model_compilation():
@@ -36,7 +36,7 @@ def test_pypesto_objective():
     differences
     """
     datafile = generate_synthetic_data(pathway_model)
-    n_hidden = 10
+    n_hidden = 2
 
     mae = MechanisticAutoEncoder(n_hidden, datafile, pathway_model)
     objective = generate_pypesto_objective(mae)
@@ -57,7 +57,7 @@ def test_pypesto_optimization():
     Test that we can minimize the loss using pypesto
     """
     datafile = generate_synthetic_data(pathway_model)
-    n_hidden = 10
+    n_hidden = 2
 
     mae = MechanisticAutoEncoder(n_hidden, datafile, pathway_model)
     train(mae, maxiter=5)

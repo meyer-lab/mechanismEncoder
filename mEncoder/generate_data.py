@@ -18,7 +18,7 @@ basedir = os.path.dirname(os.path.dirname(__file__))
 
 
 def generate_synthetic_data(pathway_name: str,
-                            latent_dimension: int = 5,
+                            latent_dimension: int = 2,
                             n_samples: int = 20) -> str:
     """
     Generates sample data using the mechanistic model.
