@@ -3,10 +3,9 @@ import os
 from mEncoder.training import trace_path, TRACE_FILE_TEMPLATE
 
 HIDDEN_LAYERS = [2]
-PATHWAYS = ['FLT3_MAPK']
+PATHWAYS = ['FLT3_MAPK_AKT_STAT']
 DATASETS = ['synthetic']
-OPTIMIZERS = ['ipopt', 'fides', 'NLOpt_LD_LBFGS', 'NLOpt_LD_MMA',
-              'NLOpt_LD_SLSQP', 'NLOpt_LD_VAR1', 'NLOpt_LD_VAR2']
+OPTIMIZERS = ['fides']
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
 
@@ -17,6 +16,7 @@ rule process_data:
         script='process_data.py',
         data_code=os.path.join('mEncoder', 'generate_data.py'),
         enc_code=os.path.join('mEncoder', 'encoder.py'),
+        bounds=os.path.join('mEncoder', '__init__.py'),
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
         pathway=os.path.join('pathways', 'pw_FLT3_MAPK_AKT_STAT.py')
     output:
@@ -45,6 +45,62 @@ rule compile_mechanistic_model:
     shell:
         'python3 {input.script} {wildcards.data} {wildcards.model}'
 
+
+rule pretrain_per_sample:
+    input:
+        script='pretrain_per_sample.py',
+        pretraining_code=os.path.join('mEncoder', 'pretraining.py'),
+        model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
+        model=rules.compile_mechanistic_model.output.model,
+    output:
+        pretraining=os.path.join(
+            'pretraining', '{model}__{data}__{model}.txt'
+        )
+    wildcard_constraints:
+        model='[\w_]+',
+        data='[\w]+',
+        sample='[\w_]+0',
+    shell:
+        'python3 {input.script} {wildcards.model} {wildcards.data}'
+
+
+rule pretrain_cross_sample:
+    input:
+        script='pretrain_cross_samples.py',
+        pretraining_code=os.path.join('mEncoder', 'pretraining.py'),
+        model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
+        pretrain_per_sample=rules.pretrain_per_sample.output.pretraining,
+        model=rules.compile_mechanistic_model.output.model,
+    output:
+        pretraining=os.path.join(
+            'pretraining', '{model}__{data}__{model}__input.csv'
+        )
+    wildcard_constraints:
+        model='[\w_]+',
+        data='[\w]+',
+    shell:
+        'python3 {input.script} {wildcards.model} {wildcards.data}'
+
+rule pretrain_encoder_inflate:
+    input:
+        script='pretrain_encoder_inflate.py',
+        pretraining_code=os.path.join('mEncoder', 'pretraining.py'),
+        model_code=os.path.join('mEncoder', 'encoder.py'),
+        pretrain_cross_sample=rules.pretrain_cross_sample.output.pretraining
+    output:
+        pretraining=os.path.join(
+            'pretraining',
+            '{model}__{data}__{model}__{n_hidden}__decoder_inflate.csv'
+        )
+    wildcard_constraints:
+        model='[\w_]+',
+        data='[\w]+',
+        n_hidden='[0-9]+'
+    shell:
+        'python3 {input.script} {wildcards.model} {wildcards.data} '
+        '{wildcards.n_hidden}'
+
+
 rule estimate_parameters:
     input:
         script='run_estimation.py',
@@ -52,6 +108,7 @@ rule estimate_parameters:
         training_code=os.path.join('mEncoder', 'training.py'),
         autoencoder_code=os.path.join('mEncoder', 'autoencoder.py'),
         dataset=rules.process_data.output.datafile,
+        pretrain_encoder=rules.pretrain_encoder_inflate.output.pretraining,
         model=rules.compile_mechanistic_model.output.model,
     output:
         result=os.path.join('results', '{model}', '{data}',

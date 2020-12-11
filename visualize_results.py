@@ -11,9 +11,10 @@ import theano
 from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.training import create_pypesto_problem
 from mEncoder import plot_and_save_fig
+from mEncoder.generate_data import plot_embedding
 
 from pypesto.visualize import waterfall, optimizer_history, \
-    optimizer_convergence
+    optimizer_convergence, parameters
 
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
@@ -54,6 +55,9 @@ plot_and_save_fig(prefix + '__waterfall.pdf')
 optimizer_history(result, scale_y='log10')
 plot_and_save_fig(prefix + '__optimizer_trace.pdf')
 
+parameters(result)
+plot_and_save_fig(prefix + '__parameters.pdf')
+
 optimizer_convergence(result)
 plot_and_save_fig(prefix + '__optimizer_convergence.pdf')
 
@@ -70,9 +74,10 @@ inflate_fun = theano.function(
 )
 
 data_dicts = []
-for ir, r in enumerate(result.optimize_result.list[1:N_STARTS]):
+for ir, r in enumerate(result.optimize_result.list[:N_STARTS]):
     embedding = embedding_fun(r['x'][mae.n_encoder_pars:])
-    axes_embedding[ir].plot(embedding[:, 0], embedding[:, 1], 'k*')
+    middle = int(np.floor(len(embedding) / 2))
+    plot_embedding(embedding, axes_embedding[ir])
 
     rdatas = mae.pypesto_subproblem.objective(
         np.hstack([r['x'][mae.n_encoder_pars:],
@@ -84,12 +89,14 @@ for ir, r in enumerate(result.optimize_result.list[1:N_STARTS]):
 
     for idata, rdata in enumerate(rdatas):
         ym = np.asarray(
-            mae.pypesto_subproblem.objective.edatas[idata].getObservedData()
+            mae.pypesto_subproblem.objective._objectives[0].edatas[
+                idata].getObservedData()
         )
         y = rdata['y']
 
         for iy, name in enumerate(
-            mae.pypesto_subproblem.objective.amici_model.getObservableNames()
+            mae.pypesto_subproblem.objective._objectives[0].
+                    amici_model.getObservableNames()
         ):
             data_dicts.append({
                 'start_index': ir,
