@@ -12,14 +12,17 @@ import matplotlib.pyplot as plt
 from sklearn import decomposition
 
 import amici
+import petab
 import os
+
+from typing import Tuple
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 
 
 def generate_synthetic_data(pathway_name: str,
                             latent_dimension: int = 2,
-                            n_samples: int = 20) -> str:
+                            n_samples: int = 20) -> Tuple[str, str]:
     """
     Generates sample data using the mechanistic model.
 
@@ -103,36 +106,15 @@ def generate_synthetic_data(pathway_name: str,
             samples.append(sample)
             embeddings.append(embedding)
 
-    # create dataframe
+    # create petab
+
+    datadir = os.path.join(basedir, 'data')
+    os.makedirs(datadir, exist_ok=True)
+
     df = pd.concat(samples)
     df[list(model.getObservableIds())].rename(columns={
         o: o.replace('_obs', '') for o in model.getObservableIds()
     }).boxplot(rot=90)
-
-    # format according to reference example
-    formatted_df = pd.melt(df[list(model.getObservableIds()) + ['Sample']],
-                           id_vars=['Sample'])
-    formatted_df.rename(columns={
-        'variable': 'site',
-        'value': 'LogFoldChange',
-    }, inplace=True)
-    formatted_df['site'] = formatted_df['site'].apply(
-        lambda x: x.replace('_obs', '')[1:]
-    )
-    formatted_df['Gene'] = formatted_df['site'].apply(
-        lambda x: x.split('_')[0]
-    )
-    formatted_df['Peptide'] = 'X.XXXXX*XXXXX.X'
-    formatted_df['site'] = formatted_df['site'].apply(
-        lambda x: x.replace('_', '-') +
-        (x.split('_')[1][0].lower() if len(x.split('_')) > 1 else '')
-    )
-
-    # save to csv
-    datadir = os.path.join(basedir, 'data')
-    os.makedirs(datadir, exist_ok=True)
-    datafile = os.path.join(datadir,
-                            f'synthetic__{pathway_name}.csv')
     plot_and_save_fig(os.path.join(datadir,
                                    f'synthetic__{pathway_name}.pdf'))
 
@@ -171,8 +153,37 @@ def generate_synthetic_data(pathway_name: str,
         datadir, f'synthetic__{pathway_name}__data_pca.pdf'
     ))
 
-    formatted_df.to_csv(datafile)
-    return datafile
+    # save to csv
+    measurements = df[['Sample', petab.TIME, ] +
+                      list(model.getObservableIds())]
+    measurements.rename(columns={'Sample': petab.SIMULATION_CONDITION_ID},
+                        inplace=True)
+    measurements = pd.melt(measurements,
+                           id_vars=[petab.TIME, petab.SIMULATION_CONDITION_ID],
+                           value_name=petab.MEASUREMENT,
+                           var_name=petab.OBSERVABLE_ID)
+
+    measurements[petab.SIMULATION_CONDITION_ID] = \
+        measurements[petab.SIMULATION_CONDITION_ID].apply(
+            lambda x: f'sample_{x}'
+        )
+
+    measurement_file = os.path.join(
+        datadir, f'synthetic__{pathway_name}__measurements.tsv'
+    )
+    measurements.to_csv(measurement_file, sep='\t')
+
+    conditions_file = os.path.join(
+        datadir, f'synthetic__{pathway_name}__conditions.tsv'
+    )
+    conditions = pd.DataFrame({
+        petab.CONDITION_ID:
+            measurements[petab.SIMULATION_CONDITION_ID].unique()
+    })
+    conditions.set_index(petab.CONDITION_ID, inplace=True)
+    conditions.to_csv(conditions_file, sep='\t')
+
+    return measurement_file, conditions_file
 
 
 def plot_embedding(embedding: np.ndarray, ax: plt.Axes):
@@ -195,4 +206,3 @@ def plot_pca_inputs(x: np.ndarray, embed_ax: plt.Axes,
         vexpl_ax.plot(np.cumsum(pca.explained_variance_ratio_))
         vexpl_ax.set_xlabel('number of components')
         vexpl_ax.set_ylabel('cumulative explained variance')
-

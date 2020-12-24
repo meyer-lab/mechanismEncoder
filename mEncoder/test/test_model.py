@@ -24,8 +24,8 @@ def test_petab_loading():
     """
     Test that we can load the mechanistic model plus data in PEtab
     """
-    datafile = generate_synthetic_data(pathway_model)
-    petab_importer = load_petab(datafile, 'pw_' + pathway_model, 1.0)
+    datafiles = generate_synthetic_data(pathway_model)
+    petab_importer = load_petab(datafiles, 'pw_' + pathway_model, 1.0)
     petab.lint.lint_problem(petab_importer.petab_problem)
 
 
@@ -35,10 +35,10 @@ def test_pypesto_objective():
     for the full autoencoder model, checks accuracy of gradient via finite
     differences
     """
-    datafile = generate_synthetic_data(pathway_model)
+    datafiles = generate_synthetic_data(pathway_model)
     n_hidden = 2
 
-    mae = MechanisticAutoEncoder(n_hidden, datafile, pathway_model)
+    mae = MechanisticAutoEncoder(n_hidden, datafiles, pathway_model)
     objective = generate_pypesto_objective(mae)
     x = np.random.random((mae.n_encoder_pars + mae.n_kin_params,))
     x[0:mae.n_encoder_pars] /= 10

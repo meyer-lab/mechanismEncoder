@@ -151,3 +151,4 @@ output
 cache
 *.hdf5
 pretraining/*
+*.tsv

@@ -7,6 +7,7 @@ import petab
 
 from pypesto.sample.theano import TheanoLogProbability
 
+from typing import Tuple
 
 from . import MODEL_FEATURE_PREFIX
 from .encoder import AutoEncoder
@@ -21,15 +22,15 @@ MODEL_FILE = os.path.join(os.path.dirname(__file__),
 class MechanisticAutoEncoder(AutoEncoder):
     def __init__(self,
                  n_hidden: int,
-                 datafile: str,
+                 datafiles: Tuple[str, str],
                  pathway_name: str,
                  par_modulation_scale: float = 1 / 2):
         """
         loads the mechanistic model as theano operator with loss as output and
         decoder output as input
 
-        :param datafile:
-            path to data csv
+        :param datafiles:
+            tuple of paths to measurements and conditions files
 
         :param pathway_name:
             name of pathway to use for model
@@ -45,16 +46,15 @@ class MechanisticAutoEncoder(AutoEncoder):
             is also intended to rescale the inputs accordingly.
 
         """
-        self.data_name = os.path.splitext(os.path.basename(datafile))[0]
+        self.data_name = os.path.splitext(os.path.basename(datafiles[0]))[0]
         self.pathway_name = pathway_name
 
         self.par_modulation_scale = par_modulation_scale
-        self.petab_importer = load_petab(datafile, 'pw_' + pathway_name,
+        self.petab_importer = load_petab(datafiles, 'pw_' + pathway_name,
                                          par_modulation_scale)
         self.pypesto_subproblem = self.petab_importer.create_problem()
 
         self.n_samples = len(self.petab_importer.petab_problem.condition_df)
-        self.n_visible = len(self.petab_importer.petab_problem.observable_df)
         self.n_model_inputs = int(sum(name.startswith(MODEL_FEATURE_PREFIX)
                                       for name in
                                       self.pypesto_subproblem.x_names) /
@@ -67,6 +67,11 @@ class MechanisticAutoEncoder(AutoEncoder):
             columns=petab.OBSERVABLE_ID,
             values=petab.MEASUREMENT
         )
+        # remove missing values
+        input_data.dropna(axis='columns', how='any', inplace=True)
+
+        self.n_visible = input_data.shape[1]
+
         # zero center input data, this is equivalent to estimating biases
         # for linear autoencoders
         # https://link.springer.com/article/10.1007/BF00332918

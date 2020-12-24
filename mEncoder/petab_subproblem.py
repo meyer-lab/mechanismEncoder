@@ -1,4 +1,3 @@
-import re
 import os
 import petab
 
@@ -11,16 +10,20 @@ from pypesto.petab.pysb_importer import PetabImporterPysb
 from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, \
     load_pathway, basedir
 
+from typing import Tuple
 
-def load_petab(datafile: str, pathway_name: str, par_input_scale: float):
+
+def load_petab(datafiles: Tuple[str, str],
+               pathway_name: str,
+               par_input_scale: float):
     """
     Imports data from a csv and converts it to the petab format. This
     function is used to connect the mechanistic model to the specified data
     in order to defines the loss function of the autoencoder up to the
     inflated parameters
 
-    :param datafile:
-        path to data csv
+    :param datafiles:
+        tuple of paths to measurements and conditions files
 
     :param pathway_name:
         name of pathway to use for model
@@ -30,47 +33,23 @@ def load_petab(datafile: str, pathway_name: str, par_input_scale: float):
         scale, also influence l2 regularization strength (std of gaussian
         prior is par_input_scale/2)
     """
-    data_df = pd.read_csv(datafile, index_col=[0])
+    measurement_table = pd.read_csv(datafiles[0], index_col=0, sep='\t')
+    condition_table = pd.read_csv(datafiles[1], index_col=0, sep='\t')
 
     model = load_pathway(pathway_name)
 
     features = [par for par in model.parameters
                 if par.name.startswith(MODEL_FEATURE_PREFIX)]
 
-    def condition_id_from_sample(cond_id):
-        return f'sample_{cond_id}'
-
     # CONDITION TABLE
     # this defines the different samples. here we define the mapping from
-    # input paraeters to model parameters
-    conditions = {
-        petab.CONDITION_ID:  [condition_id_from_sample(x)
-                              for x in data_df.Sample.unique()]
-    }
+    # input parameters to model parameters
     for feature in features:
-        conditions[feature.name] = [
-            f'{feature.name}_{s}' for s in conditions[petab.CONDITION_ID]
+        condition_table[feature.name] = [
+            f'{feature.name}_{s}' for s in condition_table.index
         ]
 
-    condition_table = pd.DataFrame(conditions).set_index(petab.CONDITION_ID)
-
     # MEASUREMENT TABLE
-    # this defines the model we will later train the model on
-    measurement_table = data_df[['Sample', 'LogFoldChange', 'site']].copy()
-    measurement_table.rename(columns={
-        'Sample': petab.SIMULATION_CONDITION_ID,
-        'LogFoldChange': petab.MEASUREMENT,
-        'site': petab.OBSERVABLE_ID,
-    }, inplace=True)
-    measurement_table[petab.SIMULATION_CONDITION_ID] = \
-        measurement_table[petab.SIMULATION_CONDITION_ID].apply(
-            condition_id_from_sample
-        )
-    measurement_table[petab.OBSERVABLE_ID] = measurement_table[
-        petab.OBSERVABLE_ID
-    ].apply(lambda x: observable_id_to_model_expr(x.replace('-', '_')))
-    measurement_table[petab.TIME] = np.inf
-
     # filter for whats available in the model:
     measurement_table = measurement_table.loc[
         measurement_table[petab.OBSERVABLE_ID].apply(
@@ -155,21 +134,6 @@ def load_petab(datafile: str, pathway_name: str, par_input_scale: float):
         pysb_model=model,
     ), output_folder=os.path.join(
         basedir, 'amici_models',
-        f'{model.name}_{os.path.splitext(os.path.basename(datafile))[0]}_petab'
+        f'{model.name}_'
+        f'{os.path.splitext(os.path.basename(datafiles[0]))[0]}_petab'
     ))
-
-
-def observable_id_to_model_expr(obs_id: str) -> str:
-    """
-    Maps site definitions from data to model observables
-
-    :param obs_id:
-        identifier of the phosphosite in the data table
-
-    :return:
-        the name of the corresponding observable in the model
-    """
-    phospho_site_pattern = r'_[S|Y|T][0-9]+[s|y|t]$'
-    return ('p' if re.search(phospho_site_pattern, obs_id) else 't') + \
-           (obs_id[:-1] if re.search(phospho_site_pattern, obs_id)
-            else obs_id) + '_obs'
