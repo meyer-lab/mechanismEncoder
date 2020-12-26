@@ -2,6 +2,7 @@ import os
 
 import theano
 import theano.tensor as tt
+import numpy as np
 
 import petab
 
@@ -11,7 +12,7 @@ from typing import Tuple
 
 from . import MODEL_FEATURE_PREFIX
 from .encoder import AutoEncoder
-from .petab_subproblem import load_petab
+from .petab_subproblem import load_petab, filter_observables
 
 TheanoFunction = theano.compile.function_module.Function
 
@@ -52,25 +53,41 @@ class MechanisticAutoEncoder(AutoEncoder):
         self.par_modulation_scale = par_modulation_scale
         self.petab_importer = load_petab(datafiles, 'pw_' + pathway_name,
                                          par_modulation_scale)
+        full_measurements = self.petab_importer.petab_problem.measurement_df
+        filter_observables(self.petab_importer.petab_problem)
         self.pypesto_subproblem = self.petab_importer.create_problem()
 
-        self.n_samples = len(self.petab_importer.petab_problem.condition_df)
+        # extract sample names, ordering of those is important since samples
+        # must match when reshaping the inflated matrix
+        samples = []
+        for name in self.pypesto_subproblem.x_names:
+            if not name.startswith(MODEL_FEATURE_PREFIX):
+                continue
+
+            sample = name.split('__')[-1]
+            if sample not in samples:
+                samples.append(sample)
+
+        input_data = full_measurements.loc[full_measurements.apply(
+            lambda x: x[petab.SIMULATION_CONDITION_ID] ==
+            x[petab.PREEQUILIBRATION_CONDITION_ID], axis=1
+        ), :].pivot_table(
+            index=petab.SIMULATION_CONDITION_ID,
+            columns=petab.OBSERVABLE_ID,
+            values=petab.MEASUREMENT,
+            aggfunc=np.nanmean
+        ).loc[samples, :]
+        # remove missing values
+        input_data.dropna(axis='columns', how='any', inplace=True)
+
+        self.n_visible = input_data.shape[1]
+        self.n_samples = input_data.shape[0]
         self.n_model_inputs = int(sum(name.startswith(MODEL_FEATURE_PREFIX)
                                       for name in
                                       self.pypesto_subproblem.x_names) /
                                   self.n_samples)
         self.n_kin_params = \
             self.pypesto_subproblem.dim - self.n_model_inputs * self.n_samples
-
-        input_data = self.petab_importer.petab_problem.measurement_df.pivot(
-            index=petab.SIMULATION_CONDITION_ID,
-            columns=petab.OBSERVABLE_ID,
-            values=petab.MEASUREMENT
-        )
-        # remove missing values
-        input_data.dropna(axis='columns', how='any', inplace=True)
-
-        self.n_visible = input_data.shape[1]
 
         # zero center input data, this is equivalent to estimating biases
         # for linear autoencoders

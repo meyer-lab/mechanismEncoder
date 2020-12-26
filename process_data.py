@@ -81,6 +81,25 @@ else:
                 petab.PREEQUILIBRATION_CONDITION_ID
             ].apply(lambda x: isinstance(x, str))]
 
+        # make identifiers petab compatible
+        measurement_table[petab.PREEQUILIBRATION_CONDITION_ID] = \
+            measurement_table[petab.PREEQUILIBRATION_CONDITION_ID].apply(
+                lambda x: x.replace('-', '_').replace(' ', '_')
+            )
+
+        # rename MOLM
+        measurement_table.loc[
+            measurement_table[petab.PREEQUILIBRATION_CONDITION_ID] == 'MOLM',
+            petab.PREEQUILIBRATION_CONDITION_ID
+        ] = 'MOLM_13'
+
+        # filter Late_MOLM_13 ~113k entries
+        measurement_table = measurement_table.loc[
+            measurement_table[petab.PREEQUILIBRATION_CONDITION_ID]
+            != 'Late_MOLM_13', :
+        ]
+
+        # convert time from string to float
         measurement_table[petab.TIME] = measurement_table[petab.TIME].apply(
             lambda x: convert_time_to_minutes(x)
         )
@@ -103,6 +122,7 @@ else:
             ), :
         ]
 
+        # match observables with model expressions
         measurement_table[petab.OBSERVABLE_ID] = \
             measurement_table[petab.OBSERVABLE_ID].apply(
             lambda x: observable_id_to_model_expr(x)
@@ -117,9 +137,7 @@ else:
         measurement_table['treatment'] = measurement_table['treatment'].apply(
             lambda x: x.replace(
                 'Trametinib', 'trametinib'
-            ).replace(
-                '+', '__'
-            )
+            ).replace('+', '__').replace('-', '_').replace(' ', '_')
         )
 
         measurement_table[petab.SIMULATION_CONDITION_ID] = \

@@ -44,24 +44,34 @@ def load_petab(datafiles: Tuple[str, str],
     # CONDITION TABLE
     # this defines the different samples. here we define the mapping from
     # input parameters to model parameters
+
+    preeq_conds = dict()
+    for cond in condition_table.index:
+        candidates = measurement_table[measurement_table[
+            petab.SIMULATION_CONDITION_ID] == cond
+        ][petab.PREEQUILIBRATION_CONDITION_ID].unique()
+        if len(candidates) > 1:
+            raise RuntimeError('Found multiple different preequilibration '
+                               f'conditions {candidates} for condition '
+                               f'{cond}, which is not supported.')
+        preeq_conds[cond] = candidates[0]
+
     for feature in features:
         condition_table[feature.name] = [
-            f'{feature.name}_{s}' for s in condition_table.index
+            f'{feature.name}__{preeq_conds[s]}' for s in condition_table.index
         ]
 
     # MEASUREMENT TABLE
     # filter for whats available in the model:
-    measurement_table = measurement_table.loc[
+    observable_ids = measurement_table.loc[
         measurement_table[petab.OBSERVABLE_ID].apply(
             lambda x: x in [expr.name for expr in model.expressions]
-        ), :
-    ]
+        ), petab.OBSERVABLE_ID
+    ].unique()
 
     # OBSERVABLE TABLE
     # this defines how model simulation are linked to experimental data,
     # currently this uses quantities that were already defined in the model
-    observable_ids = measurement_table[petab.OBSERVABLE_ID].unique()
-
     observable_table = pd.DataFrame({
         petab.OBSERVABLE_ID: observable_ids,
         petab.OBSERVABLE_NAME: observable_ids,
@@ -95,10 +105,12 @@ def load_petab(datafiles: Tuple[str, str],
         petab.NOMINAL_VALUE: par.value,
     } for par in params]
 
-    # add additional input parameters for every sample
-    for cond in condition_table.index.values:
+    # add additional input parameters for every base condition
+    for cond in measurement_table[
+        petab.PREEQUILIBRATION_CONDITION_ID
+    ].unique():
         param_defs.extend([{
-            petab.PARAMETER_ID: f'{par.name}_{cond}',
+            petab.PARAMETER_ID: f'{par.name}__{cond}',
             petab.LOWER_BOUND: 10**-par_input_scale,
             petab.UPPER_BOUND: 10**par_input_scale,
             petab.PARAMETER_SCALE: 'log10',
@@ -115,12 +127,12 @@ def load_petab(datafiles: Tuple[str, str],
 
     # add l2 regularization to input parameters
     parameter_table[petab.OBJECTIVE_PRIOR_TYPE] = [
-        petab.PARAMETER_SCALE_NORMAL if name.startswith('INPUT')
+        petab.PARAMETER_SCALE_NORMAL if name.startswith(MODEL_FEATURE_PREFIX)
         else petab.PARAMETER_SCALE_UNIFORM
         for name in parameter_table.index
     ]
     parameter_table[petab.OBJECTIVE_PRIOR_PARAMETERS] = [
-        f'0.0;{par_input_scale * 2}' if name.startswith('INPUT')
+        f'0.0;{par_input_scale * 2}' if name.startswith(MODEL_FEATURE_PREFIX)
         else f'{parameter_table.loc[name, petab.LOWER_BOUND]};'
              f'{parameter_table.loc[name, petab.UPPER_BOUND]}'
         for name in parameter_table.index
@@ -137,3 +149,11 @@ def load_petab(datafiles: Tuple[str, str],
         f'{model.name}_'
         f'{os.path.splitext(os.path.basename(datafiles[0]))[0]}_petab'
     ))
+
+
+def filter_observables(petab_problem: petab.Problem):
+    petab_problem.measurement_df = petab_problem.measurement_df.loc[
+        petab_problem.measurement_df[petab.OBSERVABLE_ID].apply(
+            lambda x: x in petab_problem.observable_df.index
+        ), :
+    ]
