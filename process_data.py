@@ -39,8 +39,8 @@ def convert_time_to_minutes(time_str):
         return float(time_str[:-3])*60
 
 
-DATA = sys.argv[1]
-MODEL = sys.argv[2]
+MODEL = sys.argv[1]
+DATA = sys.argv[2]
 
 datadir = os.path.join(basedir, 'data')
 os.makedirs(datadir, exist_ok=True)
@@ -123,10 +123,26 @@ else:
         ]
 
         # match observables with model expressions
-        measurement_table[petab.OBSERVABLE_ID] = \
+        observable_ids = measurement_table.loc[
             measurement_table[petab.OBSERVABLE_ID].apply(
-            lambda x: observable_id_to_model_expr(x)
-        )
+                lambda x: observable_id_to_model_expr(x) in [
+                    expr.name for expr in model.expressions
+                ]
+            ), petab.OBSERVABLE_ID
+        ].unique()
+
+        # OBSERVABLE TABLE
+        # this defines how model simulation are linked to experimental data,
+        # currently this uses quantities that were already defined in the model
+        observable_table = pd.DataFrame({
+            petab.OBSERVABLE_ID: observable_ids,
+            petab.OBSERVABLE_NAME: observable_ids,
+            petab.OBSERVABLE_FORMULA: [
+                observable_id_to_model_expr(obs) for obs in observable_ids
+            ],
+        })
+        observable_table[petab.NOISE_DISTRIBUTION] = 'normal'
+        observable_table[petab.NOISE_FORMULA] = '1.0'
 
         measurement_table.loc[
             (measurement_table['treatment'] == 'no treatment') |
@@ -174,9 +190,14 @@ else:
         )
     measurement_table.to_csv(measurement_file, sep='\t')
 
-    conditions_file = os.path.join(
+    condition_file = os.path.join(
         datadir, f'{DATA}__{MODEL}__conditions.tsv'
     )
-
     condition_table.set_index(petab.CONDITION_ID, inplace=True)
-    condition_table.to_csv(conditions_file, sep='\t')
+    condition_table.to_csv(condition_file, sep='\t')
+
+    observable_file = os.path.join(
+        datadir, f'{DATA}__{MODEL}__observables.tsv'
+    )
+    observable_table.set_index(petab.OBSERVABLE_ID, inplace=True)
+    observable_table.to_csv(observable_file, sep='\t')

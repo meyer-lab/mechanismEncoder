@@ -27,9 +27,13 @@ MODEL = sys.argv[1]
 DATA = sys.argv[2]
 N_HIDDEN = 1
 
-mae = MechanisticAutoEncoder(N_HIDDEN,
-                             os.path.join('data', f'{DATA}__{MODEL}.csv'),
-                             MODEL)
+mae = MechanisticAutoEncoder(
+    N_HIDDEN, (
+        os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
+        os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
+        os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
+    ), MODEL
+)
 
 problem = generate_cross_sample_pretraining_problem(mae)
 pretraindir = 'pretraining'

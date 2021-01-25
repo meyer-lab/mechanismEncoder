@@ -13,7 +13,7 @@ from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, \
 from typing import Tuple
 
 
-def load_petab(datafiles: Tuple[str, str],
+def load_petab(datafiles: Tuple[str, str, str],
                pathway_name: str,
                par_input_scale: float):
     """
@@ -23,7 +23,7 @@ def load_petab(datafiles: Tuple[str, str],
     inflated parameters
 
     :param datafiles:
-        tuple of paths to measurements and conditions files
+        tuple of paths to measurements, conditions and observables files
 
     :param pathway_name:
         name of pathway to use for model
@@ -35,6 +35,7 @@ def load_petab(datafiles: Tuple[str, str],
     """
     measurement_table = pd.read_csv(datafiles[0], index_col=0, sep='\t')
     condition_table = pd.read_csv(datafiles[1], index_col=0, sep='\t')
+    observable_table = pd.read_csv(datafiles[2], index_col=0, sep='\t')
 
     model = load_pathway(pathway_name)
 
@@ -60,25 +61,6 @@ def load_petab(datafiles: Tuple[str, str],
         condition_table[feature.name] = [
             f'{feature.name}__{preeq_conds[s]}' for s in condition_table.index
         ]
-
-    # MEASUREMENT TABLE
-    # filter for whats available in the model:
-    observable_ids = measurement_table.loc[
-        measurement_table[petab.OBSERVABLE_ID].apply(
-            lambda x: x in [expr.name for expr in model.expressions]
-        ), petab.OBSERVABLE_ID
-    ].unique()
-
-    # OBSERVABLE TABLE
-    # this defines how model simulation are linked to experimental data,
-    # currently this uses quantities that were already defined in the model
-    observable_table = pd.DataFrame({
-        petab.OBSERVABLE_ID: observable_ids,
-        petab.OBSERVABLE_NAME: observable_ids,
-        petab.OBSERVABLE_FORMULA: ['0.0' for _ in observable_ids],
-    }).set_index(petab.OBSERVABLE_ID)
-    observable_table[petab.NOISE_DISTRIBUTION] = 'normal'
-    observable_table[petab.NOISE_FORMULA] = '1.0'
 
     # PARAMETER TABLE
     # this defines the full set of parameters including boundaries, nominal

@@ -26,7 +26,7 @@ rule process_data:
         model='[\w_]+',
         data='[\w]+',
     shell:
-        'python3 {input.script} {wildcards.data} {wildcards.model}'
+        'python3 {input.script} {wildcards.model} {wildcards.data}'
 
 rule compile_mechanistic_model:
     input:

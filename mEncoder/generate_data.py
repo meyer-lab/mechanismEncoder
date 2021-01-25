@@ -22,7 +22,7 @@ basedir = os.path.dirname(os.path.dirname(__file__))
 
 def generate_synthetic_data(pathway_name: str,
                             latent_dimension: int = 2,
-                            n_samples: int = 20) -> Tuple[str, str]:
+                            n_samples: int = 20) -> Tuple[str, str, str]:
     """
     Generates sample data using the mechanistic model.
 
@@ -45,7 +45,7 @@ def generate_synthetic_data(pathway_name: str,
     model.setParameterScale(amici.parameterScalingFromIntVector([
         amici.ParameterScaling.none
         if par_id.startswith(MODEL_FEATURE_PREFIX)
-           or parameter_boundaries_scales[par_id.split('_')[-1]][2] == 'lin'
+        or parameter_boundaries_scales[par_id.split('_')[-1]][2] == 'lin'
         else amici.ParameterScaling.log10
         for par_id in model.getParameterIds()
     ]))
@@ -106,8 +106,7 @@ def generate_synthetic_data(pathway_name: str,
             samples.append(sample)
             embeddings.append(embedding)
 
-    # create petab
-
+    # prepare petab
     datadir = os.path.join(basedir, 'data')
     os.makedirs(datadir, exist_ok=True)
 
@@ -153,27 +152,34 @@ def generate_synthetic_data(pathway_name: str,
         datadir, f'synthetic__{pathway_name}__data_pca.pdf'
     ))
 
-    # save to csv
+    # create petab & save to csv
+    # MEASUREMENTS
     measurements = df[['Sample', petab.TIME, ] +
                       list(model.getObservableIds())]
-    measurements.rename(columns={'Sample': petab.SIMULATION_CONDITION_ID},
-                        inplace=True)
     measurements = pd.melt(measurements,
-                           id_vars=[petab.TIME, petab.SIMULATION_CONDITION_ID],
+                           id_vars=[petab.TIME, 'Sample'],
                            value_name=petab.MEASUREMENT,
                            var_name=petab.OBSERVABLE_ID)
 
+    measurements[petab.TIME] = 0.0
     measurements[petab.SIMULATION_CONDITION_ID] = \
-        measurements[petab.SIMULATION_CONDITION_ID].apply(
+        measurements['Sample'].apply(
             lambda x: f'sample_{x}'
         )
+    measurements[petab.PREEQUILIBRATION_CONDITION_ID] = \
+        measurements['Sample'].apply(
+            lambda x: f'sample_{x}'
+        )
+
+    measurements.drop(columns=['Sample'], inplace=True)
 
     measurement_file = os.path.join(
         datadir, f'synthetic__{pathway_name}__measurements.tsv'
     )
     measurements.to_csv(measurement_file, sep='\t')
 
-    conditions_file = os.path.join(
+    # CONDITIONS
+    condition_file = os.path.join(
         datadir, f'synthetic__{pathway_name}__conditions.tsv'
     )
     conditions = pd.DataFrame({
@@ -181,9 +187,24 @@ def generate_synthetic_data(pathway_name: str,
             measurements[petab.SIMULATION_CONDITION_ID].unique()
     })
     conditions.set_index(petab.CONDITION_ID, inplace=True)
-    conditions.to_csv(conditions_file, sep='\t')
+    conditions.to_csv(condition_file, sep='\t')
 
-    return measurement_file, conditions_file
+    # OBSERVABLES
+    observables = pd.DataFrame({
+        petab.OBSERVABLE_ID: model.getObservableIds(),
+        petab.OBSERVABLE_NAME: model.getObservableNames(),
+    })
+    observables[petab.OBSERVABLE_FORMULA] = '0.0'
+    observables[petab.NOISE_DISTRIBUTION] = 'normal'
+    observables[petab.NOISE_FORMULA] = '1.0'
+
+    observable_file = os.path.join(
+        datadir, f'synthetic__{pathway_name}__observables.tsv'
+    )
+    observables.set_index(petab.OBSERVABLE_ID, inplace=True)
+    observables.to_csv(observable_file, sep='\t')
+
+    return measurement_file, condition_file, observable_file
 
 
 def plot_embedding(embedding: np.ndarray, ax: plt.Axes):

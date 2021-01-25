@@ -23,7 +23,7 @@ MODEL_FILE = os.path.join(os.path.dirname(__file__),
 class MechanisticAutoEncoder(AutoEncoder):
     def __init__(self,
                  n_hidden: int,
-                 datafiles: Tuple[str, str],
+                 datafiles: Tuple[str, str, str],
                  pathway_name: str,
                  par_modulation_scale: float = 1 / 2):
         """
@@ -31,7 +31,7 @@ class MechanisticAutoEncoder(AutoEncoder):
         decoder output as input
 
         :param datafiles:
-            tuple of paths to measurements and conditions files
+            tuple of paths to measurements, conditions and observables files
 
         :param pathway_name:
             name of pathway to use for model

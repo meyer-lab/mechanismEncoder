@@ -13,10 +13,11 @@ N_HIDDEN = int(sys.argv[4])
 JOB = int(sys.argv[5])
 
 mae = MechanisticAutoEncoder(
-    N_HIDDEN,
-    (os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
-     os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv')),
-    MODEL
+    N_HIDDEN, (
+        os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
+        os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
+        os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
+    ), MODEL
 )
 result = train(mae, maxiter=int(1000), n_starts=1, seed=JOB,
                optimizer=OPTIMIZER, ftol=1e-6)
