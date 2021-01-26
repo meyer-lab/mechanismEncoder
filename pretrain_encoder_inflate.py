@@ -24,13 +24,11 @@ MODEL = sys.argv[1]
 DATA = sys.argv[2]
 N_HIDDEN = int(sys.argv[3])
 
-mae = MechanisticAutoEncoder(
-    N_HIDDEN, (
-        os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
-        os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
-        os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
-    ), MODEL
-)
+mae = MechanisticAutoEncoder(N_HIDDEN, (
+    os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
+    os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
+    os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
+), MODEL)
 
 
 pretraindir = 'pretraining'

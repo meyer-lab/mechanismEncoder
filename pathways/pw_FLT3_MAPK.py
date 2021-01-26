@@ -11,7 +11,6 @@ model = Model('FLT3_MAPK')
 for rtkf_name in ['FL']:
     add_monomer_synth_deg(rtkf_name)
 
-
 rtk_cascade = [
     ('FLT3',  {'Y843': ['FL']}),
 ]

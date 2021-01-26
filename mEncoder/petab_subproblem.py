@@ -66,7 +66,7 @@ def load_petab(datafiles: Tuple[str, str, str],
     # this defines the full set of parameters including boundaries, nominal
     # values, scale, priors and whether they will be estimated or not.
     params = [par for par in model.parameters
-              if not par.name.startswith(MODEL_FEATURE_PREFIX)]
+              if par.name not in condition_table.columns]
 
     transforms = {
         'lin': lambda x: x,
@@ -120,6 +120,10 @@ def load_petab(datafiles: Tuple[str, str, str],
         for name in parameter_table.index
     ]
 
+    data_name = '__'.join(os.path.splitext(
+        os.path.basename(datafiles[0])
+    )[0].split('__')[:-1])
+
     return PetabImporterPysb(PysbPetabProblem(
         measurement_df=measurement_table,
         condition_df=condition_table,
@@ -128,8 +132,7 @@ def load_petab(datafiles: Tuple[str, str, str],
         pysb_model=model,
     ), output_folder=os.path.join(
         basedir, 'amici_models',
-        f'{model.name}_'
-        f'{os.path.splitext(os.path.basename(datafiles[0]))[0]}_petab'
+        f'{model.name}_{data_name}_petab'
     ))
 
 

@@ -2,12 +2,15 @@ import sys
 import os
 import re
 import petab
+import synapseclient
 
 import pandas as pd
 import numpy as np
 
 from mEncoder.generate_data import generate_synthetic_data
 from mEncoder import load_pathway
+
+from phosphoData.phosphoAML_PTRCdata import getCellLinePilotData
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 
@@ -54,9 +57,11 @@ else:
 
     model = load_pathway('pw_' + MODEL)
 
-    if DATA == 'cptac':
-        df = pd.read_csv(os.path.join('phosphoData',
-                                      'combinedPhosphoData.csv'))
+    if DATA in ['aml_ptrc']:
+        syn = synapseclient.Synapse()
+        syn.login()
+        if DATA == 'aml_ptrc':
+            df = getCellLinePilotData(syn)
         # MEASUREMENT TABLE
         # this defines the model we will later train the model on
         measurement_table = df[['logRatio', 'site', 'Gene',
@@ -135,12 +140,16 @@ else:
         # this defines how model simulation are linked to experimental data,
         # currently this uses quantities that were already defined in the model
         observable_table = pd.DataFrame({
-            petab.OBSERVABLE_ID: observable_ids,
-            petab.OBSERVABLE_NAME: observable_ids,
-            petab.OBSERVABLE_FORMULA: [
+            petab.OBSERVABLE_ID: [
                 observable_id_to_model_expr(obs) for obs in observable_ids
             ],
+            petab.OBSERVABLE_NAME: observable_ids,
         })
+        measurement_table[petab.OBSERVABLE_ID] = \
+            measurement_table[petab.OBSERVABLE_ID].apply(
+                lambda obs: observable_id_to_model_expr(obs)
+            )
+        observable_table[petab.OBSERVABLE_FORMULA] = '0.0'
         observable_table[petab.NOISE_DISTRIBUTION] = 'normal'
         observable_table[petab.NOISE_FORMULA] = '1.0'
 
@@ -180,10 +189,23 @@ else:
         ])
         for pert in perturbations:
             if model.components.get(pert) is None:
-                continue  # perturbation not available
-            condition_table[pert] = condition_table[petab.CONDITION_ID].apply(
-                lambda x: float(int(pert in x.split('__')))
-            )
+                # remove condition
+                condition_table = condition_table[
+                    condition_table[petab.CONDITION_ID].apply(
+                        lambda x: pert not in x.split('__')
+                    )
+                ]
+                continue
+            condition_table[f'{pert}_0'] = \
+                condition_table[petab.CONDITION_ID].apply(
+                    lambda x: float(int(pert in x.split('__')))
+                )
+
+        # filter measurements for removed conditions
+        measurement_table = measurement_table[measurement_table[
+            petab.SIMULATION_CONDITION_ID].apply(
+            lambda x: x in condition_table[petab.CONDITION_ID].unique()
+        )]
 
     measurement_file = os.path.join(
             datadir, f'{DATA}__{MODEL}__measurements.tsv'

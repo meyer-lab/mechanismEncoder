@@ -49,19 +49,25 @@ def generate_per_sample_pretraining_problems(
     # has the observables added and this might lead to issues.
     clean_model = load_pathway('pw_' + ae.pathway_name)
 
+    samples = [
+        c for c in pp.condition_df.index
+        if c in pp.measurement_df[petab.PREEQUILIBRATION_CONDITION_ID].unique()
+    ]
+
     return {
-        cond: PetabImporterPysb(PysbPetabProblem(
+        sample: PetabImporterPysb(PysbPetabProblem(
             parameter_df=pp.parameter_df[[
                 not name.startswith(MODEL_FEATURE_PREFIX)
-                or name.endswith(cond)
+                or name.endswith(sample)
                 for name in pp.parameter_df.index
             ]],
             observable_df=pp.observable_df,
             measurement_df=pp.measurement_df[
-                pp.measurement_df[petab.SIMULATION_CONDITION_ID] == cond
-                ],
+                pp.measurement_df[petab.PREEQUILIBRATION_CONDITION_ID]
+                == sample
+            ],
             condition_df=pp.condition_df[[
-                name == cond
+                name.startswith(sample)
                 for name in pp.condition_df.index
             ]],
             pysb_model=Model(base=clean_model, name=pp.pysb_model.name),
@@ -70,7 +76,7 @@ def generate_per_sample_pretraining_problems(
             f'{pp.pysb_model.name}_'
             f'{ae.data_name}_petab'
         )).create_problem()
-        for cond in pp.condition_df.index
+        for sample in samples
     }
 
 
@@ -190,9 +196,10 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
             fides.Options.SUBSPACE_DIM: subspace,
             fides.Options.REFINE_STEPBACK: False,
             fides.Options.STEPBACK_STRAT: fides.StepBackStrategy.SINGLE_REFLECT
-
         }
     )
+
+    problem.objective._objectives[0].amici_solver.setMaxSteps(int(1e5))
 
     optimize_options = OptimizeOptions(
         startpoint_resample=True, allow_failed_starts=True,

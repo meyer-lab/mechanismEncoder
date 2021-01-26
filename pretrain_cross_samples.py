@@ -27,13 +27,11 @@ MODEL = sys.argv[1]
 DATA = sys.argv[2]
 N_HIDDEN = 1
 
-mae = MechanisticAutoEncoder(
-    N_HIDDEN, (
-        os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
-        os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
-        os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
-    ), MODEL
-)
+mae = MechanisticAutoEncoder(N_HIDDEN, (
+    os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
+    os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
+    os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
+), MODEL)
 
 problem = generate_cross_sample_pretraining_problem(mae)
 pretraindir = 'pretraining'
@@ -92,7 +90,7 @@ def startpoints(**kwargs):
                                            problem.x_free_indices)
         ):
             if xname.startswith(MODEL_FEATURE_PREFIX):
-                match = re.match(fr'{MODEL_FEATURE_PREFIX}([\w_]+)_'
+                match = re.match(fr'{MODEL_FEATURE_PREFIX}([\w_]+)__'
                                  r'(sample_[0-9]+)', xname)
                 par = match.group(1)
                 sample = match.group(2)

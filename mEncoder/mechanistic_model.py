@@ -1,8 +1,10 @@
 import sympy as sp
 import re
 
-from typing import Iterable, Optional, Dict, Tuple, Union
-from pysb import Monomer, Expression, Parameter, Rule, Model, Observable
+from typing import Iterable, Optional, Dict, Tuple, List
+from pysb import (
+    Monomer, Expression, Parameter, Rule, Model, Observable, Initial
+)
 
 
 def generate_pathway(model: Model,
@@ -59,15 +61,16 @@ def add_monomer_synth_deg(m_name: str,
     if asites is None:
         asites = []
 
-    sites = psites + nsites + asites
+    sites = psites + nsites + asites + ['inh']
 
     m = Monomer(
-        m_name, sites=[psite for psite in sites],
+        m_name, sites=sites,
         site_states={
             site: ['u', 'p'] if site in psites
             else ['gdp', 'gtp'] if site in nsites
             else ['inactive', 'active']
             for site in sites
+            if site in psites + nsites + asites
         }
     )
 
@@ -81,6 +84,7 @@ def add_monomer_synth_deg(m_name: str,
         **{site:
            'u' if site in psites
            else 'gdp' if site in nsites
+           else None if site is 'inh'
            else 'inactive'
            for site in sites}
     ), syn_rate)
@@ -143,6 +147,9 @@ def add_or_get_modulator_obs(model: Model, modulator: str):
             }
         except IndexError:
             raise ValueError(f'Malformed site condition {site_conditions}')
+
+        # uninhibited
+        site_conditions['inh'] = None
 
         modulator_obs = Observable(mod_name,
                                    model.components[mono_name](
@@ -252,7 +259,7 @@ def get_autoencoder_modulator(par: Parameter):
     return Parameter(f'INPUT_{par.name}', 0.0)
 
 
-def add_abundance_observables(model):
+def add_abundance_observables(model: Model):
     """
     Adds an observable that tracks the normalized absolute abundance of a
     protein
@@ -264,7 +271,7 @@ def add_abundance_observables(model):
         Expression(f't{monomer.name}_obs', sp.log(scale * (obs + offset)))
 
 
-def add_phospho_observables(model):
+def add_phospho_observables(model: Model):
     """
     Adds an observable that tracks the normalized absolute abundance of a
     phosphorylated site
@@ -278,6 +285,26 @@ def add_phospho_observables(model):
                 offset = Parameter(f'p{monomer.name}_{site}_offset', 1.0)
                 Expression(f'p{monomer.name}_{site}_obs',
                            sp.log(scale * (obs + offset)))
+
+
+def add_inhibitor(model: Model, name: str, targets: List[str]):
+    inh = Monomer(name, sites=['target'])
+    Initial(inh(target=None), Parameter(f'{name}_0', 0.0), fixed=True)
+    for target in targets:
+        koff = Parameter(f'{name}_{target}_koff', 0.1)
+        kd = Parameter(f'{name}_{target}_kd', 1.0)
+        kon = Expression(f'{name}_{target}_kon', kd*koff)
+        Rule(
+            f'{name}_inhibits_{target}',
+            model.monomers[target](inh=None) + inh(target=None)
+            |
+            model.monomers[target](inh=1) % inh(target=1),
+            kon, koff
+        )
+
+
+
+
 
 
 

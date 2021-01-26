@@ -47,7 +47,11 @@ class MechanisticAutoEncoder(AutoEncoder):
             is also intended to rescale the inputs accordingly.
 
         """
-        self.data_name = os.path.splitext(os.path.basename(datafiles[0]))[0]
+        self.data_name = '__'.join(
+            os.path.splitext(
+                os.path.basename(datafiles[0])
+            )[0].split('__')[:-1]
+        )
         self.pathway_name = pathway_name
 
         self.par_modulation_scale = par_modulation_scale

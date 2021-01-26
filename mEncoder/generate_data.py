@@ -44,7 +44,7 @@ def generate_synthetic_data(pathway_name: str,
     # setup model parameter scales
     model.setParameterScale(amici.parameterScalingFromIntVector([
         amici.ParameterScaling.none
-        if par_id.startswith(MODEL_FEATURE_PREFIX)
+        if par_id.startswith(MODEL_FEATURE_PREFIX) or par_id.endswith('_0')
         or parameter_boundaries_scales[par_id.split('_')[-1]][2] == 'lin'
         else amici.ParameterScaling.log10
         for par_id in model.getParameterIds()
@@ -55,17 +55,22 @@ def generate_synthetic_data(pathway_name: str,
     # set numpy random seed to ensure reproducibility
     np.random.seed(0)
 
+    sample_pars = [par_id for par_id in model.getParameterIds()
+                   if par_id.startswith(MODEL_FEATURE_PREFIX)]
+
     # generate static parameters that are consistent across samples
     static_pars = dict()
     for par_id in model.getParameterIds():
-        if par_id.startswith(MODEL_FEATURE_PREFIX):
+        if par_id in sample_pars:
+            continue
+        if par_id.endswith('_0'):
+            static_pars[par_id] = 0.0
             continue
         lb, ub, _ = parameter_boundaries_scales[par_id.split('_')[-1]]
         static_pars[par_id] = np.random.random() * (ub - lb) + lb
 
     # identify which parameters may vary across samples
-    sample_pars = [par_id for par_id in model.getParameterIds()
-                   if par_id.startswith(MODEL_FEATURE_PREFIX)]
+
 
     encoder = AutoEncoder(np.zeros((1, model.ny)),
                           n_hidden=latent_dimension, n_params=len(sample_pars))
@@ -186,6 +191,9 @@ def generate_synthetic_data(pathway_name: str,
         petab.CONDITION_ID:
             measurements[petab.SIMULATION_CONDITION_ID].unique()
     })
+    for name, value in static_pars.items():
+        if name.endswith('_0'):
+            conditions[name] = value
     conditions.set_index(petab.CONDITION_ID, inplace=True)
     conditions.to_csv(condition_file, sep='\t')
 

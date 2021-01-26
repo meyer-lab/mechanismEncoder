@@ -65,6 +65,8 @@ parameter_boundaries_scales = {
     'scale': (-2, 2, 'log10'),       # [1/[c]]
     'offset': (-2, 2, 'log10'),     # [[c]]
     'weight': (-1, 1, 'lin'),       # [-]
+    'koff': (-6, -2, 'log10'),      # [1/[t]]
+    'kd':   (-3, 3, 'log10'),       # [[c]]
 }
 
 MODEL_FEATURE_PREFIX = 'INPUT_'
