@@ -5,6 +5,7 @@ import theano.tensor as tt
 import numpy as np
 
 import petab
+import amici
 
 from pypesto.sample.theano import TheanoLogProbability
 
@@ -112,6 +113,8 @@ class MechanisticAutoEncoder(AutoEncoder):
             .setAbsoluteToleranceSteadyState(1e-10)
         self.pypesto_subproblem.objective._objectives[0].amici_solver\
             .setRelativeToleranceSteadyState(1e-8)
+        self.pypesto_subproblem.objective._objectives[0].amici_solver\
+            .setSensitivityMethod(amici.SensitivityMethod.adjoint)
 
         # define model theano op
         self.loss = TheanoLogProbability(self.pypesto_subproblem)
