@@ -3,9 +3,13 @@ import os
 import re
 import petab
 import synapseclient
+import pysb
 
 import pandas as pd
 import numpy as np
+
+import urllib.parse
+import urllib.request
 
 from mEncoder.generate_data import generate_synthetic_data
 from mEncoder import load_pathway
@@ -15,22 +19,88 @@ from phosphoData.phosphoAML_PTRCdata import getCellLinePilotData
 basedir = os.path.dirname(os.path.dirname(__file__))
 
 
-def observable_id_to_model_expr(obs_id: str) -> str:
+def observable_id_to_model_expr(obs_id: str,
+                                dataset: str,
+                                model: pysb.Model) -> str:
     """
     Maps site definitions from data to model observables
 
     :param obs_id:
         identifier of the phosphosite in the data table
 
+    :param dataset:
+        identifier of the dataset. Used to setup parse observable information
+
+    :param model:
+        model to which the observables are mapped
+
     :return:
         the name of the corresponding observable in the model
     """
-    obs_id = obs_id.replace('-', '_')
-    obs_id = re.sub(r'_?([SYT][0-9]+)[syt]', r'_\1', obs_id)
-    phospho_site_pattern = r'_[S|Y|T][0-9]+$'
-    return ('p' if re.search(phospho_site_pattern, obs_id) else 't') + \
-           (obs_id if re.search(phospho_site_pattern, obs_id)
-            else obs_id) + '_obs'
+    obs_id = obs_id.replace('-', '_').upper()
+    if dataset == 'ptrc':
+        palias = {
+            r'^AKT1([\w_]*)_T309': r'AKT1\1_T308'
+        }
+        obs_id = re.sub(r'_?([SYT][0-9]+)[SYT]', r'_\1', obs_id)
+    elif dataset == 'cppa':
+        palias = {
+            r'^C_RAF': 'RAF1',
+            r'^B_RAF': 'BRAF',
+            r'^A_RAF': 'ARAF',
+            r'^MEK1': 'MAP2K1',
+            r'^MEK2': 'MAP2K2',
+            r'^HER2': 'ERBB2',
+            r'^HER3': 'ERBB3',
+            r'^STAT5_ALPHA': 'STAT5A',
+            r'^C_JUN': 'JUN',
+            r'^N-RAS': 'NRAS',
+            r'^4E_BP1': 'EIF4EBP1',
+            r'^C_MET': 'CMET',
+            r'^GSK_3B': 'GSK3B',
+            r'^S6': 'RPS6',
+        }
+        obs_id = re.sub(r'_[p|P]?([SYT][0-9]+)', r'_\1', obs_id)
+    elif dataset == 'cytof':
+        palias = {
+            r'^P\.STAT5': 'STAT5A_Y694',
+            r'^P\.MEK': 'MEK_S221',
+            r'^P\.S6K$': 'RPS6KB1_S412',
+            r'^P\.STAT1': 'STAT1_Y727',
+            r'^P\.AKT\.SER473\.': 'AKT_S473',
+            r'^P\.ERK': 'ERK_T202_Y204',
+            r'^P\.HER2': 'ERBB2_Y1248',
+            r'^P\.GSK3B': 'GSK3B_S9',
+            r'^P\.PDPK1': 'PDPK1_S241',
+            r'^P\.P90RSK': 'RPS6KA1_S380',
+            r'^P\.STAT3': 'STAT3_Y705',
+            r'^P\.S6$': 'RPS6_S235_S236',
+            r'^P\.AKT\.THR308\.': 'AKT_T308',
+            r'^P\.4EBP1': 'EIF4EBP1_T37_T46',
+        }
+    else:
+        raise ValueError('Dataset not supported!')
+
+    for pname, prep in palias.items():
+        obs_id = re.sub(pname, prep, obs_id)
+
+    if model.observables.get(obs_id, None):
+        return obs_id
+
+    site_pattern = r'_([S|Y|T][0-9]+)'
+
+    monomer = re.sub(site_pattern, '', obs_id)
+    sites = sorted(list(re.findall(site_pattern, obs_id)))
+
+    name = f'p{monomer}_{"_".join(sites)}' if sites else f't{obs_id}'
+
+    if model.observables.get(name, None):
+        return name
+
+    if model.monomers.get(monomer, None):
+        print(f'could not map {obs_id} to {monomer}!')
+
+    return ''
 
 
 def convert_time_to_minutes(time_str):
@@ -127,32 +197,6 @@ else:
             ), :
         ]
 
-        # match observables with model expressions
-        observable_ids = measurement_table.loc[
-            measurement_table[petab.OBSERVABLE_ID].apply(
-                lambda x: observable_id_to_model_expr(x) in [
-                    expr.name for expr in model.expressions
-                ]
-            ), petab.OBSERVABLE_ID
-        ].unique()
-
-        # OBSERVABLE TABLE
-        # this defines how model simulation are linked to experimental data,
-        # currently this uses quantities that were already defined in the model
-        observable_table = pd.DataFrame({
-            petab.OBSERVABLE_ID: [
-                observable_id_to_model_expr(obs) for obs in observable_ids
-            ],
-            petab.OBSERVABLE_NAME: observable_ids,
-        })
-        measurement_table[petab.OBSERVABLE_ID] = \
-            measurement_table[petab.OBSERVABLE_ID].apply(
-                lambda obs: observable_id_to_model_expr(obs)
-            )
-        observable_table[petab.OBSERVABLE_FORMULA] = '0.0'
-        observable_table[petab.NOISE_DISTRIBUTION] = 'normal'
-        observable_table[petab.NOISE_FORMULA] = '1.0'
-
         measurement_table.loc[
             (measurement_table['treatment'] == 'no treatment') |
             (measurement_table['treatment'] == 'No treatment'),
@@ -201,11 +245,176 @@ else:
                     lambda x: float(int(pert in x.split('__')))
                 )
 
-        # filter measurements for removed conditions
-        measurement_table = measurement_table[measurement_table[
-            petab.SIMULATION_CONDITION_ID].apply(
-            lambda x: x in condition_table[petab.CONDITION_ID].unique()
-        )]
+        observable_mode = 'ptrc'
+
+    if DATA in ['cppa_skin', 'cppa_breast']:
+        measurement_table = pd.read_csv(
+            os.path.join(
+                datadir, f'{DATA}__measurements.tsv'
+            ), sep='\t'
+        )
+
+        condition_table = pd.read_csv(
+            os.path.join(
+                datadir, f'{DATA}__conditions.tsv'
+            ), sep='\t'
+        )
+        observable_mode = 'cppa'
+
+    if DATA == 'dream_cytof':
+        syn = synapseclient.Synapse()
+        syn.login()
+        df_median_phospho = pd.read_csv(syn.get('syn20613384').path)
+        measurement_table_phospho = pd.melt(
+            df_median_phospho,
+            id_vars=['cell_line', 'treatment', 'time'],
+            var_name=petab.OBSERVABLE_ID,
+            value_name=petab.MEASUREMENT,
+        ).rename(columns={'cell_line': petab.PREEQUILIBRATION_CONDITION_ID,
+                          'time': petab.TIME})
+
+        measurement_table_phospho[petab.PREEQUILIBRATION_CONDITION_ID] = \
+            measurement_table_phospho[
+                petab.PREEQUILIBRATION_CONDITION_ID
+            ].apply(lambda x: f'c{x}')
+
+
+        measurement_table_phospho[petab.SIMULATION_CONDITION_ID] = \
+            measurement_table_phospho.apply(
+                lambda x: f'{x[petab.PREEQUILIBRATION_CONDITION_ID]}__'
+                          f'{x.treatment}', axis=1
+            )
+        measurement_table_phospho.drop(columns=['treatment'], inplace=True)
+
+        df_proteomics = pd.read_csv(syn.get('syn20690775').path, index_col=[0])
+        df_proteomics[petab.OBSERVABLE_ID] = df_proteomics.index
+
+        df_proteomics = df_proteomics[
+            df_proteomics[petab.OBSERVABLE_ID].apply(lambda x: ';' not in x)
+        ]
+
+        measurement_table_proteomics = pd.melt(
+            df_proteomics,
+            id_vars=[petab.OBSERVABLE_ID],
+            var_name=petab.PREEQUILIBRATION_CONDITION_ID,
+            value_name=petab.MEASUREMENT,
+        )
+
+        url = 'https://www.uniprot.org/uploadlists/'
+
+        params = {
+            'from': 'ACC+ID',
+            'to': 'GENENAME',
+            'format': 'tab',
+            'query': ' '.join(df_proteomics[petab.OBSERVABLE_ID].unique())
+        }
+
+        data = urllib.parse.urlencode(params)
+        data = data.encode('utf-8')
+        req = urllib.request.Request(url, data)
+        with urllib.request.urlopen(req) as f:
+            response = f.read()
+        up_ids = dict([
+            mapping.split('\t')
+            for mapping in response.decode('utf-8').split('\n')
+            if '\t' in mapping
+        ])
+
+        measurement_table_proteomics[petab.OBSERVABLE_ID] = \
+            measurement_table_proteomics[petab.OBSERVABLE_ID].apply(
+                lambda x: up_ids.get(x, '')
+            )
+
+        measurement_table_proteomics = measurement_table_proteomics[
+            measurement_table_proteomics[petab.OBSERVABLE_ID] != ''
+        ]
+
+        measurement_table_proteomics.dropna(axis=0, subset=[petab.MEASUREMENT],
+                                            inplace=True)
+
+        measurement_table_proteomics[petab.PREEQUILIBRATION_CONDITION_ID] = \
+            measurement_table_proteomics[
+                petab.PREEQUILIBRATION_CONDITION_ID
+            ].apply(lambda x: f'c{x.split("_")[0]}')
+
+        measurement_table_proteomics[petab.SIMULATION_CONDITION_ID] = \
+            measurement_table_proteomics[petab.PREEQUILIBRATION_CONDITION_ID]
+
+        measurement_table_proteomics[petab.TIME] = 0.0
+
+        measurement_table = pd.concat([measurement_table_phospho,
+                                       measurement_table_proteomics])
+
+        condition_table = pd.DataFrame({
+            petab.CONDITION_ID:
+                measurement_table[petab.SIMULATION_CONDITION_ID].unique()
+        })
+
+        # ignore "full" for now
+        condition_table = condition_table[
+            condition_table[petab.CONDITION_ID].apply(
+                lambda x: 'full' not in x.split('__') and
+                          'iPKC' not in x.split('__')
+            )
+        ]
+
+        perturbations = np.unique([
+            p
+            for c in condition_table[petab.CONDITION_ID]
+            if len(c.split('__')) > 1
+            for p in c.split('__')[1:] if p != 'full'
+        ])
+        for pert in perturbations:
+            condition_table[f'{pert}_0'] = \
+                condition_table[petab.CONDITION_ID].apply(
+                    lambda x: float(int(pert in x.split('__')))
+                )
+
+        condition_table['EGF_0'] = \
+            condition_table[petab.CONDITION_ID].apply(
+                lambda x: float('__' in x)
+            )
+
+        observable_mode = 'cytof'
+
+    # filter measurements for removed conditions
+    condition_ids = condition_table[petab.CONDITION_ID].unique()
+    measurement_table = measurement_table[measurement_table[
+        petab.SIMULATION_CONDITION_ID].apply(
+        lambda x: x in condition_ids
+    )]
+
+    observable_ids = [
+        obs_id for obs_id in
+        measurement_table.loc[:, petab.OBSERVABLE_ID].unique()
+        if observable_id_to_model_expr(obs_id, observable_mode, model) != ''
+    ]
+    observable_table = pd.DataFrame({
+        petab.OBSERVABLE_NAME: observable_ids,
+    })
+    observable_obs = [
+        observable_id_to_model_expr(obs_id, observable_mode, model)
+        for obs_id in observable_ids
+    ]
+    observable_table[petab.OBSERVABLE_ID] = \
+        [
+            f'{obs}_obs'
+            for obs in observable_obs
+        ]
+    measurement_table[petab.OBSERVABLE_ID] = \
+        measurement_table[petab.OBSERVABLE_ID].apply(
+            lambda x: observable_id_to_model_expr(x, observable_mode, model)
+            + '_obs'
+            if observable_id_to_model_expr(x, observable_mode, model) != ''
+            else x
+        )
+    observable_table[petab.OBSERVABLE_FORMULA] = \
+        [
+            f'log({obs}_scale * ({obs} + {obs}_offset))'
+            for obs in observable_obs
+        ]
+    observable_table[petab.NOISE_DISTRIBUTION] = 'normal'
+    observable_table[petab.NOISE_FORMULA] = '1.0'
 
     measurement_file = os.path.join(
             datadir, f'{DATA}__{MODEL}__measurements.tsv'

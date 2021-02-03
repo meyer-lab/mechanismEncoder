@@ -91,7 +91,7 @@ def startpoints(**kwargs):
         ):
             if xname.startswith(MODEL_FEATURE_PREFIX):
                 match = re.match(fr'{MODEL_FEATURE_PREFIX}([\w_]+)__'
-                                 r'(sample_[0-9]+)', xname)
+                                 r'([\w0-9]+)', xname)
                 par = match.group(1)
                 sample = match.group(2)
                 xs[istart, ix] = par_combo.loc[sample, par] - means[par]

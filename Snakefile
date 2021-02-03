@@ -4,7 +4,7 @@ from mEncoder.training import trace_path, TRACE_FILE_TEMPLATE
 
 HIDDEN_LAYERS = [2]
 PATHWAYS = ['FLT3_MAPK_AKT_STAT']
-DATASETS = ['synthetic', 'aml_ptrc']
+DATASETS = ['synthetic', 'aml_ptrc', 'cppa_skin', 'cppa_breast']
 OPTIMIZERS = ['fides']
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]

@@ -1,5 +1,6 @@
 import os
 import petab
+import pysb
 
 import pandas as pd
 import numpy as np
@@ -66,7 +67,11 @@ def load_petab(datafiles: Tuple[str, str, str],
     # this defines the full set of parameters including boundaries, nominal
     # values, scale, priors and whether they will be estimated or not.
     params = [par for par in model.parameters
-              if par.name not in condition_table.columns]
+              if par.name not in condition_table.columns] + \
+        [pysb.Parameter(f'{obs.replace("_obs","")}_scale', 1.0)
+         for obs in observable_table.index] + \
+        [pysb.Parameter(f'{obs.replace("_obs", "")}_offset', 0.0)
+         for obs in observable_table.index]
 
     transforms = {
         'lin': lambda x: x,

@@ -57,8 +57,11 @@ class MechanisticAutoEncoder(AutoEncoder):
         self.par_modulation_scale = par_modulation_scale
         self.petab_importer = load_petab(datafiles, 'pw_' + pathway_name,
                                          par_modulation_scale)
+
         full_measurements = self.petab_importer.petab_problem.measurement_df
         filter_observables(self.petab_importer.petab_problem)
+        petab.lint_problem(self.petab_importer.petab_problem)
+
         self.pypesto_subproblem = self.petab_importer.create_problem()
 
         # extract sample names, ordering of those is important since samples
@@ -73,8 +76,9 @@ class MechanisticAutoEncoder(AutoEncoder):
                 samples.append(sample)
 
         input_data = full_measurements.loc[full_measurements.apply(
-            lambda x: x[petab.SIMULATION_CONDITION_ID] ==
-            x[petab.PREEQUILIBRATION_CONDITION_ID], axis=1
+            lambda x: (x[petab.SIMULATION_CONDITION_ID] ==
+                       x[petab.PREEQUILIBRATION_CONDITION_ID]) &
+                      (x[petab.TIME] == 0.0), axis=1
         ), :].pivot_table(
             index=petab.SIMULATION_CONDITION_ID,
             columns=petab.OBSERVABLE_ID,
