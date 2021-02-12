@@ -116,6 +116,8 @@ class MechanisticAutoEncoder(AutoEncoder):
             .setAbsoluteToleranceSteadyState(1e-10)
         self.pypesto_subproblem.objective._objectives[0].amici_solver\
             .setRelativeToleranceSteadyState(1e-8)
+        self.pypesto_subproblem.objective._objectives[0].amici_model\
+            .setReinitializeFixedParameterInitialStates(True)
 
         # define model theano op
         self.loss = TheanoLogProbability(self.pypesto_subproblem)

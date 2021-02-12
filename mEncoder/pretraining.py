@@ -25,7 +25,7 @@ basedir = os.path.dirname(os.path.dirname(__file__))
 
 def generate_per_sample_pretraining_problems(
         ae: MechanisticAutoEncoder
-) -> Dict[str, Problem]:
+) -> Dict[str, PetabImporterPysb]:
     """
     Creates a pypesto problem that can be used to train the
     mechanistic model individually on every sample
@@ -70,12 +70,17 @@ def generate_per_sample_pretraining_problems(
                 name.startswith(sample)
                 for name in pp.condition_df.index
             ]],
+            visualization_df=pd.read_csv(
+                os.path.join('data',
+                             f'{ae.data_name}__'
+                             f'{sample}__visualization.tsv'), sep='\t'
+            ),
             pysb_model=Model(base=clean_model, name=pp.pysb_model.name),
         ), output_folder=os.path.join(
             basedir, 'amici_models',
             f'{pp.pysb_model.name}_'
             f'{ae.data_name}_petab'
-        )).create_problem()
+        ))
         for sample in samples
     }
 
@@ -162,7 +167,7 @@ def generate_encoder_inflate_pretraining_problem(
 def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
              fatol: float = 1e-2,
              subspace: fides.SubSpaceDim = fides.SubSpaceDim.FULL,
-             maxiter: int = int(1e3)):
+             maxiter: int = int(1e3)) -> Result:
     """
     Pretrain the provided problem via optimization.
 
@@ -199,15 +204,23 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
         }
     )
 
-    problem.objective._objectives[0].amici_solver.setMaxSteps(int(1e5))
+    solver = problem.objective._objectives[0].amici_solver
+
+    solver.setMaxSteps(int(1e5))
+    #solver.setAbsoluteTolerance(1e-12)
+    #solver.setRelativeTolerance(1e-10)
+    #solver.setAbsoluteToleranceSteadyState(1e-10)
+    #solver.setRelativeToleranceSteadyState(1e-8)
+
+    for e in problem.objective._objectives[0].edatas:
+        e.reinitializeFixedParameterInitialStates = True
 
     optimize_options = OptimizeOptions(
         startpoint_resample=True, allow_failed_starts=True,
     )
 
     return minimize(
-        problem, opt,
-        n_starts=nstarts, options=optimize_options,
+        problem, opt, n_starts=nstarts, options=optimize_options,
         startpoint_method=startpoint_method,
     )
 

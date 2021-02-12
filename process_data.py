@@ -416,6 +416,72 @@ else:
     observable_table[petab.NOISE_DISTRIBUTION] = 'normal'
     observable_table[petab.NOISE_FORMULA] = '1.0'
 
+    for sample in measurement_table[
+        petab.PREEQUILIBRATION_CONDITION_ID
+    ].unique():
+        measurements_sample = measurement_table[
+            measurement_table[petab.PREEQUILIBRATION_CONDITION_ID] == sample
+        ]
+        conditions = [
+            c for c in
+            measurements_sample[petab.SIMULATION_CONDITION_ID].unique()
+        ]
+
+        visualization_table = []
+        for condition in conditions:
+            measurements_condition = measurements_sample[
+                measurements_sample[petab.SIMULATION_CONDITION_ID] == condition
+            ]
+
+            condition_name = condition.replace(
+                f'{sample}__', ''
+            ).replace(sample, 'baseline')
+
+            static_measurements = [
+                obs_id for obs_id
+                in measurements_condition[petab.OBSERVABLE_ID].unique()
+                if (measurements_condition.query(
+                    f'{petab.OBSERVABLE_ID} == "{obs_id}"'
+                )[petab.TIME].unique() == 0.0).all()
+                and obs_id in observable_table[petab.OBSERVABLE_ID].unique()
+            ]
+            dynamic_measurements = [
+                obs_id for obs_id
+                in measurements_condition[petab.OBSERVABLE_ID].unique()
+                if obs_id not in static_measurements
+                and obs_id in observable_table[petab.OBSERVABLE_ID].unique()
+            ]
+            for static_obs in static_measurements:
+                visualization_table.append({
+                    petab.PLOT_ID: f'{condition}_static',
+                    petab.PLOT_NAME: f'{condition_name} static',
+                    petab.Y_VALUES: static_obs,
+                    petab.PLOT_TYPE_SIMULATION: petab.BAR_PLOT,
+                    petab.LEGEND_ENTRY: f'{condition_name} {static_obs}'
+                })
+
+            for dynamic_obs in dynamic_measurements:
+                visualization_table.append({
+                    petab.PLOT_ID: f'{sample}_{dynamic_obs}',
+                    petab.PLOT_NAME: dynamic_obs,
+                    petab.Y_VALUES: dynamic_obs,
+                    petab.PLOT_TYPE_SIMULATION: petab.LINE_PLOT,
+                    petab.LEGEND_ENTRY: condition_name
+                })
+
+        visualization_table = pd.DataFrame(visualization_table)
+
+        visualization_table[petab.Y_SCALE] = petab.LIN
+        visualization_table[petab.X_SCALE] = petab.LIN
+        #visualization_table[petab.Y_LABEL] = 'measurement'
+        visualization_table[petab.PLOT_TYPE_DATA] = \
+            petab.MEAN_AND_SD
+
+        visualization_file = os.path.join(
+            datadir, f'{DATA}__{MODEL}__{sample}__visualization.tsv'
+        )
+        visualization_table.to_csv(visualization_file, sep='\t')
+
     measurement_file = os.path.join(
             datadir, f'{DATA}__{MODEL}__measurements.tsv'
         )
@@ -432,3 +498,6 @@ else:
     )
     observable_table.set_index(petab.OBSERVABLE_ID, inplace=True)
     observable_table.to_csv(observable_file, sep='\t')
+
+
+

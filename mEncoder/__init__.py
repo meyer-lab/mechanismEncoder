@@ -17,7 +17,14 @@ figures_path = os.path.join(basedir, 'figures')
 
 def load_pathway(pathway_name: str) -> pysb.Model:
     model_file = os.path.join(basedir, 'pathways', pathway_name + '.py')
-    return amici.pysb_import.pysb_model_from_path(model_file)
+
+    model = amici.pysb_import.pysb_model_from_path(model_file)
+
+    with open(os.path.join(basedir, 'pysb_models',
+                           model.name + '.py'), 'w') as file:
+        file.write(pysb.export.export(model, 'pysb_flat'))
+
+    return model
 
 
 def load_model(pathway_name: str,
@@ -36,10 +43,6 @@ def load_model(pathway_name: str,
                 scale = pysb.Parameter(obs.name + '_scale', 1.0)
                 pysb.Expression(obs.name + '_obs',
                                 sp.log(scale * (obs + offset)))
-
-    with open(os.path.join(basedir, 'pysb_models',
-                           model.name + '.py'), 'w') as file:
-        file.write(pysb.export.export(model, 'pysb_flat'))
 
     if force_compile or not os.path.exists(os.path.join(outdir, model.name,
                                                         model.name + '.py')):
@@ -80,7 +83,7 @@ parameter_boundaries_scales = {
     'kdeg': (-3, -1, 'log10'),      # [1/[t]]
     'eq': (1, 2, 'log10'),          # [[c]]
     'bias': (-1, 1, 'lin'),         # [-]
-    'kcat': (1, 3, 'log10'),        # [1/([t]*[c])]
+    'kcat': (0, 4, 'log10'),        # [1/([t]*[c])]
     'scale': (-2, 2, 'log10'),       # [1/[c]]
     'offset': (-2, 2, 'log10'),     # [[c]]
     'weight': (-1, 1, 'lin'),       # [-]
