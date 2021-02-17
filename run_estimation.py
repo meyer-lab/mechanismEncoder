@@ -16,9 +16,10 @@ mae = MechanisticAutoEncoder(N_HIDDEN,
                              os.path.join('data', f'{DATA}__{MODEL}.csv'),
                              MODEL)
 result = train(mae, maxiter=int(1000), n_starts=1, seed=JOB,
-               optimizer=OPTIMIZER)
+               optimizer=OPTIMIZER, ftol=1e-6)
 outfile = os.path.join('results', MODEL, DATA,
                        f'{OPTIMIZER}__{N_HIDDEN}__{JOB}.pickle')
+
 with open(outfile, 'wb') as f:
     pickle.dump(result.optimize_result, f)
 

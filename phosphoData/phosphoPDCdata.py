@@ -33,7 +33,7 @@ def main():
     opts = parser.parse_args()
 
     if opts.get:
-        for ds in ['brca', 'ccrcc', 'colon', 'ovarian']:
+        for ds in ['brca', 'ccrcc', 'colon', 'ovarian','endometrial','luad']:
             cptac.download(dataset=ds)
 
     dat = getDataForCancer(opts.type)

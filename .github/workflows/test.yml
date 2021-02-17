@@ -17,7 +17,7 @@ jobs:
       run: |
         wget -q -O bionetgen.tar.gz https://github.com/RuleWorld/bionetgen/releases/download/BioNetGen-2.5.1/BioNetGen-2.5.1-linux.tgz
         tar -xzf bionetgen.tar.gz
-        echo "::set-env name=BNGPATH::$(pwd)/BioNetGen-2.5.1"
+        echo "BNGPATH=${GITHUB_WORKSPACE}/BioNetGen-2.5.1" >> $GITHUB_ENV
     - name: Install apt dependencies
       run: |
         sudo apt-get update
@@ -42,8 +42,5 @@ jobs:
         env_vars: OS,PYTHON
         name: codecov-umbrella
         fail_ci_if_error: true
-
     - name: Dryrun Snakemake
-      run: |
-        pip install snakemake
-        snakemake -n collect_estimation --config num_starts=2 --verbose
+      run: snakemake -n collect_estimation --config num_starts=2 --verbose
