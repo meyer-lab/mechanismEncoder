@@ -6,21 +6,27 @@ keywords:
   - manubot
 lang: en-US
 authors:
-  - github: johndoe
-    name: John Doe
-    initials: JD
+  - github: FFroehlich
+    name: Fabian Fröhlich
+    initials: FF
     orcid: XXXX-XXXX-XXXX-XXXX
-    twitter: johndoe
+    twitter: fabfrohlich
     email: john.doe@something.com
     affiliations:
-      - Department of Something, University of Whatever
+      - Department of Systems Biology, Harvard Medical School
     funders:
       - Grant XXXXXXXX
-  - github: janeroe
-    name: Jane Roe
-    initials: JR
-    orcid: XXXX-XXXX-XXXX-XXXX
-    email: jane.roe@whatever.edu
+  - github: sgosline 
+    name: Sara JC Gosline
+    initials: SG
+    twitter: sargoshoe
+    orcid: 0000-0002-6534-4774
+    email: sara.gosline@pnnl.gov
+    affiliations:
+      - Pacific Northwest National Laboratories
+  - github: JacksonLChin 
+    name: Jackson L. Chin
+    initials: JLC
     affiliations:
       - Department of Something, University of Whatever
       - Department of Whatever, University of Something
