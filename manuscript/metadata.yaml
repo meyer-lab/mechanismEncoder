@@ -9,7 +9,7 @@ authors:
   - github: FFroehlich
     name: Fabian Fröhlich
     initials: FF
-    orcid: XXXX-XXXX-XXXX-XXXX
+    orcid: 0000-0002-5360-4292
     twitter: fabfrohlich
     email: john.doe@something.com
     affiliations:
@@ -28,5 +28,21 @@ authors:
     name: Jackson L. Chin
     initials: JLC
     affiliations:
-      - Department of Something, University of Whatever
-      - Department of Whatever, University of Something
+      - Department of Bioengineering, University of California, Los Angeles
+  - github: emekdemir 
+    name: Emek Demir
+    initials: ED
+    orcid: 0000-0002-3663-7113
+    affiliations:
+      - Department of Molecular and Medical Genetics, Oregon Health & Sciences Univerity
+  - github: aarmey
+    name: Aaron S. Meyer
+    initials: ASM
+    orcid: 0000-0003-4513-1840
+    twitter: aarmey
+    email: ameyer@asmlab.org
+    affiliations:
+      - Department of Bioengineering, University of California, Los Angeles
+      - Department of Bioinformatics, University of California, Los Angeles
+      - Jonsson Comprehensive Cancer Center, University of California, Los Angeles
+      - Eli and Edythe Broad Center of Regenerative Medicine and Stem Cell Research, University of California, Los Angeles
