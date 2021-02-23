@@ -1,5 +1,5 @@
-import sympy as sp
 import re
+import itertools as itt
 
 from typing import Iterable, Optional, Dict, Tuple, List
 from pysb import (
@@ -21,6 +21,8 @@ def generate_pathway(model: Model,
     """
     for p_name, site_activators in proteins:
         add_monomer_synth_deg(p_name, psites=site_activators.keys())
+
+    for p_name, site_activators in proteins:
         for site, activators in site_activators.items():
             add_activation(model, p_name, site, 'phosphorylation', activators)
 
@@ -28,7 +30,8 @@ def generate_pathway(model: Model,
 def add_monomer_synth_deg(m_name: str,
                           psites: Optional[Iterable[str]] = None,
                           nsites: Optional[Iterable[str]] = None,
-                          asites: Optional[Iterable[str]] = None,):
+                          asites: Optional[Iterable[str]] = None,
+                          asite_states: Optional[Iterable[str]] = None):
     """
     Adds the respective monomer plus synthesis rules and basal
     activation/deactivation rules for all activateable sites
@@ -49,17 +52,20 @@ def add_monomer_synth_deg(m_name: str,
     if psites is None:
         psites = []
     else:
-        psites = [
+        psites = list({
             site
             for psite in psites
             for site in psite.split('_')
-        ]
+        })
 
     if nsites is None:
         nsites = []
 
     if asites is None:
         asites = []
+
+    if asite_states is None:
+        asite_states = ['inactive', 'active']
 
     sites = psites + nsites + asites + ['inh']
 
@@ -68,7 +74,7 @@ def add_monomer_synth_deg(m_name: str,
         site_states={
             site: ['u', 'p'] if site in psites
             else ['gdp', 'gtp'] if site in nsites
-            else ['inactive', 'active']
+            else asite_states
             for site in sites
             if site in psites + nsites + asites
         }
@@ -80,17 +86,21 @@ def add_monomer_synth_deg(m_name: str,
     syn_rate = Expression(f'{m_name}_synthesis_rate',
                           ksyn * get_autoencoder_modulator(t))
 
-    Rule(f'synthesis_{m_name}', None >> m(
+    syn_prod = m(
         **{site:
            'u' if site in psites
            else 'gdp' if site in nsites
            else None if site is 'inh'
-           else 'inactive'
+           else asite_states[0]
            for site in sites}
-    ), syn_rate)
+    )
 
+    Rule(f'synthesis_{m_name}', None >> syn_prod, syn_rate)
     deg_rate = Expression(f'{m_name}_degradation_rate', kdeg)
     Rule(f'degradation_{m_name}', m() >> None, deg_rate)
+    t_ss = Expression(f'{m_name}_ss', syn_rate/deg_rate)
+    Initial(syn_prod, t_ss)
+
 
     # basal activation
     for sites, labels, fstate, rstate in zip(
@@ -98,8 +108,8 @@ def add_monomer_synth_deg(m_name: str,
         [('phosphorylation', 'dephosphorylation'),
          ('gtp_exchange', 'gdp_exchange'),
          ('activation', 'deactivation')],
-        ['p', 'gtp', 'active'],
-        ['u', 'gdp', 'indactive']
+        ['p', 'gtp', asite_states[1]],
+        ['u', 'gdp', asite_states[0]]
     ):
         for site in sites:
             kcats = [
@@ -133,20 +143,7 @@ def add_or_get_modulator_obs(model: Model, modulator: str):
     if mod_name in model.observables.keys():
         modulator_obs = model.observables[f'{modulator}_obs']
     else:
-        desc = modulator.split('__')
-        mono_name = desc[0]
-        if len(desc) > 1:
-            site_conditions = desc[1:]
-        else:
-            site_conditions = []
-
-        try:
-            site_conditions = {
-                cond.split('_')[0]: cond.split('_')[1]
-                for cond in site_conditions
-            }
-        except IndexError:
-            raise ValueError(f'Malformed site condition {site_conditions}')
+        mono_name, site_conditions = site_states_from_string(modulator)
 
         # uninhibited
         site_conditions['inh'] = None
@@ -159,10 +156,30 @@ def add_or_get_modulator_obs(model: Model, modulator: str):
     return modulator_obs
 
 
+def site_states_from_string(obs_string):
+    desc = obs_string.split('__')
+    mono_name = desc[0]
+    if len(desc) > 1:
+        site_conditions = desc[1:]
+    else:
+        site_conditions = []
+
+    try:
+        site_conditions = {
+            cond.split('_')[0]: cond.split('_')[1]
+            for cond in site_conditions
+        }
+    except IndexError:
+        raise ValueError(f'Malformed site condition {site_conditions}')
+
+    return mono_name, site_conditions
+
+
 def add_activation(
         model: Model, m_name: str, site: str, activation_type: str,
         activators: Optional[Iterable[str]] = None,
-        deactivators: Optional[Iterable[str]] = None
+        deactivators: Optional[Iterable[str]] = None,
+        site_states: Optional[Iterable[str]] = None,
 ):
     """
     Adds activation/deactivation rules to a specific site
@@ -201,12 +218,14 @@ def add_activation(
 
     mono = model.monomers[m_name]
 
-    if activation_type == 'phosphorylation':
+    if site_states is not None:
+        valid_states = site_states
+    elif activation_type == 'phosphorylation':
         valid_states = ['u', 'p']
     elif activation_type == 'nucleotide_exchange':
         valid_states = ['gdp', 'gtp']
     elif activation_type == 'tf_activation':
-        valid_states = ['active', 'inactive']
+        valid_states = ['inactive', 'active']
     else:
         raise ValueError(f'Invalid activation type {activation_type}.')
 
@@ -223,15 +242,16 @@ def add_activation(
     if activation_type == 'phosphorylation':
         forward = 'phosphorylation'
         backward = 'dephosphorylation'
-        fstate = {site: 'u' for site in sites}
-        rstate = {site: 'p' for site in sites}
     elif activation_type == 'nucleotide_exchange':
         forward = 'gtp_exchange'
         backward = 'gdp_exchange'
-        fstate = {site: 'gdp' for site in sites}
-        rstate = {site: 'gtp' for site in sites}
+    elif activation_type == 'activation':
+        forward = 'gtp_exchange'
+        backward = 'gdp_exchange'
     else:
         raise ValueError(f'Invalid activation type {activation_type}.')
+    fstate = {site: valid_states[0] for site in sites}
+    rstate = {site: valid_states[1] for site in sites}
 
     for label, educts, products, modulators in zip(
             [forward,        backward],
@@ -259,46 +279,70 @@ def get_autoencoder_modulator(par: Parameter):
     return Parameter(f'INPUT_{par.name}', 0.0)
 
 
-def add_abundance_observables(model: Model):
+def add_observables(model: Model):
     """
-    Adds an observable that tracks the normalized absolute abundance of a
-    protein
-    """
-    for monomer in model.monomers:
-        obs = Observable(f'total_{monomer.name}', monomer())
-        scale = Parameter(f't{monomer.name}_scale', 1.0)
-        offset = Parameter(f't{monomer.name}_offset', 1.0)
-        Expression(f't{monomer.name}_obs', sp.log(scale * (obs + offset)))
-
-
-def add_phospho_observables(model: Model):
-    """
-    Adds an observable that tracks the normalized absolute abundance of a
-    phosphorylated site
+    Adds a observable that tracks the normalized absolute abundance of all
+    phosphorylated site combinations for all monomers
     """
     for monomer in model.monomers:
-        for site in monomer.site_states:
-            if re.match(r'[YTS][0-9]+$', site):
-                obs = Observable(f'p{monomer.name}_{site}',
-                                 monomer(**{site: 'p'}))
-                scale = Parameter(f'p{monomer.name}_{site}_scale', 1.0)
-                offset = Parameter(f'p{monomer.name}_{site}_offset', 1.0)
-                Expression(f'p{monomer.name}_{site}_obs',
-                           sp.log(scale * (obs + offset)))
+        Observable(f't{monomer.name}', monomer())
+        psites = [site for site in monomer.site_states.keys()
+                  if re.match(r'[YTS][0-9]+$', site)]
+        for nsites in range(1, len(psites)+1):
+            for sites in itt.combinations(psites, nsites):
+                sites = sorted(sites)
+                Observable(f'p{monomer.name}_{"_".join(sites)}',
+                           monomer(**{site: 'p' for site in sites}))
 
 
 def add_inhibitor(model: Model, name: str, targets: List[str]):
     inh = Monomer(name, sites=['target'])
     Initial(inh(target=None), Parameter(f'{name}_0', 0.0), fixed=True)
     for target in targets:
+
+        mono_name, site_conditions = site_states_from_string(target)
         koff = Parameter(f'{name}_{target}_koff', 0.1)
         kd = Parameter(f'{name}_{target}_kd', 1.0)
         kon = Expression(f'{name}_{target}_kon', kd*koff)
+        if site_conditions:
+            Rule(
+                f'{name}_binds_{mono_name}',
+                model.monomers[mono_name](inh=None, **site_conditions)
+                +
+                inh(target=None)
+                >>
+                model.monomers[mono_name](inh=1, **site_conditions)
+                %
+                inh(target=1),
+                kon
+            )
+            Rule(
+                f'{name}_unbinds_{mono_name}',
+                model.monomers[mono_name](inh=1) % inh(target=1)
+                >>
+                model.monomers[mono_name](inh=None) + inh(target=None),
+                koff
+            )
+        else:
+            Rule(
+                f'{name}_inhibits_{target}',
+                model.monomers[target](inh=None) + inh(target=None)
+                |
+                model.monomers[target](inh=1) % inh(target=1),
+                kon, koff
+            )
+
+
+def add_gf_bolus(model, name: str, created_monomers: List[str]):
+    bolus = Monomer(f'{name}_ext')
+    Initial(bolus(), Parameter(f'{name}_0', 0.0), fixed=True)
+    for created_monomer in created_monomers:
+        koff = Parameter(f'{name}_{created_monomer}_koff', 0.1)
+        kd = Parameter(f'{name}_{created_monomer}_kd', 1.0)
+        kon = Expression(f'{name}_{created_monomer}_kon', kd * koff)
         Rule(
-            f'{name}_inhibits_{target}',
-            model.monomers[target](inh=None) + inh(target=None)
-            |
-            model.monomers[target](inh=1) % inh(target=1),
+            f'{name}_ext_to_{created_monomer}',
+            bolus() | model.monomers[created_monomer](inh=None),
             kon, koff
         )
 

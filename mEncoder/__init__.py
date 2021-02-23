@@ -3,6 +3,9 @@ import amici.pysb_import
 import logging
 import importlib
 import sys
+import re
+import pysb
+import sympy as sp
 import amici
 import pysb.export
 import matplotlib.pyplot as plt
@@ -14,18 +17,32 @@ figures_path = os.path.join(basedir, 'figures')
 
 def load_pathway(pathway_name: str) -> pysb.Model:
     model_file = os.path.join(basedir, 'pathways', pathway_name + '.py')
-    return amici.pysb_import.pysb_model_from_path(model_file)
 
+    model = amici.pysb_import.pysb_model_from_path(model_file)
 
-def load_model(pathway_name: str,
-               force_compile: bool = True) -> Tuple[amici.AmiciModel,
-                                                    amici.AmiciSolver]:
-
-    model = load_pathway(pathway_name)
-    outdir = os.path.join(basedir, 'amici_models', model.name)
     with open(os.path.join(basedir, 'pysb_models',
                            model.name + '.py'), 'w') as file:
         file.write(pysb.export.export(model, 'pysb_flat'))
+
+    return model
+
+
+def load_model(pathway_name: str,
+               force_compile: bool = True,
+               add_observables: bool = False) -> Tuple[amici.AmiciModel,
+                                                       amici.AmiciSolver]:
+
+    model = load_pathway(pathway_name)
+    outdir = os.path.join(basedir, 'amici_models', model.name)
+
+    # extend observables
+    if add_observables:
+        for obs in model.observables:
+            if re.match(r'[p|t][A-Z0-9]+[SYT0-9_]*', obs.name):
+                offset = pysb.Parameter(obs.name + '_offset', 0.0)
+                scale = pysb.Parameter(obs.name + '_scale', 1.0)
+                pysb.Expression(obs.name + '_obs',
+                                sp.log(scale * (obs + offset)))
 
     if force_compile or not os.path.exists(os.path.join(outdir, model.name,
                                                         model.name + '.py')):
@@ -44,8 +61,13 @@ def load_model(pathway_name: str,
     model_module = importlib.import_module(model.name)
 
     amici_model = model_module.getModel()
+    solver = amici_model.getSolver()
 
-    return amici_model, amici_model.getSolver()
+    solver.setMaxSteps(int(1e5))
+    solver.setAbsoluteToleranceSteadyState(1e-2)
+    solver.setRelativeToleranceSteadyState(1e-8)
+
+    return amici_model, solver
 
 
 def plot_and_save_fig(filename):
@@ -61,7 +83,7 @@ parameter_boundaries_scales = {
     'kdeg': (-3, -1, 'log10'),      # [1/[t]]
     'eq': (1, 2, 'log10'),          # [[c]]
     'bias': (-1, 1, 'lin'),         # [-]
-    'kcat': (1, 3, 'log10'),        # [1/([t]*[c])]
+    'kcat': (0, 4, 'log10'),        # [1/([t]*[c])]
     'scale': (-2, 2, 'log10'),       # [1/[c]]
     'offset': (-2, 2, 'log10'),     # [[c]]
     'weight': (-1, 1, 'lin'),       # [-]

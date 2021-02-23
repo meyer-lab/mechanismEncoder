@@ -12,3 +12,4 @@ importer = load_petab((
     os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
 ), 'pw_' + MODEL, 1.0)
 importer.create_model(force_compile=True)
+

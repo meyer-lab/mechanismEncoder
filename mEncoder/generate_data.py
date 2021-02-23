@@ -14,6 +14,8 @@ from sklearn import decomposition
 import amici
 import petab
 import os
+import pysb
+import re
 
 from typing import Tuple
 
@@ -39,7 +41,8 @@ def generate_synthetic_data(pathway_name: str,
     :return:
         path to csv where generated data was saved
     """
-    model, solver = load_model('pw_' + pathway_name, force_compile=True)
+    model, solver = load_model('pw_' + pathway_name, force_compile=True,
+                               add_observables=True)
 
     # setup model parameter scales
     model.setParameterScale(amici.parameterScalingFromIntVector([
@@ -68,9 +71,6 @@ def generate_synthetic_data(pathway_name: str,
             continue
         lb, ub, _ = parameter_boundaries_scales[par_id.split('_')[-1]]
         static_pars[par_id] = np.random.random() * (ub - lb) + lb
-
-    # identify which parameters may vary across samples
-
 
     encoder = AutoEncoder(np.zeros((1, model.ny)),
                           n_hidden=latent_dimension, n_params=len(sample_pars))
