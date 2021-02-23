@@ -7,6 +7,23 @@ import cptac
 import argparse
 
 
+def getDataForCancer(ctype):
+    if ctype.lower() == 'brca':
+        dat = cptac.Brca()
+    elif ctype.lower() == 'ccrcc':
+        dat = cptac.Ccrcc()
+    elif ctype.lower() == 'coad':
+        dat = cptac.Colon()
+    elif ctype.lower() == 'ovca':
+        dat = cptac.Ovarian()
+    elif ctype.lower() == 'luad':
+        dat = cptac.Luad()
+    elif ctype.lower() == 'endometrial':
+        dat = cptac.Endometrial()
+    else:
+        exit()
+    return dat
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--cancerType', dest='type',\
@@ -19,27 +36,13 @@ def main():
         for ds in ['brca', 'ccrcc', 'colon', 'ovarian','endometrial','luad']:
             cptac.download(dataset=ds)
 
-    if opts.type.lower() == 'brca':
-        dat = cptac.Brca()
-    elif opts.type.lower() == 'ccrcc':
-        dat = cptac.Ccrcc()
-    elif opts.type.lower() == 'coad':
-        dat = cptac.Colon()
-    elif opts.type.lower() == 'ovca':
-        dat = cptac.Ovarian()
-    elif opts.type.lower() == 'luad':
-        dat = cptac.Luad()
-    elif opts.type.lower() == 'endometrial':
-        dat = cptac.Endometrial()
-    else:
-        exit()
-
+    dat = getDataForCancer(opts.type)
     df = dat.get_phosphoproteomics()
     pdf = dat.get_proteomics()
    # df.columns = [' '.join(col).strip() for col in df.columns.values]
 
     df.to_csv(path_or_buf="phos_file.tsv",sep='\t')
     pdf.to_csv(path_or_buf='prot_file.tsv',sep='\t')
-    
+
 if  __name__=='__main__':
     main()
