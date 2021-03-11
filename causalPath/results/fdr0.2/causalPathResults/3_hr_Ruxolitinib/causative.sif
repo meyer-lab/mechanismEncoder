@@ -1,0 +1,18 @@
+RPS6KA3	phosphorylates	LCP1	http://pathwaycommons.org/pc2/BiochemicalReaction_c149b7e11a29eab9281749b1a80da568 http://pathwaycommons.org/pc2/Catalysis_7bc62a481a312fd52c7eed77d86384fb	S5
+CHEK2	phosphorylates	TRIM28	http://pathwaycommons.org/pc2/BiochemicalReaction_1b84a5cb38e5aac2c15ef7b6d1804d82 http://pathwaycommons.org/pc2/Catalysis_3470d1bfaf7d1818da481a55e5e96f44	S473
+DYRK1A	phosphorylates	SF3B1	http://pathwaycommons.org/pc2/BiochemicalReaction_8c76fe2ae351addd9b0cb395d294d0a5 http://pathwaycommons.org/pc2/BiochemicalReaction_72a585eb14d88d9b88ec262218d3ca9f http://pathwaycommons.org/pc2/Catalysis_d204c7b70ea8312931b8fcdee14b75e5 http://pathwaycommons.org/pc2/Catalysis_4a17e3ac52d98c5033442925ec44a7db	T434;T273
+RPS6KA3	phosphorylates	YBX1	http://pathwaycommons.org/pc2/BiochemicalReaction_331a5408d1f4cd27eeb400d4f040b68e  http://pathwaycommons.org/pc2/Catalysis_81a33fae32e83af4ce70757dd65da7d1	S102
+CHEK1	phosphorylates	MKI67	http://pathwaycommons.org/pc2/BiochemicalReaction_9c40e9d7996442d35fe7e9cc6f0c4d5b http://pathwaycommons.org/pc2/Catalysis_31b49e0cd4f4c6c4795486b8a12a886b	T1764
+RPS6KA3	phosphorylates	GSK3A	http://pathwaycommons.org/pc2/BiochemicalReaction_8d6260b00a7ac83ec5597599f5945e2f http://pathwaycommons.org/pc2/Catalysis_6e988ff897a654ac2a001993c2d72e80	S21
+RPS6KA3	phosphorylates	CIC	http://pathwaycommons.org/pc2/Catalysis_bb90703baa78f5878fc2b79b5e9827a1 http://pathwaycommons.org/pc2/BiochemicalReaction_c8ea1b99b202cfc0dac4a042332c9655	S173
+PKN1	phosphorylates	MEFV	http://pathwaycommons.org/pc2/BiochemicalReaction_897e4a67977236b9ee951d7731a7a672 http://pathwaycommons.org/pc2/BiochemicalReaction_514fd9125908209f6c84cfa79a05f0fb http://pathwaycommons.org/pc2/Catalysis_b13b29ef6a2a360e0a3df48f3696d561 http://pathwaycommons.org/pc2/Catalysis_05cfef4846b5f11e7534309bafd3c60f	S208;S242
+ATM	phosphorylates	SMC3	http://pathwaycommons.org/pc2/Catalysis_d4008255f2b4e52a9c8a0f10d8b4eb9e http://pathwaycommons.org/pc2/BiochemicalReaction_c9410943b76013f8b3bfb7c356f39c5f	S1083
+PRKAR1A	phosphorylates	ITGA4	http://pathwaycommons.org/pc2/Catalysis_49e9442eb0aeff78f0ca268c27e175ca http://pathwaycommons.org/pc2/ComplexAssembly_a948fe678d4f28f24c80f99aeff50e50	S1021
+CHEK2	phosphorylates	OTUD7B		S100
+RPS6KA3	phosphorylates	EIF4B		S422
+MAPKAPK2	phosphorylates	PARN	http://pathwaycommons.org/pc2/BiochemicalReaction_c5d7c3f4cafdce86d2e170aa3e251573  http://pathwaycommons.org/pc2/Catalysis_fadb53f14fc75e22a96fae3898f9464c	S557
+MYC	upregulates-expression	CHEK2		
+DYRK1A	phosphorylates	SRSF6		S303
+MAPKAPK2	phosphorylates	TRIM28	http://pathwaycommons.org/pc2/Catalysis_e2e1690cff2f597cda73b53eb57ecb6e  http://pathwaycommons.org/pc2/BiochemicalReaction_1b84a5cb38e5aac2c15ef7b6d1804d82	S473
+DYRK1A	phosphorylates	MAP1B		S1400
+ATM	phosphorylates	NHEJ1	http://pathwaycommons.org/pc2/Catalysis_383741ddabbee3bae78d0fab826dac6a  http://pathwaycommons.org/pc2/BiochemicalReaction_dde31786948cf86b575c9e5ef08c537a	S251
