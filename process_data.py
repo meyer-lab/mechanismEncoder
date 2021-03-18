@@ -4,6 +4,7 @@ import re
 import petab
 import synapseclient
 import pysb
+import json
 
 import pandas as pd
 import numpy as np
@@ -278,7 +279,6 @@ else:
                 petab.PREEQUILIBRATION_CONDITION_ID
             ].apply(lambda x: f'c{x}')
 
-
         measurement_table_phospho[petab.SIMULATION_CONDITION_ID] = \
             measurement_table_phospho.apply(
                 lambda x: f'{x[petab.PREEQUILIBRATION_CONDITION_ID]}__'
@@ -300,25 +300,32 @@ else:
             value_name=petab.MEASUREMENT,
         )
 
-        url = 'https://www.uniprot.org/uploadlists/'
+        UP_ID_JSON = 'up_ids.json'
+        if os.path.exists(UP_ID_JSON):
+            with open(UP_ID_JSON, 'r') as fp:
+                up_ids = json.load(fp)
+        else:
+            url = 'https://www.uniprot.org/uploadlists/'
 
-        params = {
-            'from': 'ACC+ID',
-            'to': 'GENENAME',
-            'format': 'tab',
-            'query': ' '.join(df_proteomics[petab.OBSERVABLE_ID].unique())
-        }
+            params = {
+                'from': 'ACC+ID',
+                'to': 'GENENAME',
+                'format': 'tab',
+                'query': ' '.join(df_proteomics[petab.OBSERVABLE_ID].unique())
+            }
 
-        data = urllib.parse.urlencode(params)
-        data = data.encode('utf-8')
-        req = urllib.request.Request(url, data)
-        with urllib.request.urlopen(req) as f:
-            response = f.read()
-        up_ids = dict([
-            mapping.split('\t')
-            for mapping in response.decode('utf-8').split('\n')
-            if '\t' in mapping
-        ])
+            data = urllib.parse.urlencode(params)
+            data = data.encode('utf-8')
+            req = urllib.request.Request(url, data)
+            with urllib.request.urlopen(req) as f:
+                response = f.read()
+            up_ids = dict([
+                mapping.split('\t')
+                for mapping in response.decode('utf-8').split('\n')
+                if '\t' in mapping
+            ])
+            with open(UP_ID_JSON, 'w') as fp:
+                json.dump(up_ids, fp)
 
         measurement_table_proteomics[petab.OBSERVABLE_ID] = \
             measurement_table_proteomics[petab.OBSERVABLE_ID].apply(
@@ -353,8 +360,7 @@ else:
         # ignore "full" for now
         condition_table = condition_table[
             condition_table[petab.CONDITION_ID].apply(
-                lambda x: 'full' not in x.split('__') and
-                          'iPKC' not in x.split('__')
+                lambda x: 'full' not in x.split('__')
             )
         ]
 
@@ -365,6 +371,14 @@ else:
             for p in c.split('__')[1:] if p != 'full'
         ])
         for pert in perturbations:
+            if model.parameters.get(f'{pert}_0') is None:
+                # remove condition
+                condition_table = condition_table[
+                    condition_table[petab.CONDITION_ID].apply(
+                        lambda x: pert not in x.split('__')
+                    )
+                ]
+                continue
             condition_table[f'{pert}_0'] = \
                 condition_table[petab.CONDITION_ID].apply(
                     lambda x: float(int(pert in x.split('__')))
@@ -379,10 +393,13 @@ else:
 
     # filter measurements for removed conditions
     condition_ids = condition_table[petab.CONDITION_ID].unique()
-    measurement_table = measurement_table[measurement_table[
-        petab.SIMULATION_CONDITION_ID].apply(
-        lambda x: x in condition_ids
-    )]
+    measurement_table = measurement_table[
+        measurement_table.apply(
+            lambda x: x[petab.SIMULATION_CONDITION_ID] in condition_ids and
+                      x[petab.PREEQUILIBRATION_CONDITION_ID] in condition_ids,
+            axis=1
+        )
+    ]
 
     observable_ids = [
         obs_id for obs_id in
@@ -408,13 +425,19 @@ else:
             if observable_id_to_model_expr(x, observable_mode, model) != ''
             else x
         )
+    measurement_table[petab.DATASET_ID] = measurement_table[
+        petab.SIMULATION_CONDITION_ID
+    ]
     observable_table[petab.OBSERVABLE_FORMULA] = \
         [
             f'log({obs}_scale * ({obs} + {obs}_offset))'
             for obs in observable_obs
         ]
     observable_table[petab.NOISE_DISTRIBUTION] = 'normal'
-    observable_table[petab.NOISE_FORMULA] = '1.0'
+    observable_table[petab.NOISE_FORMULA] = \
+        observable_table[petab.OBSERVABLE_ID].apply(
+            lambda x: '0.1' if x.startswith('p') else '1.0'
+        )
 
     for sample in measurement_table[
         petab.PREEQUILIBRATION_CONDITION_ID
@@ -442,7 +465,7 @@ else:
                 in measurements_condition[petab.OBSERVABLE_ID].unique()
                 if (measurements_condition.query(
                     f'{petab.OBSERVABLE_ID} == "{obs_id}"'
-                )[petab.TIME].unique() == 0.0).all()
+                )[petab.TIME] == 0.0).all()
                 and obs_id in observable_table[petab.OBSERVABLE_ID].unique()
             ]
             dynamic_measurements = [
@@ -457,7 +480,8 @@ else:
                     petab.PLOT_NAME: f'{condition_name} static',
                     petab.Y_VALUES: static_obs,
                     petab.PLOT_TYPE_SIMULATION: petab.BAR_PLOT,
-                    petab.LEGEND_ENTRY: f'{condition_name} {static_obs}'
+                    petab.LEGEND_ENTRY: f'{condition_name} {static_obs}',
+                    petab.DATASET_ID: condition,
                 })
 
             for dynamic_obs in dynamic_measurements:
@@ -466,7 +490,8 @@ else:
                     petab.PLOT_NAME: dynamic_obs,
                     petab.Y_VALUES: dynamic_obs,
                     petab.PLOT_TYPE_SIMULATION: petab.LINE_PLOT,
-                    petab.LEGEND_ENTRY: condition_name
+                    petab.LEGEND_ENTRY: condition_name,
+                    petab.DATASET_ID: condition,
                 })
 
         visualization_table = pd.DataFrame(visualization_table)

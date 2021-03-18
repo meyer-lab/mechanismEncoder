@@ -48,7 +48,7 @@ def load_petab(datafiles: Tuple[str, str, str],
     # input parameters to model parameters
 
     preeq_conds = dict()
-    for cond in condition_table.index:
+    for cond in list(condition_table.index):
         candidates = measurement_table[measurement_table[
             petab.SIMULATION_CONDITION_ID] == cond
         ][petab.PREEQUILIBRATION_CONDITION_ID].unique()
@@ -56,6 +56,9 @@ def load_petab(datafiles: Tuple[str, str, str],
             raise RuntimeError('Found multiple different preequilibration '
                                f'conditions {candidates} for condition '
                                f'{cond}, which is not supported.')
+        if len(candidates) == 0:
+            condition_table.drop(index=cond, inplace=True)
+            continue
         preeq_conds[cond] = candidates[0]
 
     for feature in features:

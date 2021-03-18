@@ -17,9 +17,6 @@ from .petab_subproblem import load_petab, filter_observables
 
 TheanoFunction = theano.compile.function_module.Function
 
-MODEL_FILE = os.path.join(os.path.dirname(__file__),
-                          'pathway_FLT3_MAPK_AKT_STAT')
-
 
 class MechanisticAutoEncoder(AutoEncoder):
     def __init__(self,
@@ -117,10 +114,8 @@ class MechanisticAutoEncoder(AutoEncoder):
             .setAbsoluteToleranceSteadyState(1e-10)
         self.pypesto_subproblem.objective._objectives[0].amici_solver\
             .setRelativeToleranceSteadyState(1e-8)
-        self.pypesto_subproblem.objective._objectives[0].amici_solver\
-            .setSensitivityMethod(amici.SensitivityMethod.adjoint)
-        self.pypesto_subproblem.objective._objectives[0].amici_model\
-            .setReinitializeFixedParameterInitialStates(True)
+        #self.pypesto_subproblem.objective._objectives[0].amici_solver\
+        #    .setSensitivityMethod(amici.SensitivityMethod.adjoint)
 
         # define model theano op
         self.loss = TheanoLogProbability(self.pypesto_subproblem)

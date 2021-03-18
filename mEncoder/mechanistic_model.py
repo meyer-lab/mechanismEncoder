@@ -1,10 +1,12 @@
 import re
 import itertools as itt
+import sympy as sp
 
 from typing import Iterable, Optional, Dict, Tuple, List
 from pysb import (
     Monomer, Expression, Parameter, Rule, Model, Observable, Initial
 )
+import pysb.bng
 
 
 def generate_pathway(model: Model,
@@ -80,11 +82,11 @@ def add_monomer_synth_deg(m_name: str,
         }
     )
 
-    kdeg = Parameter(f'{m_name}_degradation_kdeg', 1.0)
+    #kdeg = Parameter(f'{m_name}_degradation_kdeg', 1.0)
     t = Parameter(f'{m_name}_eq', 100.0)
-    ksyn = Expression(f'{m_name}_synthesis_ksyn', t*kdeg)
-    syn_rate = Expression(f'{m_name}_synthesis_rate',
-                          ksyn * get_autoencoder_modulator(t))
+    #ksyn = Expression(f'{m_name}_synthesis_ksyn', t*kdeg)
+    #syn_rate = Expression(f'{m_name}_synthesis_rate',
+    #                      ksyn * get_autoencoder_modulator(t))
 
     syn_prod = m(
         **{site:
@@ -95,11 +97,11 @@ def add_monomer_synth_deg(m_name: str,
            for site in sites}
     )
 
-    Rule(f'synthesis_{m_name}', None >> syn_prod, syn_rate)
-    deg_rate = Expression(f'{m_name}_degradation_rate', kdeg)
-    Rule(f'degradation_{m_name}', m() >> None, deg_rate)
-    t_ss = Expression(f'{m_name}_ss', syn_rate/deg_rate)
-    Initial(syn_prod, t_ss)
+    #Rule(f'synthesis_{m_name}', None >> syn_prod, syn_rate)
+    #deg_rate = Expression(f'{m_name}_degradation_rate', kdeg)
+    #Rule(f'degradation_{m_name}', m() >> None, deg_rate)
+    #t_ss = Expression(f'{m_name}_ss', syn_rate/deg_rate)
+    Initial(syn_prod, t)
 
 
     # basal activation
@@ -114,16 +116,18 @@ def add_monomer_synth_deg(m_name: str,
         for site in sites:
             kcats = [
                 Parameter(f'{m_name}_{label}_{site}_base_kcat', 1.0)
-                for label in labels
+                for label in labels[1:]
             ]
             rates = [
                 Expression(f'{m_name}_{label}_{site}_base_rate',
                            kcat * get_autoencoder_modulator(kcat))
-                for kcat, label in zip(kcats, labels)
+                for kcat, label in zip(kcats, labels[1:])
             ]
 
+            #Rule(F'{m_name}_{site}_base',
+            #     m(**{site: rstate}) | m(**{site: fstate}), *rates)
             Rule(F'{m_name}_{site}_base',
-                 m(**{site: fstate}) | m(**{site: rstate}), *rates)
+                 m(**{site: fstate}) >> m(**{site: rstate}), *rates)
 
     return m
 
@@ -296,41 +300,36 @@ def add_observables(model: Model):
 
 
 def add_inhibitor(model: Model, name: str, targets: List[str]):
-    inh = Monomer(name, sites=['target'])
-    Initial(inh(target=None), Parameter(f'{name}_0', 0.0), fixed=True)
-    for target in targets:
+    inh = Parameter(f'{name}_0', 0.0)
+    kd = Parameter(f'{name}_kd', 0.0)
+    affinities = {
+        target: Expression(
+            f'inh_{target}',
+            Observable(f'target_{target}', model.monomers[target])/kd
+        )
+        for target in targets
+    }
 
-        mono_name, site_conditions = site_states_from_string(target)
-        koff = Parameter(f'{name}_{target}_koff', 0.1)
-        kd = Parameter(f'{name}_{target}_kd', 1.0)
-        kon = Expression(f'{name}_{target}_kon', kd*koff)
-        if site_conditions:
-            Rule(
-                f'{name}_binds_{mono_name}',
-                model.monomers[mono_name](inh=None, **site_conditions)
-                +
-                inh(target=None)
-                >>
-                model.monomers[mono_name](inh=1, **site_conditions)
-                %
-                inh(target=1),
-                kon
+    for expr in model.expressions:
+        if expr.name.startswith('inh_'):
+            continue
+        target = next((
+            next(
+                mp.monomer.name
+                for cp in s.reaction_pattern.complex_patterns
+                for mp in cp.monomer_patterns
+                if mp.monomer.name in targets
             )
-            Rule(
-                f'{name}_unbinds_{mono_name}',
-                model.monomers[mono_name](inh=1) % inh(target=1)
-                >>
-                model.monomers[mono_name](inh=None) + inh(target=None),
-                koff
+            for s in expr.expr.free_symbols
+            if isinstance(s, Observable) and any(
+                mp.monomer.name in targets
+                for cp in s.reaction_pattern.complex_patterns
+                for mp in cp.monomer_patterns
             )
-        else:
-            Rule(
-                f'{name}_inhibits_{target}',
-                model.monomers[target](inh=None) + inh(target=None)
-                |
-                model.monomers[target](inh=1) % inh(target=1),
-                kon, koff
-            )
+        ), None)
+        if target is None:
+            continue
+        expr.expr *= 1/(1 + inh * affinities[target])
 
 
 def add_gf_bolus(model, name: str, created_monomers: List[str]):
@@ -346,6 +345,82 @@ def add_gf_bolus(model, name: str, created_monomers: List[str]):
             kon, koff
         )
 
+
+def cleanup_unused(model):
+
+    model.reset_equations()
+    pysb.bng.generate_equations(model)
+
+    observables = [
+        obs.name for obs in model.expressions
+        if obs.name.endswith('_obs')
+    ]
+
+    dynamic_eq = sp.Matrix(model.odes)
+
+    expression_dynamic_symbols = set()
+    for sym in dynamic_eq.free_symbols:
+        if not isinstance(sym, Expression):
+            continue
+        if sym.name in model.expressions.keys():
+            expression_dynamic_symbols |= model.expressions[
+                sym.name
+            ].expand_expr().free_symbols
+
+    initial_eq = sp.Matrix([
+        initial.value.expand_expr()
+        if isinstance(initial.value, Expression) else initial.value
+        for initial in model.initials
+    ])
+
+    observable_eq = sp.Matrix([
+        expression.expand_expr()
+        for expression in model.expressions
+        if expression.name in observables
+    ])
+
+    free_symbols = list(
+        dynamic_eq.free_symbols | initial_eq.free_symbols |
+        observable_eq.free_symbols | expression_dynamic_symbols
+    )
+
+    unused_pars = set(
+        par
+        for par in model.parameters
+        if par not in free_symbols and sp.Symbol(par.name) not in free_symbols
+    )
+
+    rule_reaction_count = {
+        rule.name: 0
+        for rule in model.rules
+    }
+
+    for reaction in model.reactions:
+        for rule in reaction['rule']:
+            rule_reaction_count[rule] += 1
+
+    model.parameters = pysb.ComponentSet([
+        par for par in model.parameters
+        if par not in unused_pars
+    ])
+
+    model.expressions = pysb.ComponentSet([
+        expr for expr in model.expressions
+        if len(expr.expand_expr().free_symbols.intersection(unused_pars)) == 0
+        and not expr.name.startswith('_')
+    ])
+
+    model.rules = pysb.ComponentSet([
+        rule for rule in model.rules
+        if rule_reaction_count[rule.name] > 0
+    ])
+
+    # model.observables = [
+    #     obs for obs in model.observables
+    #     if len(obs.coefficients) > 0
+    # ]
+
+    model.reset_equations()
 
 
 

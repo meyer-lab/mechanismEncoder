@@ -6,6 +6,9 @@ import sys
 import os
 import pypesto
 import petab.visualize
+import numpy as np
+
+np.random.seed(0)
 
 import matplotlib.pyplot as plt
 
@@ -35,7 +38,7 @@ prefix = f'{mae.pathway_name}__{mae.data_name}'
 for sample, importer in pretraining_problems.items():
     problem = importer.create_problem()
     model = importer.create_model()
-    result = pretrain(problem, pypesto.startpoint.uniform, 10)
+    result = pretrain(problem, pypesto.startpoint.uniform, 100)
     output_prefix = f'{prefix}__{sample}'
 
     store_and_plot_pretraining(result, pretraindir, output_prefix)
@@ -47,7 +50,8 @@ for sample, importer in pretraining_problems.items():
         problem_parameters=dict(zip(
             problem.x_names,
             result.optimize_result.list[0]['x'],
-        )), scaled_parameters=True
+        )), scaled_parameters=True,
+        edatas=problem.objective._objectives[0].edatas
     )
     # Convert the simulation to PEtab format.
     simulation_df = amici.petab_objective.rdatas_to_simulation_df(
