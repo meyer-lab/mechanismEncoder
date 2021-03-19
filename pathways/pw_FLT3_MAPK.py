@@ -1,8 +1,7 @@
 from pysb import Model
 
 from mEncoder.mechanistic_model import (
-    add_monomer_synth_deg, generate_pathway, add_activation,
-    add_abundance_observables, add_phospho_observables
+    add_monomer_synth_deg, generate_pathway, add_activation, add_observables
 )
 
 model = Model('FLT3_MAPK')
@@ -36,5 +35,4 @@ mapk_cascade = [
 ]
 generate_pathway(model, mapk_cascade)
 
-add_abundance_observables(model)
-add_phospho_observables(model)
+add_observables(model)

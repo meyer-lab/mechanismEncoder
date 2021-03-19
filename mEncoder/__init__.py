@@ -57,8 +57,7 @@ def load_model(pathway_name: str,
                                      ],
                                      constant_parameters=[])
 
-    sys.path.insert(0, os.path.abspath(outdir))
-    model_module = importlib.import_module(model.name)
+    model_module = amici.import_model_module(model.name, outdir)
 
     amici_model = model_module.getModel()
     solver = amici_model.getSolver()
