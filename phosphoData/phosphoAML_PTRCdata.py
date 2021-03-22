@@ -45,6 +45,17 @@ def getCellLinePilotData(syn):
     return tab
 
 
+def getGiltData(syn):
+    '''
+    Collect data from gilteritinib time course data treated from MOLM14 cell lines
+    Here we have varying ligand treatments of the cells ahead of time
+    to simulate early and late resistance
+    '''
+    tabid ='syn24189487'
+    tab = syn.tableQuery('select * from '+tabid).asDataFrame()
+    tab = tab.rename(columns={'CellType':'cellLine','TimePoint':'Time(minutes)'})
+    return tab
+
 def getTramData(syn):
     '''
     Here we have time course treatment of trametinib -
