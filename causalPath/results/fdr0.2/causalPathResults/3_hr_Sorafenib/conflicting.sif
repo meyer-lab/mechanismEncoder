@@ -1,0 +1,16 @@
+CHEK1	phosphorylates	MKI67	http://pathwaycommons.org/pc2/BiochemicalReaction_9c40e9d7996442d35fe7e9cc6f0c4d5b http://pathwaycommons.org/pc2/Catalysis_31b49e0cd4f4c6c4795486b8a12a886b	T1764
+AKT1	phosphorylates	HIRIP3		T84;S98;S357;S136;S196;S370
+PDPK1	phosphorylates	PRKCI		T412
+PRKCI	phosphorylates	CDK7	http://pathwaycommons.org/pc2/Catalysis_839adbfeffffdf76c12cf08657d6e8a8 http://pathwaycommons.org/pc2/BiochemicalReaction_2c57fd5552169d09054be2c2de764a76	T170
+AKT1	phosphorylates	PPP1R13L		S526;S280;S102;S158;S183
+CDK7	phosphorylates	PINX1		T164;S161
+DAPK1	phosphorylates	RPS6		S236;S235
+JUND	downregulates-expression	MYB		
+CDK7	phosphorylates	PPP1R13L		S316;S358;S567;S113;S597;S158;S84;S53;S280;T123;S120;S395;S110;S187
+CHEK1	phosphorylates	CCDC6	http://pathwaycommons.org/pc2/Catalysis_6f12b18afcae83958079e76c17f8ade9 http://pathwaycommons.org/pc2/Catalysis_7882794dd5f7e28c280dfeb4df7ac910 http://pathwaycommons.org/pc2/BiochemicalReaction_4743e2e2f966a0a338c962a003a4998b http://pathwaycommons.org/pc2/BiochemicalReaction_e7b43852b639fd33cc7ccefa459b5b0f	S244;S240
+CHEK1	phosphorylates	MATR3	http://pathwaycommons.org/pc2/Catalysis_590c17db5fcbf9a5f8aeb4563d28ffa9  http://pathwaycommons.org/pc2/Catalysis_0a8d9303a410da7f6f154e7585f7c8da http://pathwaycommons.org/pc2/Catalysis_dbd53a233f719e87653302b79d5b26fd http://pathwaycommons.org/pc2/BiochemicalReaction_a78c5aed663da3c2c21927f1387c4784 http://pathwaycommons.org/pc2/BiochemicalReaction_7d5ae23d46770ec67135b8dd0920f759 http://pathwaycommons.org/pc2/BiochemicalReaction_858413b200af06e2112621a3b7582e05	S4;S195;T150
+AKT1	phosphorylates	AKT1S1	http://pathwaycommons.org/pc2/Catalysis_71dd863a67834b5a582650e0dbe06d95 http://pathwaycommons.org/pc2/Catalysis_538150348f8581d355be9602621f15b4 http://pathwaycommons.org/pc2/Catalysis_958ef3f1d6851352b8f5f8555107d97b http://pathwaycommons.org/pc2/BiochemicalReaction_ccfeecffe3caf4ed4c2e295780196283 http://pathwaycommons.org/pc2/ComplexAssembly_0723f2d7bbbfff1e088d5b30f381b880 http://pathwaycommons.org/pc2/Catalysis_3aab9a2ac962d28569325065a8999f55 http://pathwaycommons.org/pc2/Catalysis_292c8629869ce036b798214d684283d4 http://pathwaycommons.org/pc2/BiochemicalReaction_9ed7d05fd68b199bdc4f849ed4045982 http://pathwaycommons.org/pc2/Catalysis_88b20f98c4866969f3aa62f03687b474 http://identifiers.org/reactome/R-HSA-200143 http://pathwaycommons.org/pc2/Catalysis_4b0dd80e93d2fd91ba3ad4549e400d4d http://identifiers.org/reactome/R-HSA-377186	T246;S183
+CHEK1	phosphorylates	TRIM28	http://pathwaycommons.org/pc2/Catalysis_ad27c0a53b5483f1cc808ab190d5f336 http://pathwaycommons.org/pc2/BiochemicalReaction_1b84a5cb38e5aac2c15ef7b6d1804d82	S473
+MYB	upregulates-expression	SLC1A5	http://pathwaycommons.org/pc2/TemplateReaction_c78e788c0bc39ee50795464b17d8823e http://pathwaycommons.org/pc2/TemplateReactionRegulation_fca69285444318105b546885fdae599f	
+CDK7	phosphorylates	CBL		S900;S452;S483
+BRCA1	upregulates-expression	STAT1		
