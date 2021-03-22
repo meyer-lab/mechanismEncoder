@@ -42,6 +42,8 @@ def getCellLinePilotData(syn):
     tab = syn.tableQuery('select * from '+tabid).asDataFrame()
     tab = tab.rename(columns={'Sample':'sample', 'LogFoldChange':'logRatio'})
     #we need to update the time points for this to be just minutes
+    tab = tab[["sample","Gene","site","cellLine","treatment","timePoint","logRatio"]]
+    print(tab)
     return tab
 
 
@@ -53,7 +55,12 @@ def getGiltData(syn):
     '''
     tabid ='syn24189487'
     tab = syn.tableQuery('select * from '+tabid).asDataFrame()
-    tab = tab.rename(columns={'CellType':'cellLine','TimePoint':'Time(minutes)'})
+    tab = tab.rename(columns={'Sample':'sample', \
+                              'CellType':'cellLine','LogRatio':'logRatio',\
+                              'Time (minutes)':'timePoint'})
+    tab = tab.assign(treatment=lambda x: x['Treatment']+' '+x['Ligand'])
+    tab = tab[["sample","Gene","site","cellLine","treatment","timePoint","logRatio"]]
+    print(tab)
     return tab
 
 def getTramData(syn):
@@ -65,6 +72,8 @@ def getTramData(syn):
     tab = syn.tableQuery('select * from '+tabid).asDataFrame()
     tab = tab.rename(columns={'CellType':'cellLine', "LogRatio":'logRatio',\
                       'TimePoint':'timePoint', 'Treatment':'treatment'})
+    tab = tab[["sample","Gene","site","cellLine","treatment","timePoint","logRatio"]]
+    print(tab)
     return tab
 
 
@@ -76,7 +85,8 @@ def getAllData(syn):
     '''
     tram = getTramData(syn)
     cl = getCellLinePilotData(syn)
-    res = pd.concat([tram, cl]) #TODO if we're printing, get rid of dumb row index
+    gl = getGiltData(syn)
+    res = pd.concat([tram, cl,gl] ) #TODO if we're printing, get rid of dumb row index
     return res
 
 def main():
