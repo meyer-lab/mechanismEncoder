@@ -233,19 +233,19 @@ def add_activation(
     else:
         raise ValueError(f'Invalid activation type {activation_type}.')
 
-    sites = [site for site in site.split('_')]
+    sites = [s for s in site.split('_')]
 
-    for site in sites:
-        if site not in mono.site_states \
-                or len(mono.site_states[site]) != len(valid_states) \
-                or any(state not in mono.site_states[site]
+    for s in sites:
+        if s not in mono.site_states \
+                or len(mono.site_states[s]) != len(valid_states) \
+                or any(state not in mono.site_states[s]
                        for state in valid_states):
-            raise ValueError(f'{site} is not a valid target for '
+            raise ValueError(f'{s} is not a valid target for '
                              f'{activation_type}.')
 
     if activation_type == 'phosphorylation':
-        forward = 'phosphorylation'
-        backward = 'dephosphorylation'
+        forward = 'phosphorylation_' + site
+        backward = 'dephosphorylation_' + site
     elif activation_type == 'nucleotide_exchange':
         forward = 'gtp_exchange'
         backward = 'gdp_exchange'
