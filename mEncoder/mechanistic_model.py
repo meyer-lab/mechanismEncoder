@@ -92,7 +92,7 @@ def add_monomer_synth_deg(m_name: str,
         **{site:
            'u' if site in psites
            else 'gdp' if site in nsites
-           else None if site is 'inh'
+           else None if site == 'inh'
            else asite_states[0]
            for site in sites}
     )

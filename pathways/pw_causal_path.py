@@ -3,7 +3,7 @@ import pandas as pd
 from pysb import Model
 
 from mEncoder.mechanistic_model import (
-    add_monomer_synth_deg, generate_pathway, add_activation, add_observables
+    add_monomer_synth_deg, add_activation, add_observables, add_inhibitor
 )
 
 model = Model('FLT3_MAPK_cp')
@@ -66,5 +66,9 @@ for target in df['Target data ID'].unique():
     ]
     add_activation(model, protein, '_'.join(sites),
                    'phosphorylation', activators)
+
+add_inhibitor(
+    model, 'trametinib', ['ARAF', 'BRAF', 'RAF1']
+)
 
 add_observables(model)
