@@ -11,11 +11,11 @@ matplotlib==3.3.4
 seaborn==0.11.1
 Theano==1.0.5
 git+https://github.com/pysb/pysb
-amici==0.11.13
-petab==0.1.14
+amici==0.11.15
+petab==0.1.18
 sympy==1.7.1
 snakemake==5.32.2
-fides==0.3.0
+fides==0.3.4
 pypesto==0.2.4
 scikit-learn==0.24.1
 synapseclient==2.2.2

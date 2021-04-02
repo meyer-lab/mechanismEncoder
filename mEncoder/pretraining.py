@@ -5,13 +5,16 @@ from pypesto.optimize import FidesOptimizer, OptimizeOptions, minimize
 from pypesto.store import OptimizationResultHDF5Writer
 from pypesto.visualize import waterfall, parameters
 
+
 import petab
+import amici
 import os
 import fides
 import pandas as pd
 import numpy as np
 import theano
 import theano.tensor as tt
+import pypesto.engine
 import matplotlib.pyplot as plt
 
 from typing import Dict, Callable
@@ -207,8 +210,11 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
     solver = problem.objective._objectives[0].amici_solver
 
     solver.setMaxSteps(int(1e5))
-    #solver.setAbsoluteTolerance(1e-12)
-    #solver.setRelativeTolerance(1e-10)
+    solver.setSensitivityMethod(amici.SensitivityMethod.adjoint)
+    solver.setAbsoluteToleranceQuadratures(1e-10)
+    solver.setRelativeToleranceQuadratures(1e-4)
+    solver.setAbsoluteTolerance(1e-12)
+    solver.setRelativeTolerance(1e-8)
     #solver.setAbsoluteToleranceSteadyState(1e-10)
     #solver.setRelativeToleranceSteadyState(1e-8)
 
@@ -216,12 +222,13 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
         e.reinitializeFixedParameterInitialStates = True
 
     optimize_options = OptimizeOptions(
-        startpoint_resample=True, allow_failed_starts=True,
+        startpoint_resample=True, allow_failed_starts=False,
     )
 
     return minimize(
         problem, opt, n_starts=nstarts, options=optimize_options,
         startpoint_method=startpoint_method,
+        engine=pypesto.engine.MultiThreadEngine(n_threads=4)
     )
 
 
