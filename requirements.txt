@@ -18,5 +18,5 @@ snakemake==5.32.2
 fides==0.3.4
 pypesto==0.2.4
 scikit-learn==0.24.1
-synapseclient==2.2.2
+synapseclient==2.3.0
 cptac==0.8.8

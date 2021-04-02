@@ -463,10 +463,10 @@ else:
             static_measurements = [
                 obs_id for obs_id
                 in measurements_condition[petab.OBSERVABLE_ID].unique()
-                if (measurements_condition.query(
-                    f'{petab.OBSERVABLE_ID} == "{obs_id}"'
-                )[petab.TIME] == 0.0).all()
-                and obs_id in observable_table[petab.OBSERVABLE_ID].unique()
+                if obs_id in observable_table[petab.OBSERVABLE_ID].unique()
+                and (measurements_condition[
+                    measurements_condition[petab.OBSERVABLE_ID] == obs_id
+                ][petab.TIME] == 0.0).all()
             ]
             dynamic_measurements = [
                 obs_id for obs_id
