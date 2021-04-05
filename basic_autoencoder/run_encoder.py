@@ -1,38 +1,71 @@
 import argparse
 
+import numpy as np
 from pytorch_lightning.trainer import Trainer
+import torch
+from torch.utils.data import DataLoader
 
-from data.me_loader import MELoader
+from data.loaders.me_loader import MELoader, reformat_csv
 from encoder.pytorch_encoder import NMEncoder
 
 
-def main(parser):
+def run_encoder(train, test, epochs):
     # Instances training dataset
-    data_train = MELoader(parser.train)
+    data_train = MELoader(train)
 
     # Instances testing dataset
-    data_test = MELoader(parser.test)
+    data_test = MELoader(test)
 
     # Instances non-mechanistic autoencoder
     feats = data_train.data.shape[1]
     encoder = NMEncoder(feats, feats // 2)
 
     # Instances PyTorch Lightning trainer
-    trainer = Trainer(gpus=0, num_nodes=1, max_epochs=10)
+    trainer = Trainer(gpus=1, num_nodes=1, max_epochs=epochs)
 
     # Performs model fitting on training set
-    trainer.fit(encoder, data_train)
+    trainer.fit(encoder, DataLoader(dataset=data_train))
 
     # Performs test on testing set
-    performance = trainer.test(encoder, data_test)
-    print(performance)
+    performance = trainer.test(encoder, DataLoader(dataset=data_test))
+
+    return performance[0]["test_loss"]
+
+
+def main(parser):
+    sample_id = 'sample'  # Name of sample ID field
+    descriptor_ids = ['Protein', 'Peptide', 'site']  # Name of sample descriptors
+    value_id = 'logRatio'  # Name of sample value field
+    data = reformat_csv(parser.data, sample_id, descriptor_ids, value_id, drop_axis=1)
+
+    width = 100  # Width of latent attribute layer
+    depth = 1  # Layers in encoder and decoder
+    fold_size = data.shape[0] // parser.folds
+    fold_means = []
+    for fold in range(parser.folds):
+        test = data.iloc[fold_size * fold:fold_size * (fold + 1), :]
+        train = data.drop(range(fold_size * fold, fold_size * (fold + 1)))
+        loss = run_encoder(train, test, parser.epochs)
+        
+        fold_means.append(loss)
+        torch.cuda.empty_cache()
+
+    print(np.mean(fold_means))
 
 
 def _parse_args():
-    parser = argparse.ArgumentParser(description='Instance, train, and test autoencoder.')
-    parser.add_argument('-train', dest='train', required=True, help='Path to training data')
-    parser.add_argument('-test', dest='test', required=True, help='Path to testing data')
-    parser.add_argument('-epochs', dest='epochs', default=10, type=int, help='Training epochs')
+    parser = argparse.ArgumentParser(
+        description="Cross-validate with extendable autoencoder"
+    )
+    parser.add_argument(
+        "-d", "--data", dest="data", required=True, help="Path to AML data"
+    )
+    parser.add_argument(
+        "-e", "--epochs", dest="epochs", default=10, type=int, help="Training epochs"
+    )
+    parser.add_argument(
+        "-f", "--folds", dest="folds", default=30, type=int, help="Cross-validation folds"
+    )
     parser = parser.parse_args()
     return parser
 
