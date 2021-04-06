@@ -145,13 +145,14 @@ mEncoder/amici_models/FLT3_MAPK_AKT_STAT_petab/y.h
 traces/*
 .snakemake/*
 *.csv
-*.tsv
 *.pickle
 *.pdf
 output
 cache
 *.hdf5
 pretraining/*
+*.tsv
+*.tsv
 
-# PyTorch logs
+# PyTorch logging
 */lightning_logs/*
