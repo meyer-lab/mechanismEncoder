@@ -2,6 +2,7 @@ import argparse
 
 import numpy as np
 from pytorch_lightning.trainer import Trainer
+from sklearn.model_selection import KFold
 import torch
 from torch.utils.data import DataLoader
 
@@ -47,7 +48,7 @@ def main(parser):
     sample_id = 'sample'  # Name of sample ID field
     descriptor_ids = ['Protein', 'Peptide', 'site']  # Name of sample descriptors
     value_id = 'logRatio'  # Name of sample value field
-    data = reformat_csv(parser.data, sample_id, descriptor_ids, value_id, drop_axis=1)
+    data = reformat_csv(parser.input, sample_id, descriptor_ids, value_id, drop_axis=1)
 
     width = 100  # Width of latent attribute layer
     depth = 1  # Layers in encoder and decoder
@@ -68,7 +69,7 @@ def _parse_args():
         description="Cross-validate with extendable autoencoder"
     )
     parser.add_argument(
-        "-d", "--data", dest="data", required=True, help="Path to AML data"
+        "-i", "--input", dest="input", required=True, help="Path to AML data"
     )
     parser.add_argument(
         "-e", "--epochs", dest="epochs", default=10, type=int, help="Training epochs"

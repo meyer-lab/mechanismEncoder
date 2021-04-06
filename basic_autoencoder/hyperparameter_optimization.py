@@ -47,6 +47,51 @@ def obj_func(params, data):
     return np.mean(fold_means)
 
 
+def main(parser):
+    max_evals = parser.max_evals
+
+    # Loads previous hyperopt trials (if available)
+    try:
+        trials = pickle.load(open(parser.trials_pkl, 'rb'))
+        max_evals += len(trials)
+    except FileNotFoundError:
+        trials = Trials()
+    
+    # Loads data and converts to wide, samples v. features format
+    sample_id = 'sample'  # Name of sample ID field
+    descriptor_ids = ['Protein', 'Peptide', 'site']  # Name of sample descriptors
+    value_id = 'logRatio'  # Name of sample value field
+    data = reformat_csv(parser.data, sample_id, descriptor_ids, value_id, drop_axis=1)
+
+    # Hyperparameter search space
+    params = {
+        'width': scope.int(hp.quniform('width', 10, 5000, q=1)),
+        'depth': scope.int(hp.quniform('depth', 1, 6, q=1)),
+        'dropout_prob': hp.uniform('dropout_prob', 0, 1),
+        'reg_coef': hp.uniform('reg_coef', 0, 1)
+    }
+
+    # Defines objective function; partial used to permit data import
+    fmin_objective = partial(obj_func, data=data)
+    
+    # The below code runs hyperopt for the provided number of evaluations
+    # We perform only one evaluation at a time; hyperopt has a bug where it
+    # fails to deallocate GPU memory between evaluations
+    for evals in range(len(trials) + 1, max_evals + 1):
+        fmin(
+            fn=fmin_objective, 
+            space=params, 
+            algo=tpe.suggest, 
+            max_evals=evals,
+            trials=trials
+        )
+        torch.cuda.empty_cache()
+        with open('hp_aml_trials.pkl', 'wb') as handle:
+            pickle.dump(trials, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+        time.sleep(0.01)  # Gives time for garbage collection
+
+
 def _read_args():
     """
     Reads command line arguments to setup hyperopt and define input data.
@@ -84,46 +129,6 @@ def _read_args():
     )
 
     return parser.parse_args()
-
-
-def main(parser):
-    max_evals = parser.max_evals
-    try:
-        trials = pickle.load(open(parser.trials_pkl, 'rb'))
-        max_evals += len(trials)
-    except FileNotFoundError:
-        trials = Trials()
-    
-    sample_id = 'sample'  # Name of sample ID field
-    descriptor_ids = ['Protein', 'Peptide', 'site']  # Name of sample descriptors
-    value_id = 'logRatio'  # Name of sample value field
-    data = reformat_csv(parser.data, sample_id, descriptor_ids, value_id, drop_axis=1)
-
-    params = {
-        'width': scope.int(hp.quniform('width', 10, 5000, q=1)),
-        'depth': scope.int(hp.quniform('depth', 1, 6, q=1)),
-        'dropout_prob': hp.uniform('dropout_prob', 0, 1),
-        'reg_coef': hp.uniform('reg_coef', 0, 1)
-    }
-
-    fmin_objective = partial(obj_func, data=data)
-    
-    # The below code runs hyperopt for the provided number of evaluations
-    # We perform only one evaluation at a time; hyperopt has a bug where it
-    # fails to deallocate GPU memory between evaluations
-    for evals in range(len(trials) + 1, max_evals + 1):
-        fmin(
-            fn=fmin_objective, 
-            space=params, 
-            algo=tpe.suggest, 
-            max_evals=evals,
-            trials=trials
-        )
-        torch.cuda.empty_cache()
-        with open('hp_aml_trials.pkl', 'wb') as handle:
-            pickle.dump(trials, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-        time.sleep(0.01)  # Gives time for garbage collection
 
 
 if __name__ == '__main__':

@@ -152,3 +152,6 @@ output
 cache
 *.hdf5
 pretraining/*
+
+# PyTorch logs
+*/lightning_logs/*
