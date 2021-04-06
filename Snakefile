@@ -4,7 +4,7 @@ from mEncoder.training import trace_path, TRACE_FILE_TEMPLATE
 
 HIDDEN_LAYERS = [2]
 PATHWAYS = ['FLT3_MAPK_AKT_STAT']
-DATASETS = ['synthetic']
+DATASETS = ['synthetic', 'aml_ptrc', 'cppa_skin', 'cppa_breast']
 OPTIMIZERS = ['fides']
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
@@ -20,13 +20,15 @@ rule process_data:
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
         pathway=os.path.join('pathways', 'pw_FLT3_MAPK_AKT_STAT.py')
     output:
-        datafile=os.path.join('data', '{data}__{model}.csv'),
-        datafigure=os.path.join('data', '{data}__{model}.pdf')
+        datafiles=expand(
+            os.path.join('data', '{{data}}__{{model}}__{file}.tsv'),
+            file=['conditions', 'measurements', 'observables']
+        )
     wildcard_constraints:
         model='[\w_]+',
         data='[\w]+',
     shell:
-        'python3 {input.script} {wildcards.data} {wildcards.model}'
+        'python3 {input.script} {wildcards.model} {wildcards.data}'
 
 rule compile_mechanistic_model:
     input:
@@ -35,7 +37,7 @@ rule compile_mechanistic_model:
         enc_code=os.path.join('mEncoder', 'encoder.py'),
         autoencoder_code=os.path.join('mEncoder', 'autoencoder.py'),
         pathway=os.path.join('pathways', 'pw_{model}.py'),
-        data=os.path.join('data', '{data}__{model}.csv')
+        data=rules.process_data.output.datafiles
     output:
         model=os.path.join('amici_models', '{model}_{data}__{model}_petab',
                            '{model}', '{model}.py'),
@@ -43,7 +45,7 @@ rule compile_mechanistic_model:
         model='[\w_]+',
         data='[\w]+',
     shell:
-        'python3 {input.script} {wildcards.data} {wildcards.model}'
+        'python3 {input.script} {wildcards.model} {wildcards.data}'
 
 
 rule pretrain_per_sample:
@@ -52,6 +54,7 @@ rule pretrain_per_sample:
         pretraining_code=os.path.join('mEncoder', 'pretraining.py'),
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
         model=rules.compile_mechanistic_model.output.model,
+        data=rules.process_data.output.datafiles,
     output:
         pretraining=os.path.join(
             'pretraining', '{model}__{data}__{model}.txt'
@@ -71,6 +74,7 @@ rule pretrain_cross_sample:
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
         pretrain_per_sample=rules.pretrain_per_sample.output.pretraining,
         model=rules.compile_mechanistic_model.output.model,
+        data=rules.process_data.output.datafiles,
     output:
         pretraining=os.path.join(
             'pretraining', '{model}__{data}__{model}__input.csv'
@@ -107,7 +111,7 @@ rule estimate_parameters:
         encoder_code=os.path.join('mEncoder', 'encoder.py'),
         training_code=os.path.join('mEncoder', 'training.py'),
         autoencoder_code=os.path.join('mEncoder', 'autoencoder.py'),
-        dataset=rules.process_data.output.datafile,
+        dataset=rules.process_data.output.datafiles,
         pretrain_encoder=rules.pretrain_encoder_inflate.output.pretraining,
         model=rules.compile_mechanistic_model.output.model,
     output:

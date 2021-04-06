@@ -25,9 +25,11 @@ N_STARTS = 5
 
 outfile = os.path.join('results', MODEL, DATA,
                        f'{OPTIMIZER}__{N_HIDDEN}__full.pickle')
-mae = MechanisticAutoEncoder(N_HIDDEN, os.path.join('data',
-                                                    f'{DATA}__{MODEL}.csv'),
-                             MODEL)
+mae = MechanisticAutoEncoder(N_HIDDEN, (
+    os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
+    os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
+    os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
+), MODEL)
 problem = create_pypesto_problem(mae)
 
 with open(outfile, 'rb') as f:

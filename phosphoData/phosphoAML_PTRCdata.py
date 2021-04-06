@@ -8,10 +8,30 @@ with time course treatment to my knowledge
 import synapseclient
 import pandas as pd
 
-def getBeatAMLPatientData(syn):
-    tabid = 'syn22156830'
-    tab = syn.tableQuery('select * from '+tabid).asDataFrame()
-    return tab
+def getBeatAMLPatientData(syn, normalized = False):
+    '''
+    Collects uncorrected phosphoproteomics data or normalized
+    '''
+    if normalized:
+        tabid = 'syn22156830'
+        soraf_tabid = 'syn22314122'
+        comb_tabid = 'syn22156814'
+
+    else:
+        tabid = 'syn24227903'
+        soraf_tabid = 'syn24228075'
+        comb_tabid = 'syn24240355'
+    #get original data
+    tab = syn.tableQuery("select Sample,Gene,site,Peptide,LogFoldChange from "+tabid).asDataFrame()
+    #get sorafenib data
+    stab = syn.tableQuery("select 'AML sample' as Sample,Gene,site,Peptide,LogFoldChange from "+soraf_tabid+" where Treatment='Vehicle' and \"Cell number\">5000000").asDataFrame()
+
+    #get combo data
+    ctab = syn.tableQuery("select distinct 'AML sample' as Sample,Gene,site,Peptide,value as LogFoldChange from "+comb_tabid).asDataFrame()
+
+    ft = pd.concat([tab,stab,ctab])
+    print (set(ft.Sample))
+    return ft
 
 def getCellLinePilotData(syn):
     '''
@@ -22,18 +42,38 @@ def getCellLinePilotData(syn):
     tab = syn.tableQuery('select * from '+tabid).asDataFrame()
     tab = tab.rename(columns={'Sample':'sample', 'LogFoldChange':'logRatio'})
     #we need to update the time points for this to be just minutes
+    tab = tab[["sample","Gene","site","cellLine","treatment","timePoint","logRatio"]]
+    print(tab)
     return tab
 
+
+def getGiltData(syn):
+    '''
+    Collect data from gilteritinib time course data treated from MOLM14 cell lines
+    Here we have varying ligand treatments of the cells ahead of time
+    to simulate early and late resistance
+    '''
+    tabid ='syn24189487'
+    tab = syn.tableQuery('select * from '+tabid).asDataFrame()
+    tab = tab.rename(columns={'Sample':'sample', \
+                              'CellType':'cellLine','LogRatio':'logRatio',\
+                              'Time (minutes)':'timePoint'})
+    tab = tab.assign(treatment=lambda x: x['Treatment']+' '+x['Ligand'])
+    tab = tab[["sample","Gene","site","cellLine","treatment","timePoint","logRatio"]]
+    print(tab)
+    return tab
 
 def getTramData(syn):
     '''
     Here we have time course treatment of trametinib -
     less interesting because it only has two timepoints
     '''
-    tabid = 'syn22986341'
+    tabid = 'syn24389738'
     tab = syn.tableQuery('select * from '+tabid).asDataFrame()
     tab = tab.rename(columns={'CellType':'cellLine', "LogRatio":'logRatio',\
                       'TimePoint':'timePoint', 'Treatment':'treatment'})
+    tab = tab[["sample","Gene","site","cellLine","treatment","timePoint","logRatio"]]
+    print(tab)
     return tab
 
 
@@ -45,7 +85,8 @@ def getAllData(syn):
     '''
     tram = getTramData(syn)
     cl = getCellLinePilotData(syn)
-    res = pd.concat([tram, cl]) #TODO if we're printing, get rid of dumb row index
+    gl = getGiltData(syn)
+    res = pd.concat([tram, cl,gl] ) #TODO if we're printing, get rid of dumb row index
     return res
 
 def main():
@@ -57,7 +98,10 @@ def main():
     res = getAllData(syn)
     res.to_csv('combinedPhosphoData.csv')
     tab = synapseclient.build_table('Combined CTRP Cell Line Phospho data','syn17084058',res)
-    # syn.store(tab)
+    syn.store(tab)
+
+    res = getBeatAMLPatientData(syn)
+    res.to_csv("combinedPatientData.csv")
 
 if __name__=='__main__':
     main()

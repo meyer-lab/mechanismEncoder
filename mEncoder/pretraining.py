@@ -5,13 +5,16 @@ from pypesto.optimize import FidesOptimizer, OptimizeOptions, minimize
 from pypesto.store import OptimizationResultHDF5Writer
 from pypesto.visualize import waterfall, parameters
 
+
 import petab
+import amici
 import os
 import fides
 import pandas as pd
 import numpy as np
 import theano
 import theano.tensor as tt
+import pypesto.engine
 import matplotlib.pyplot as plt
 
 from typing import Dict, Callable
@@ -25,7 +28,7 @@ basedir = os.path.dirname(os.path.dirname(__file__))
 
 def generate_per_sample_pretraining_problems(
         ae: MechanisticAutoEncoder
-) -> Dict[str, Problem]:
+) -> Dict[str, PetabImporterPysb]:
     """
     Creates a pypesto problem that can be used to train the
     mechanistic model individually on every sample
@@ -49,28 +52,39 @@ def generate_per_sample_pretraining_problems(
     # has the observables added and this might lead to issues.
     clean_model = load_pathway('pw_' + ae.pathway_name)
 
+    samples = [
+        c for c in pp.condition_df.index
+        if c in pp.measurement_df[petab.PREEQUILIBRATION_CONDITION_ID].unique()
+    ]
+
     return {
-        cond: PetabImporterPysb(PysbPetabProblem(
+        sample: PetabImporterPysb(PysbPetabProblem(
             parameter_df=pp.parameter_df[[
                 not name.startswith(MODEL_FEATURE_PREFIX)
-                or name.endswith(cond)
+                or name.endswith(sample)
                 for name in pp.parameter_df.index
             ]],
             observable_df=pp.observable_df,
             measurement_df=pp.measurement_df[
-                pp.measurement_df[petab.SIMULATION_CONDITION_ID] == cond
-                ],
+                pp.measurement_df[petab.PREEQUILIBRATION_CONDITION_ID]
+                == sample
+            ],
             condition_df=pp.condition_df[[
-                name == cond
+                name.startswith(sample)
                 for name in pp.condition_df.index
             ]],
+            visualization_df=pd.read_csv(
+                os.path.join('data',
+                             f'{ae.data_name}__'
+                             f'{sample}__visualization.tsv'), sep='\t'
+            ),
             pysb_model=Model(base=clean_model, name=pp.pysb_model.name),
         ), output_folder=os.path.join(
             basedir, 'amici_models',
             f'{pp.pysb_model.name}_'
             f'{ae.data_name}_petab'
-        )).create_problem()
-        for cond in pp.condition_df.index
+        ))
+        for sample in samples
     }
 
 
@@ -156,7 +170,7 @@ def generate_encoder_inflate_pretraining_problem(
 def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
              fatol: float = 1e-2,
              subspace: fides.SubSpaceDim = fides.SubSpaceDim.FULL,
-             maxiter: int = int(1e3)):
+             maxiter: int = int(1e3)) -> Result:
     """
     Pretrain the provided problem via optimization.
 
@@ -190,18 +204,31 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
             fides.Options.SUBSPACE_DIM: subspace,
             fides.Options.REFINE_STEPBACK: False,
             fides.Options.STEPBACK_STRAT: fides.StepBackStrategy.SINGLE_REFLECT
-
         }
     )
 
+    solver = problem.objective._objectives[0].amici_solver
+
+    solver.setMaxSteps(int(1e5))
+    solver.setSensitivityMethod(amici.SensitivityMethod.adjoint)
+    solver.setAbsoluteToleranceQuadratures(1e-10)
+    solver.setRelativeToleranceQuadratures(1e-4)
+    solver.setAbsoluteTolerance(1e-12)
+    solver.setRelativeTolerance(1e-8)
+    #solver.setAbsoluteToleranceSteadyState(1e-10)
+    #solver.setRelativeToleranceSteadyState(1e-8)
+
+    for e in problem.objective._objectives[0].edatas:
+        e.reinitializeFixedParameterInitialStates = True
+
     optimize_options = OptimizeOptions(
-        startpoint_resample=True, allow_failed_starts=True,
+        startpoint_resample=True, allow_failed_starts=False,
     )
 
     return minimize(
-        problem, opt,
-        n_starts=nstarts, options=optimize_options,
+        problem, opt, n_starts=nstarts, options=optimize_options,
         startpoint_method=startpoint_method,
+        engine=pypesto.engine.MultiThreadEngine(n_threads=4)
     )
 
 

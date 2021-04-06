@@ -12,14 +12,19 @@ import matplotlib.pyplot as plt
 from sklearn import decomposition
 
 import amici
+import petab
 import os
+import pysb
+import re
+
+from typing import Tuple
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 
 
 def generate_synthetic_data(pathway_name: str,
                             latent_dimension: int = 2,
-                            n_samples: int = 20) -> str:
+                            n_samples: int = 20) -> Tuple[str, str, str]:
     """
     Generates sample data using the mechanistic model.
 
@@ -36,13 +41,14 @@ def generate_synthetic_data(pathway_name: str,
     :return:
         path to csv where generated data was saved
     """
-    model, solver = load_model('pw_' + pathway_name, force_compile=True)
+    model, solver = load_model('pw_' + pathway_name, force_compile=True,
+                               add_observables=True)
 
     # setup model parameter scales
     model.setParameterScale(amici.parameterScalingFromIntVector([
         amici.ParameterScaling.none
-        if par_id.startswith(MODEL_FEATURE_PREFIX)
-           or parameter_boundaries_scales[par_id.split('_')[-1]][2] == 'lin'
+        if par_id.startswith(MODEL_FEATURE_PREFIX) or par_id.endswith('_0')
+        or parameter_boundaries_scales[par_id.split('_')[-1]][2] == 'lin'
         else amici.ParameterScaling.log10
         for par_id in model.getParameterIds()
     ]))
@@ -52,17 +58,19 @@ def generate_synthetic_data(pathway_name: str,
     # set numpy random seed to ensure reproducibility
     np.random.seed(0)
 
+    sample_pars = [par_id for par_id in model.getParameterIds()
+                   if par_id.startswith(MODEL_FEATURE_PREFIX)]
+
     # generate static parameters that are consistent across samples
     static_pars = dict()
     for par_id in model.getParameterIds():
-        if par_id.startswith(MODEL_FEATURE_PREFIX):
+        if par_id in sample_pars:
+            continue
+        if par_id.endswith('_0'):
+            static_pars[par_id] = 0.0
             continue
         lb, ub, _ = parameter_boundaries_scales[par_id.split('_')[-1]]
         static_pars[par_id] = np.random.random() * (ub - lb) + lb
-
-    # identify which parameters may vary across samples
-    sample_pars = [par_id for par_id in model.getParameterIds()
-                   if par_id.startswith(MODEL_FEATURE_PREFIX)]
 
     encoder = AutoEncoder(np.zeros((1, model.ny)),
                           n_hidden=latent_dimension, n_params=len(sample_pars))
@@ -103,36 +111,14 @@ def generate_synthetic_data(pathway_name: str,
             samples.append(sample)
             embeddings.append(embedding)
 
-    # create dataframe
+    # prepare petab
+    datadir = os.path.join(basedir, 'data')
+    os.makedirs(datadir, exist_ok=True)
+
     df = pd.concat(samples)
     df[list(model.getObservableIds())].rename(columns={
         o: o.replace('_obs', '') for o in model.getObservableIds()
     }).boxplot(rot=90)
-
-    # format according to reference example
-    formatted_df = pd.melt(df[list(model.getObservableIds()) + ['Sample']],
-                           id_vars=['Sample'])
-    formatted_df.rename(columns={
-        'variable': 'site',
-        'value': 'LogFoldChange',
-    }, inplace=True)
-    formatted_df['site'] = formatted_df['site'].apply(
-        lambda x: x.replace('_obs', '')[1:]
-    )
-    formatted_df['Gene'] = formatted_df['site'].apply(
-        lambda x: x.split('_')[0]
-    )
-    formatted_df['Peptide'] = 'X.XXXXX*XXXXX.X'
-    formatted_df['site'] = formatted_df['site'].apply(
-        lambda x: x.replace('_', '-') +
-        (x.split('_')[1][0].lower() if len(x.split('_')) > 1 else '')
-    )
-
-    # save to csv
-    datadir = os.path.join(basedir, 'data')
-    os.makedirs(datadir, exist_ok=True)
-    datafile = os.path.join(datadir,
-                            f'synthetic__{pathway_name}.csv')
     plot_and_save_fig(os.path.join(datadir,
                                    f'synthetic__{pathway_name}.pdf'))
 
@@ -171,8 +157,62 @@ def generate_synthetic_data(pathway_name: str,
         datadir, f'synthetic__{pathway_name}__data_pca.pdf'
     ))
 
-    formatted_df.to_csv(datafile)
-    return datafile
+    # create petab & save to csv
+    # MEASUREMENTS
+    measurements = df[['Sample', petab.TIME, ] +
+                      list(model.getObservableIds())]
+    measurements = pd.melt(measurements,
+                           id_vars=[petab.TIME, 'Sample'],
+                           value_name=petab.MEASUREMENT,
+                           var_name=petab.OBSERVABLE_ID)
+
+    measurements[petab.TIME] = 0.0
+    measurements[petab.SIMULATION_CONDITION_ID] = \
+        measurements['Sample'].apply(
+            lambda x: f'sample_{x}'
+        )
+    measurements[petab.PREEQUILIBRATION_CONDITION_ID] = \
+        measurements['Sample'].apply(
+            lambda x: f'sample_{x}'
+        )
+
+    measurements.drop(columns=['Sample'], inplace=True)
+
+    measurement_file = os.path.join(
+        datadir, f'synthetic__{pathway_name}__measurements.tsv'
+    )
+    measurements.to_csv(measurement_file, sep='\t')
+
+    # CONDITIONS
+    condition_file = os.path.join(
+        datadir, f'synthetic__{pathway_name}__conditions.tsv'
+    )
+    conditions = pd.DataFrame({
+        petab.CONDITION_ID:
+            measurements[petab.SIMULATION_CONDITION_ID].unique()
+    })
+    for name, value in static_pars.items():
+        if name.endswith('_0'):
+            conditions[name] = value
+    conditions.set_index(petab.CONDITION_ID, inplace=True)
+    conditions.to_csv(condition_file, sep='\t')
+
+    # OBSERVABLES
+    observables = pd.DataFrame({
+        petab.OBSERVABLE_ID: model.getObservableIds(),
+        petab.OBSERVABLE_NAME: model.getObservableNames(),
+    })
+    observables[petab.OBSERVABLE_FORMULA] = '0.0'
+    observables[petab.NOISE_DISTRIBUTION] = 'normal'
+    observables[petab.NOISE_FORMULA] = '1.0'
+
+    observable_file = os.path.join(
+        datadir, f'synthetic__{pathway_name}__observables.tsv'
+    )
+    observables.set_index(petab.OBSERVABLE_ID, inplace=True)
+    observables.to_csv(observable_file, sep='\t')
+
+    return measurement_file, condition_file, observable_file
 
 
 def plot_embedding(embedding: np.ndarray, ax: plt.Axes):
@@ -195,4 +235,3 @@ def plot_pca_inputs(x: np.ndarray, embed_ax: plt.Axes,
         vexpl_ax.plot(np.cumsum(pca.explained_variance_ratio_))
         vexpl_ax.set_xlabel('number of components')
         vexpl_ax.set_ylabel('cumulative explained variance')
-

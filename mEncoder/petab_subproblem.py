@@ -1,6 +1,6 @@
-import re
 import os
 import petab
+import pysb
 
 import pandas as pd
 import numpy as np
@@ -11,16 +11,20 @@ from pypesto.petab.pysb_importer import PetabImporterPysb
 from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, \
     load_pathway, basedir
 
+from typing import Tuple
 
-def load_petab(datafile: str, pathway_name: str, par_input_scale: float):
+
+def load_petab(datafiles: Tuple[str, str, str],
+               pathway_name: str,
+               par_input_scale: float):
     """
     Imports data from a csv and converts it to the petab format. This
     function is used to connect the mechanistic model to the specified data
     in order to defines the loss function of the autoencoder up to the
     inflated parameters
 
-    :param datafile:
-        path to data csv
+    :param datafiles:
+        tuple of paths to measurements, conditions and observables files
 
     :param pathway_name:
         name of pathway to use for model
@@ -30,72 +34,47 @@ def load_petab(datafile: str, pathway_name: str, par_input_scale: float):
         scale, also influence l2 regularization strength (std of gaussian
         prior is par_input_scale/2)
     """
-    data_df = pd.read_csv(datafile, index_col=[0])
+    measurement_table = pd.read_csv(datafiles[0], index_col=0, sep='\t')
+    condition_table = pd.read_csv(datafiles[1], index_col=0, sep='\t')
+    observable_table = pd.read_csv(datafiles[2], index_col=0, sep='\t')
 
     model = load_pathway(pathway_name)
 
     features = [par for par in model.parameters
                 if par.name.startswith(MODEL_FEATURE_PREFIX)]
 
-    def condition_id_from_sample(cond_id):
-        return f'sample_{cond_id}'
-
     # CONDITION TABLE
     # this defines the different samples. here we define the mapping from
-    # input paraeters to model parameters
-    conditions = {
-        petab.CONDITION_ID:  [condition_id_from_sample(x)
-                              for x in data_df.Sample.unique()]
-    }
+    # input parameters to model parameters
+
+    preeq_conds = dict()
+    for cond in list(condition_table.index):
+        candidates = measurement_table[measurement_table[
+            petab.SIMULATION_CONDITION_ID] == cond
+        ][petab.PREEQUILIBRATION_CONDITION_ID].unique()
+        if len(candidates) > 1:
+            raise RuntimeError('Found multiple different preequilibration '
+                               f'conditions {candidates} for condition '
+                               f'{cond}, which is not supported.')
+        if len(candidates) == 0:
+            condition_table.drop(index=cond, inplace=True)
+            continue
+        preeq_conds[cond] = candidates[0]
+
     for feature in features:
-        conditions[feature.name] = [
-            f'{feature.name}_{s}' for s in conditions[petab.CONDITION_ID]
+        condition_table[feature.name] = [
+            f'{feature.name}__{preeq_conds[s]}' for s in condition_table.index
         ]
-
-    condition_table = pd.DataFrame(conditions).set_index(petab.CONDITION_ID)
-
-    # MEASUREMENT TABLE
-    # this defines the model we will later train the model on
-    measurement_table = data_df[['Sample', 'LogFoldChange', 'site']].copy()
-    measurement_table.rename(columns={
-        'Sample': petab.SIMULATION_CONDITION_ID,
-        'LogFoldChange': petab.MEASUREMENT,
-        'site': petab.OBSERVABLE_ID,
-    }, inplace=True)
-    measurement_table[petab.SIMULATION_CONDITION_ID] = \
-        measurement_table[petab.SIMULATION_CONDITION_ID].apply(
-            condition_id_from_sample
-        )
-    measurement_table[petab.OBSERVABLE_ID] = measurement_table[
-        petab.OBSERVABLE_ID
-    ].apply(lambda x: observable_id_to_model_expr(x.replace('-', '_')))
-    measurement_table[petab.TIME] = np.inf
-
-    # filter for whats available in the model:
-    measurement_table = measurement_table.loc[
-        measurement_table[petab.OBSERVABLE_ID].apply(
-            lambda x: x in [expr.name for expr in model.expressions]
-        ), :
-    ]
-
-    # OBSERVABLE TABLE
-    # this defines how model simulation are linked to experimental data,
-    # currently this uses quantities that were already defined in the model
-    observable_ids = measurement_table[petab.OBSERVABLE_ID].unique()
-
-    observable_table = pd.DataFrame({
-        petab.OBSERVABLE_ID: observable_ids,
-        petab.OBSERVABLE_NAME: observable_ids,
-        petab.OBSERVABLE_FORMULA: ['0.0' for _ in observable_ids],
-    }).set_index(petab.OBSERVABLE_ID)
-    observable_table[petab.NOISE_DISTRIBUTION] = 'normal'
-    observable_table[petab.NOISE_FORMULA] = '1.0'
 
     # PARAMETER TABLE
     # this defines the full set of parameters including boundaries, nominal
     # values, scale, priors and whether they will be estimated or not.
     params = [par for par in model.parameters
-              if not par.name.startswith(MODEL_FEATURE_PREFIX)]
+              if par.name not in condition_table.columns] + \
+        [pysb.Parameter(f'{obs.replace("_obs","")}_scale', 1.0)
+         for obs in observable_table.index] + \
+        [pysb.Parameter(f'{obs.replace("_obs", "")}_offset', 0.0)
+         for obs in observable_table.index]
 
     transforms = {
         'lin': lambda x: x,
@@ -116,10 +95,12 @@ def load_petab(datafile: str, pathway_name: str, par_input_scale: float):
         petab.NOMINAL_VALUE: par.value,
     } for par in params]
 
-    # add additional input parameters for every sample
-    for cond in condition_table.index.values:
+    # add additional input parameters for every base condition
+    for cond in measurement_table[
+        petab.PREEQUILIBRATION_CONDITION_ID
+    ].unique():
         param_defs.extend([{
-            petab.PARAMETER_ID: f'{par.name}_{cond}',
+            petab.PARAMETER_ID: f'{par.name}__{cond}',
             petab.LOWER_BOUND: 10**-par_input_scale,
             petab.UPPER_BOUND: 10**par_input_scale,
             petab.PARAMETER_SCALE: 'log10',
@@ -136,16 +117,20 @@ def load_petab(datafile: str, pathway_name: str, par_input_scale: float):
 
     # add l2 regularization to input parameters
     parameter_table[petab.OBJECTIVE_PRIOR_TYPE] = [
-        petab.PARAMETER_SCALE_NORMAL if name.startswith('INPUT')
+        petab.PARAMETER_SCALE_NORMAL if name.startswith(MODEL_FEATURE_PREFIX)
         else petab.PARAMETER_SCALE_UNIFORM
         for name in parameter_table.index
     ]
     parameter_table[petab.OBJECTIVE_PRIOR_PARAMETERS] = [
-        f'0.0;{par_input_scale * 2}' if name.startswith('INPUT')
+        f'0.0;{par_input_scale * 2}' if name.startswith(MODEL_FEATURE_PREFIX)
         else f'{parameter_table.loc[name, petab.LOWER_BOUND]};'
              f'{parameter_table.loc[name, petab.UPPER_BOUND]}'
         for name in parameter_table.index
     ]
+
+    data_name = '__'.join(os.path.splitext(
+        os.path.basename(datafiles[0])
+    )[0].split('__')[:-1])
 
     return PetabImporterPysb(PysbPetabProblem(
         measurement_df=measurement_table,
@@ -155,21 +140,13 @@ def load_petab(datafile: str, pathway_name: str, par_input_scale: float):
         pysb_model=model,
     ), output_folder=os.path.join(
         basedir, 'amici_models',
-        f'{model.name}_{os.path.splitext(os.path.basename(datafile))[0]}_petab'
+        f'{model.name}_{data_name}_petab'
     ))
 
 
-def observable_id_to_model_expr(obs_id: str) -> str:
-    """
-    Maps site definitions from data to model observables
-
-    :param obs_id:
-        identifier of the phosphosite in the data table
-
-    :return:
-        the name of the corresponding observable in the model
-    """
-    phospho_site_pattern = r'_[S|Y|T][0-9]+[s|y|t]$'
-    return ('p' if re.search(phospho_site_pattern, obs_id) else 't') + \
-           (obs_id[:-1] if re.search(phospho_site_pattern, obs_id)
-            else obs_id) + '_obs'
+def filter_observables(petab_problem: petab.Problem):
+    petab_problem.measurement_df = petab_problem.measurement_df.loc[
+        petab_problem.measurement_df[petab.OBSERVABLE_ID].apply(
+            lambda x: x in petab_problem.observable_df.index
+        ), :
+    ]
