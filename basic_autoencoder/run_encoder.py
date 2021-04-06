@@ -10,6 +10,17 @@ from encoder.pytorch_encoder import NMEncoder
 
 
 def run_encoder(train, test, epochs):
+    """
+    Instances and runs autoencoder.
+
+    Parameters:
+        train (pandas.DataFrame): DataFrame of training data
+        test (pandas.DataFrame): DataFrame of testing data
+        epochs (int): Training epochs
+
+    Returns:
+        Autoencoder loss on test data
+    """
     # Instances training dataset
     data_train = MELoader(train)
 
@@ -40,15 +51,14 @@ def main(parser):
 
     width = 100  # Width of latent attribute layer
     depth = 1  # Layers in encoder and decoder
-    fold_size = data.shape[0] // parser.folds
+
     fold_means = []
-    for fold in range(parser.folds):
-        test = data.iloc[fold_size * fold:fold_size * (fold + 1), :]
-        train = data.drop(range(fold_size * fold, fold_size * (fold + 1)))
+    kf = KFold(n_splits=parser.folds)
+    for train_index, test_index in kf.split(data):
+        test = data.iloc[test_index, :]
+        train = data.iloc[train_index, :]
         loss = run_encoder(train, test, parser.epochs)
-        
         fold_means.append(loss)
-        torch.cuda.empty_cache()
 
     print(np.mean(fold_means))
 

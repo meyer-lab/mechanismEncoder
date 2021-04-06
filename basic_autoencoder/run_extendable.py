@@ -2,6 +2,7 @@ import argparse
 
 import numpy as np
 from pytorch_lightning.trainer import Trainer
+from sklearn.model_selection import KFold
 import torch
 from torch.utils.data import DataLoader
 
@@ -10,6 +11,21 @@ from encoder.pytorch_encoder_extendable import NMEncoder
 
 
 def run_encoder(train, test, epochs, width, depth, dropout_prob=0.2, reg_coef=0):
+    """
+    Instances and runs extendable autoencoder.
+
+    Parameters:
+        train (pandas.DataFrame): DataFrame of training data
+        test (pandas.DataFrame): DataFrame of testing data
+        epochs (int): Training epochs
+        width (int): Number of latent attributes
+        depth (int): Number of encoding/decoding layers
+        dropout_prob (float, default=0.2): Probability of drop-out
+        reg_coef (float, default=0): Regularization coefficient
+
+    Returns:
+        Autoencoder loss on test data
+    """
     # Instances training dataset
     data_train = MELoader(train)
 
@@ -49,15 +65,15 @@ def main(parser):
 
     width = 100  # Width of latent attribute layer
     depth = 1  # Layers in encoder and decoder
-    fold_size = data.shape[0] // parser.folds
-    fold_means = []
-    for fold in range(parser.folds):
-        test = data.iloc[fold_size * fold:fold_size * (fold + 1), :]
-        train = data.drop(range(fold_size * fold, fold_size * (fold + 1)))
-        loss = run_encoder(train, test, parser.epochs, width, depth)
 
+    fold_means = []
+    kf = KFold(n_splits=parser.folds)
+    for train_index, test_index in kf.split(data):
+        test = data.iloc[test_index, :]
+        train = data.iloc[train_index, :]
+        loss = run_encoder(train, test, width, 20, depth, dropout_prob=dropout_prob, 
+                           reg_coef=reg_coef)
         fold_means.append(loss)
-        torch.cuda.empty_cache()
 
     print(np.mean(fold_means))
 

@@ -9,39 +9,47 @@ from hyperopt import fmin, hp, tpe, Trials
 from hyperopt.pyll import scope
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import KFold
 import torch
 
-from data.loaders.cv_loader import reformat_csv
-from run_CV import run_encoder
+from data.loaders.me_loader import reformat_csv
+from run_extendable import run_encoder
 
 CV_FOLDS = 30
 
 
 def obj_func(params, data):
+    """
+    Hyperopt objective function implemented by fmin. Calculates the loss in running the 
+    autoencoder with the provided parameters.
+
+    Parameters:
+        params (dict): Dictionary of autoencoder hyper-parameters
+        data (pandas.DataFrame): Data for autoencoding
+
+    Returns:
+        Average autoencoder loss over cross-validation folds
+    """
     width = params['width']
     depth = params['depth']
     dropout_prob = params['dropout_prob']
     reg_coef = params['reg_coef']
-    fold_size = data.shape[0] // CV_FOLDS
 
     fold_means = []
-    for fold in range(CV_FOLDS):
-        test = data.iloc[fold_size * fold:fold_size * (fold + 1), :]
-        train = data.drop(range(fold_size * fold, fold_size * (fold + 1)))
-        loss = run_encoder(train, test, width, depth, dropout_prob=dropout_prob, 
+    kf = KFold(n_splits=CV_FOLDS)
+    for train_index, test_index in kf.split(data):
+        test = data.iloc[test_index, :]
+        train = data.iloc[train_index, :]
+        loss = run_encoder(train, test, width, 20, depth, dropout_prob=dropout_prob, 
                            reg_coef=reg_coef)
         fold_means.append(loss)
-
-        gc.collect()
-        torch.cuda.empty_cache()
 
     return np.mean(fold_means)
 
 
 def _read_args():
     """
-    Reads command line arguments--we use these to specify pickle files for
-    classification
+    Reads command line arguments to setup hyperopt and define input data.
 
     Parameters:
         None
@@ -100,8 +108,10 @@ def main(parser):
 
     fmin_objective = partial(obj_func, data=data)
     
+    # The below code runs hyperopt for the provided number of evaluations
+    # We perform only one evaluation at a time; hyperopt has a bug where it
+    # fails to deallocate GPU memory between evaluations
     for evals in range(len(trials) + 1, max_evals + 1):
-        print(torch.cuda.memory_reserved(device=None))
         fmin(
             fn=fmin_objective, 
             space=params, 
@@ -113,7 +123,7 @@ def main(parser):
         with open('hp_aml_trials.pkl', 'wb') as handle:
             pickle.dump(trials, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-        time.sleep(0.01)
+        time.sleep(0.01)  # Gives time for garbage collection
 
 
 if __name__ == '__main__':
