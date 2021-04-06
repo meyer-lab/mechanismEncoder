@@ -1,9 +1,9 @@
 import argparse
 
 import numpy as np
+import torch
 from pytorch_lightning.trainer import Trainer
 from sklearn.model_selection import KFold
-import torch
 from torch.utils.data import DataLoader
 
 from data.loaders.me_loader import MELoader, reformat_csv
@@ -45,9 +45,9 @@ def run_encoder(train, test, epochs):
 
 
 def main(parser):
-    sample_id = 'sample'  # Name of sample ID field
-    descriptor_ids = ['Protein', 'Peptide', 'site']  # Name of sample descriptors
-    value_id = 'logRatio'  # Name of sample value field
+    sample_id = "sample"  # Name of sample ID field
+    descriptor_ids = ["Protein", "Peptide", "site"]  # Name of sample descriptors
+    value_id = "logRatio"  # Name of sample value field
     data = reformat_csv(parser.input, sample_id, descriptor_ids, value_id, drop_axis=1)
 
     width = 100  # Width of latent attribute layer
@@ -75,7 +75,12 @@ def _parse_args():
         "-e", "--epochs", dest="epochs", default=10, type=int, help="Training epochs"
     )
     parser.add_argument(
-        "-f", "--folds", dest="folds", default=30, type=int, help="Cross-validation folds"
+        "-f",
+        "--folds",
+        dest="folds",
+        default=30,
+        type=int,
+        help="Cross-validation folds",
     )
     parser = parser.parse_args()
     return parser

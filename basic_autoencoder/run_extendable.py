@@ -1,9 +1,9 @@
 import argparse
 
 import numpy as np
+import torch
 from pytorch_lightning.trainer import Trainer
 from sklearn.model_selection import KFold
-import torch
 from torch.utils.data import DataLoader
 
 from data.loaders.me_loader import MELoader, reformat_csv
@@ -58,9 +58,9 @@ def run_encoder(train, test, epochs, width, depth, dropout_prob=0.2, reg_coef=0)
 
 
 def main(parser):
-    sample_id = 'sample'  # Name of sample ID field
-    descriptor_ids = ['Protein', 'Peptide', 'site']  # Name of sample descriptors
-    value_id = 'logRatio'  # Name of sample value field
+    sample_id = "sample"  # Name of sample ID field
+    descriptor_ids = ["Protein", "Peptide", "site"]  # Name of sample descriptors
+    value_id = "logRatio"  # Name of sample value field
     data = reformat_csv(parser.input, sample_id, descriptor_ids, value_id, drop_axis=1)
 
     width = parser.width  # Width of latent attribute layer
@@ -73,8 +73,9 @@ def main(parser):
     for train_index, test_index in kf.split(data):
         test = data.iloc[test_index, :]
         train = data.iloc[train_index, :]
-        loss = run_encoder(train, test, width, 20, depth, dropout_prob=dropout_prob, 
-                           reg_coef=reg_coef)
+        loss = run_encoder(
+            train, test, width, 20, depth, dropout_prob=dropout_prob, reg_coef=reg_coef
+        )
         fold_means.append(loss)
 
     print(np.mean(fold_means))
@@ -85,7 +86,12 @@ def _parse_args():
         description="Cross-validate with extendable autoencoder"
     )
     parser.add_argument(
-        "-d", "--dropout", dest="dropout", default=0.2, type=float, help="Dropout probability"
+        "-d",
+        "--dropout",
+        dest="dropout",
+        default=0.2,
+        type=float,
+        help="Dropout probability",
     )
     parser.add_argument(
         "-i", "--input", dest="input", required=True, help="Path to AML data"
@@ -94,16 +100,36 @@ def _parse_args():
         "-e", "--epochs", dest="epochs", default=10, type=int, help="Training epochs"
     )
     parser.add_argument(
-        "-f", "--folds", dest="folds", default=30, type=int, help="Cross-validation folds"
+        "-f",
+        "--folds",
+        dest="folds",
+        default=30,
+        type=int,
+        help="Cross-validation folds",
     )
     parser.add_argument(
-        "-l", "--layers", dest="layers", default=1, type=int, help="Encoder/decoder layers"
+        "-l",
+        "--layers",
+        dest="layers",
+        default=1,
+        type=int,
+        help="Encoder/decoder layers",
     )
     parser.add_argument(
-        "-r", "--reg_coef", dest="reg_coef", default=0, type=float, help="L2 regularization coefficient"
+        "-r",
+        "--reg_coef",
+        dest="reg_coef",
+        default=0,
+        type=float,
+        help="L2 regularization coefficient",
     )
     parser.add_argument(
-        "-w", "--width", dest="width", default=10, type=int, help="Number of latent attributes"
+        "-w",
+        "--width",
+        dest="width",
+        default=10,
+        type=int,
+        help="Number of latent attributes",
     )
     parser = parser.parse_args()
     return parser
