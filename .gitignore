@@ -153,3 +153,6 @@ cache
 pretraining/*
 *.tsv
 *.tsv
+
+# PyTorch logging
+*/lightning_logs/*

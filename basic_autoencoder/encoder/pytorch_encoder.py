@@ -77,13 +77,12 @@ class NMEncoder(pl.LightningModule):
         Returns:
             Dictionary mapping loss in training batch
         """
-        data = torch.from_numpy(batch)
-        data = data.float()
+        batch = batch.float()
 
-        decoded = self(data)
-        decoded = torch.reshape(decoded, data.shape)
+        decoded = self(batch)
+        decoded = torch.reshape(decoded, batch.shape)
 
-        loss = self.metric(data, decoded)
+        loss = self.metric(batch, decoded)
         self.log.info(f"train_loss: {loss}")
         return {"loss": loss}
 
@@ -98,12 +97,11 @@ class NMEncoder(pl.LightningModule):
         Returns:
             Dictionary mapping loss in testing batch
         """
-        data = torch.from_numpy(batch)
-        data = data.float()
+        batch = batch.float()
 
-        decoded = self(data)
-        decoded = torch.reshape(decoded, data.shape)
+        decoded = self(batch)
+        decoded = torch.reshape(decoded, batch.shape)
 
-        loss = self.metric(data, decoded)
+        loss = self.metric(batch, decoded)
         self.log.info(f"test_loss: {loss}")
         return {"test_loss": loss}
