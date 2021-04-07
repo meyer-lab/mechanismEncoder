@@ -1,0 +1,153 @@
+{
+  "pandoc": {
+    "title": "Mechanistic Autoencoders for Patient-Specific Phosphoproteomic Models",
+    "keywords": [
+      "markdown",
+      "publishing",
+      "manubot"
+    ],
+    "lang": "en-US",
+    "date-meta": "2021-04-06",
+    "author-meta": [
+      "Fabian Fröhlich",
+      "Sara JC Gosline",
+      "Jackson L. Chin",
+      "Emek Demir",
+      "Aaron S. Meyer"
+    ],
+    "header-includes": "<!--\nManubot generated metadata rendered from header-includes-template.html.\nSuggest improvements at https://github.com/manubot/manubot/blob/master/manubot/process/header-includes-template.html\n-->\n<meta name=\"dc.format\" content=\"text/html\" />\n<meta name=\"dc.title\" content=\"Mechanistic Autoencoders for Patient-Specific Phosphoproteomic Models\" />\n<meta name=\"citation_title\" content=\"Mechanistic Autoencoders for Patient-Specific Phosphoproteomic Models\" />\n<meta property=\"og:title\" content=\"Mechanistic Autoencoders for Patient-Specific Phosphoproteomic Models\" />\n<meta property=\"twitter:title\" content=\"Mechanistic Autoencoders for Patient-Specific Phosphoproteomic Models\" />\n<meta name=\"dc.date\" content=\"2021-04-06\" />\n<meta name=\"citation_publication_date\" content=\"2021-04-06\" />\n<meta name=\"dc.language\" content=\"en-US\" />\n<meta name=\"citation_language\" content=\"en-US\" />\n<meta name=\"dc.relation.ispartof\" content=\"Manubot\" />\n<meta name=\"dc.publisher\" content=\"Manubot\" />\n<meta name=\"citation_journal_title\" content=\"Manubot\" />\n<meta name=\"citation_technical_report_institution\" content=\"Manubot\" />\n<meta name=\"citation_author\" content=\"Fabian Fröhlich\" />\n<meta name=\"citation_author_institution\" content=\"Department of Systems Biology, Harvard Medical School\" />\n<meta name=\"citation_author_orcid\" content=\"0000-0002-5360-4292\" />\n<meta name=\"twitter:creator\" content=\"@fabfrohlich\" />\n<meta name=\"citation_author\" content=\"Sara JC Gosline\" />\n<meta name=\"citation_author_institution\" content=\"Pacific Northwest National Laboratories\" />\n<meta name=\"citation_author_orcid\" content=\"0000-0002-6534-4774\" />\n<meta name=\"twitter:creator\" content=\"@sargoshoe\" />\n<meta name=\"citation_author\" content=\"Jackson L. Chin\" />\n<meta name=\"citation_author_institution\" content=\"Department of Bioengineering, University of California, Los Angeles\" />\n<meta name=\"citation_author\" content=\"Emek Demir\" />\n<meta name=\"citation_author_institution\" content=\"Department of Molecular and Medical Genetics, Oregon Health &amp; Sciences Univerity\" />\n<meta name=\"citation_author_orcid\" content=\"0000-0002-3663-7113\" />\n<meta name=\"citation_author\" content=\"Aaron S. Meyer\" />\n<meta name=\"citation_author_institution\" content=\"Department of Bioengineering, University of California, Los Angeles\" />\n<meta name=\"citation_author_institution\" content=\"Department of Bioinformatics, University of California, Los Angeles\" />\n<meta name=\"citation_author_institution\" content=\"Jonsson Comprehensive Cancer Center, University of California, Los Angeles\" />\n<meta name=\"citation_author_institution\" content=\"Eli and Edythe Broad Center of Regenerative Medicine and Stem Cell Research, University of California, Los Angeles\" />\n<meta name=\"citation_author_orcid\" content=\"0000-0003-4513-1840\" />\n<meta name=\"twitter:creator\" content=\"@aarmey\" />\n<link rel=\"canonical\" href=\"https://meyer-lab.github.io/mechanismEncoder/\" />\n<meta property=\"og:url\" content=\"https://meyer-lab.github.io/mechanismEncoder/\" />\n<meta property=\"twitter:url\" content=\"https://meyer-lab.github.io/mechanismEncoder/\" />\n<meta name=\"citation_fulltext_html_url\" content=\"https://meyer-lab.github.io/mechanismEncoder/\" />\n<meta name=\"citation_pdf_url\" content=\"https://meyer-lab.github.io/mechanismEncoder/manuscript.pdf\" />\n<link rel=\"alternate\" type=\"application/pdf\" href=\"https://meyer-lab.github.io/mechanismEncoder/manuscript.pdf\" />\n<link rel=\"alternate\" type=\"text/html\" href=\"https://meyer-lab.github.io/mechanismEncoder/v/f851f7fa2f9e3b90c404c0b2352f9d9ff51e2931/\" />\n<meta name=\"manubot_html_url_versioned\" content=\"https://meyer-lab.github.io/mechanismEncoder/v/f851f7fa2f9e3b90c404c0b2352f9d9ff51e2931/\" />\n<meta name=\"manubot_pdf_url_versioned\" content=\"https://meyer-lab.github.io/mechanismEncoder/v/f851f7fa2f9e3b90c404c0b2352f9d9ff51e2931/manuscript.pdf\" />\n<meta property=\"og:type\" content=\"article\" />\n<meta property=\"twitter:card\" content=\"summary_large_image\" />\n<link rel=\"icon\" type=\"image/png\" sizes=\"192x192\" href=\"https://manubot.org/favicon-192x192.png\" />\n<link rel=\"mask-icon\" href=\"https://manubot.org/safari-pinned-tab.svg\" color=\"#ad1457\" />\n<meta name=\"theme-color\" content=\"#ad1457\" />\n<!-- end Manubot generated metadata -->",
+    "bibliography": [],
+    "manubot-output-bibliography": "output/references.json",
+    "manubot-output-citekeys": "output/citations.tsv",
+    "manubot-requests-cache-path": "cache/requests-cache",
+    "manubot-clear-requests-cache": false
+  },
+  "manubot": {
+    "date": "April 6, 2021",
+    "authors": [
+      {
+        "github": "FFroehlich",
+        "name": "Fabian Fröhlich",
+        "initials": "FF",
+        "orcid": "0000-0002-5360-4292",
+        "twitter": "fabfrohlich",
+        "email": "john.doe@something.com",
+        "affiliations": [
+          "Department of Systems Biology, Harvard Medical School"
+        ],
+        "funders": [
+          "Grant XXXXXXXX"
+        ],
+        "affiliation_numbers": [
+          1
+        ]
+      },
+      {
+        "github": "sgosline",
+        "name": "Sara JC Gosline",
+        "initials": "SG",
+        "twitter": "sargoshoe",
+        "orcid": "0000-0002-6534-4774",
+        "email": "sara.gosline@pnnl.gov",
+        "affiliations": [
+          "Pacific Northwest National Laboratories"
+        ],
+        "affiliation_numbers": [
+          2
+        ]
+      },
+      {
+        "github": "JacksonLChin",
+        "name": "Jackson L. Chin",
+        "initials": "JLC",
+        "affiliations": [
+          "Department of Bioengineering, University of California, Los Angeles"
+        ],
+        "affiliation_numbers": [
+          3
+        ]
+      },
+      {
+        "github": "emekdemir",
+        "name": "Emek Demir",
+        "initials": "ED",
+        "orcid": "0000-0002-3663-7113",
+        "affiliations": [
+          "Department of Molecular and Medical Genetics, Oregon Health & Sciences Univerity"
+        ],
+        "affiliation_numbers": [
+          4
+        ]
+      },
+      {
+        "github": "aarmey",
+        "name": "Aaron S. Meyer",
+        "initials": "ASM",
+        "orcid": "0000-0003-4513-1840",
+        "twitter": "aarmey",
+        "email": "ameyer@asmlab.org",
+        "affiliations": [
+          "Department of Bioengineering, University of California, Los Angeles",
+          "Department of Bioinformatics, University of California, Los Angeles",
+          "Jonsson Comprehensive Cancer Center, University of California, Los Angeles",
+          "Eli and Edythe Broad Center of Regenerative Medicine and Stem Cell Research, University of California, Los Angeles"
+        ],
+        "affiliation_numbers": [
+          3,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "affiliations": [
+      {
+        "affiliation": "Department of Systems Biology, Harvard Medical School",
+        "affiliation_number": 1
+      },
+      {
+        "affiliation": "Pacific Northwest National Laboratories",
+        "affiliation_number": 2
+      },
+      {
+        "affiliation": "Department of Bioengineering, University of California, Los Angeles",
+        "affiliation_number": 3
+      },
+      {
+        "affiliation": "Department of Molecular and Medical Genetics, Oregon Health & Sciences Univerity",
+        "affiliation_number": 4
+      },
+      {
+        "affiliation": "Department of Bioinformatics, University of California, Los Angeles",
+        "affiliation_number": 5
+      },
+      {
+        "affiliation": "Jonsson Comprehensive Cancer Center, University of California, Los Angeles",
+        "affiliation_number": 6
+      },
+      {
+        "affiliation": "Eli and Edythe Broad Center of Regenerative Medicine and Stem Cell Research, University of California, Los Angeles",
+        "affiliation_number": 7
+      }
+    ],
+    "ci_source": {
+      "provider": "github",
+      "repo_slug": "meyer-lab/mechanismEncoder",
+      "repo_owner": "meyer-lab",
+      "repo_name": "mechanismEncoder",
+      "commit": "f851f7fa2f9e3b90c404c0b2352f9d9ff51e2931",
+      "triggering_commit": "f851f7fa2f9e3b90c404c0b2352f9d9ff51e2931",
+      "build_url": "https://github.com/meyer-lab/mechanismEncoder/commit/f851f7fa2f9e3b90c404c0b2352f9d9ff51e2931/checks",
+      "job_url": "https://github.com/meyer-lab/mechanismEncoder/runs/run2"
+    },
+    "html_url": "https://meyer-lab.github.io/mechanismEncoder/",
+    "pdf_url": "https://meyer-lab.github.io/mechanismEncoder/manuscript.pdf",
+    "html_url_versioned": "https://meyer-lab.github.io/mechanismEncoder/v/f851f7fa2f9e3b90c404c0b2352f9d9ff51e2931/",
+    "pdf_url_versioned": "https://meyer-lab.github.io/mechanismEncoder/v/f851f7fa2f9e3b90c404c0b2352f9d9ff51e2931/manuscript.pdf",
+    "manubot_version": "0.5.0",
+    "rootstock_commit": null,
+    "manuscript_stats": {
+      "word_count": 1001
+    }
+  }
+}
