@@ -2,12 +2,12 @@
 Materials for a simple linear encoder, and its analytical reverse.
 """
 
-import theano.tensor as tt
-import theano
+import aesara.tensor as aet
+import aesara
 import numpy as np
 from typing import List
 
-TheanoFunction = theano.compile.function_module.Function
+AFunction = aesara.compile.Function
 
 
 class AutoEncoder:
@@ -38,12 +38,17 @@ class AutoEncoder:
         self.n_params = n_params
         self.n_encode_weights = self.n_visible * self.n_hidden
         self.n_inflate_weights = self.n_hidden * self.n_params
-        self.n_inflate_bias = 0  # self.n_params
         self.n_encoder_pars = self.n_encode_weights + \
-            self.n_inflate_weights + self.n_inflate_bias
+            self.n_inflate_weights
 
-        self.encoder_pars = tt.specify_shape(tt.vector('encoder_pars'),
-                                             (self.n_encoder_pars,))
+        self.encode_weights = aet.specify_shape(aet.vector('encode_weights'),
+                                                (self.n_encode_weights,))
+
+        self.inflate_weights = aet.specify_shape(aet.vector('inflate_weights'),
+                                                 (self.n_inflate_weights,))
+
+        self.encoder_pars = aet.specify_shape(aet.vector('encoder_pars'),
+                                              (self.n_encoder_pars,))
 
         # self.par_modulation_scale = par_modulation_scale
 
@@ -51,24 +56,22 @@ class AutoEncoder:
             f'ecoder_{iw}_weight' for iw in range(self.n_encode_weights)
         ] + [
             f'inflate_{iw}_weight' for iw in range(self.n_inflate_weights)
-        ] + [
-            f'inflate_{iw}_bias' for iw in range(self.n_inflate_bias)
         ]
 
-    def encode(self, parameters: tt.vector):
+    def encode(self, parameters: aet.vector):
         """
         Run the input through the encoder.
 
         :param parameters:
             parametrization of full autoencoder
         """
-        W = tt.reshape(parameters[0:self.n_encode_weights],
-                       (self.n_visible, self.n_hidden))
-        return tt.dot(self.data, W)
+        W = aet.reshape(parameters[0:self.n_encode_weights],
+                        (self.n_visible, self.n_hidden))
+        return aet.dot(self.data, W)
 
     def getW(self, parameters):
-        return tt.reshape(parameters[0:self.n_encode_weights],
-                          (self.n_visible, self.n_hidden))
+        return aet.reshape(parameters[0:self.n_encode_weights],
+                           (self.n_visible, self.n_hidden))
 
     def initialW(self):
         """ Calculate an initial encoder parameter set by PCA. """
@@ -79,23 +82,29 @@ class AutoEncoder:
     def regularize(self, parameters, l2=0.0, ortho=0.0):
         """ Calculate regularization of encoder. """
         W = self.getW(parameters)
-        return l2 * tt.nlinalg.norm(parameters, None) \
-            + ortho * tt.nlinalg.norm(tt.dot(W.T, W) - tt.eye(self.n_hidden),
-                                      None)
-
-    def inflate_params(self, embedded_data, parameters: tt.vector):
-        """ Inflate the input to parameters. """
-        W_p = tt.reshape(
-            parameters[self.n_encode_weights:
-                       self.n_encode_weights+self.n_inflate_weights],
-            (self.n_hidden, self.n_params)
+        return l2 * aet.nlinalg.norm(parameters, None) \
+            + ortho * aet.nlinalg.norm(
+            aet.dot(W.T, W) - aet.eye(self.n_hidden), None
         )
-        # bias = pIn[-self.n_inflate_bias:]
-        return tt.dot(embedded_data, W_p)
-        #return T.nnet.sigmoid(T.dot(embedded_data, W_p) + bias) \
-        #    * self.par_modulation_scale*2 - self.par_modulation_scale
 
-    def encode_params(self, parameters: tt.vector):
+    def inflate_params_restricted(self, embedding: np.ndarray,
+                                  parameters: aet.vector):
+        """ Inflate the input to parameters (partial parameter vector) """
+        W_p = aet.reshape(
+            parameters, (self.n_hidden, self.n_params)
+        )
+        return aet.dot(embedding, W_p)
+
+    def inflate_params(self, embedding: np.ndarray, parameters: aet.vector):
+        """ Inflate the input to parameters (full parameter vector) """
+
+        return self.inflate_params_restricted(
+            embedding,
+            parameters[self.n_encode_weights:
+                       self.n_encode_weights + self.n_inflate_weights],
+        )
+
+    def encode_params(self, parameters: aet.vector):
         """
         Run the encoder and then inflate to parameters.
 
@@ -104,7 +113,7 @@ class AutoEncoder:
         """
         return self.inflate_params(self.encode(parameters), parameters)
     
-    def decode(self, embedded_data: np.ndarray, parameters: tt.vector):
+    def decode(self, embedded_data: np.ndarray, parameters: aet.vector):
         """
         Run the input through the analytical decoder.
 
@@ -114,15 +123,15 @@ class AutoEncoder:
         :param parameters:
             parametrization of full autoencoder
         """
-        W = tt.reshape(parameters[0:self.n_encode_weights],
-                       (self.n_visible, self.n_hidden))
-        return tt.dot(embedded_data, tt.nlinalg.pinv(W))
+        W = aet.reshape(parameters[0:self.n_encode_weights],
+                        (self.n_visible, self.n_hidden))
+        return aet.dot(embedded_data, aet.nlinalg.pinv(W))
 
-    def compile_embedded_pars(self) -> TheanoFunction:
+    def compile_embedded_pars(self) -> AFunction:
         """
         Compile a theano function that computes the inflated parameters
         """
-        return theano.function(
+        return aesara.function(
             [self.encoder_pars],
             self.encode(self.encoder_pars)
         )
@@ -134,11 +143,11 @@ class AutoEncoder:
         """
         return self.compile_embedded_pars()(encoder_pars)
 
-    def compile_inflate_pars(self) -> TheanoFunction:
+    def compile_inflate_pars(self) -> AFunction:
         """
         Compile a theano function that computes the inflated parameters
         """
-        return theano.function(
+        return aesara.function(
             [self.encoder_pars],
             self.encode_params(self.encoder_pars)
         )

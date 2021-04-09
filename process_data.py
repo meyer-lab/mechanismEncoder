@@ -15,7 +15,7 @@ import urllib.request
 from mEncoder.generate_data import generate_synthetic_data
 from mEncoder import load_pathway
 
-from phosphoData.phosphoAML_PTRCdata import getCellLinePilotData
+from phosphoData.phosphoAML_PTRCdata import getAllData
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 
@@ -132,7 +132,7 @@ else:
         syn = synapseclient.Synapse()
         syn.login()
         if DATA == 'aml_ptrc':
-            df = getCellLinePilotData(syn)
+            df = getAllData(syn)
         # MEASUREMENT TABLE
         # this defines the model we will later train the model on
         measurement_table = df[['logRatio', 'site', 'Gene',
@@ -145,17 +145,13 @@ else:
             'cellLine': petab.PREEQUILIBRATION_CONDITION_ID
         }, inplace=True)
 
-        # filter out UR-BC.1, UR-BC.2 ~100k entries
-        measurement_table = \
-            measurement_table[measurement_table[
-                petab.PREEQUILIBRATION_CONDITION_ID
-            ].apply(lambda x: x not in ['UR-BC.1', 'UR-BC.2'])]
 
-        # filter unknown cell line ~115k entries
-        measurement_table = \
-            measurement_table[measurement_table[
+        # filter unknown cell line ~68k entries (controls
+        measurement_table = measurement_table[
+            measurement_table[
                 petab.PREEQUILIBRATION_CONDITION_ID
-            ].apply(lambda x: isinstance(x, str))]
+            ].apply(lambda x: isinstance(x, str))
+        ]
 
         # make identifiers petab compatible
         measurement_table[petab.PREEQUILIBRATION_CONDITION_ID] = \
@@ -168,12 +164,6 @@ else:
             measurement_table[petab.PREEQUILIBRATION_CONDITION_ID] == 'MOLM',
             petab.PREEQUILIBRATION_CONDITION_ID
         ] = 'MOLM_13'
-
-        # filter Late_MOLM_13 ~113k entries
-        measurement_table = measurement_table.loc[
-            measurement_table[petab.PREEQUILIBRATION_CONDITION_ID]
-            != 'Late_MOLM_13', :
-        ]
 
         # convert time from string to float
         measurement_table[petab.TIME] = measurement_table[petab.TIME].apply(
@@ -232,8 +222,9 @@ else:
             if len(c.split('__')) > 1
             for p in c.split('__')[1:]
         ])
+
         for pert in perturbations:
-            if model.components.get(pert) is None:
+            if model.parameters.get(f'{pert}_0') is None:
                 # remove condition
                 condition_table = condition_table[
                     condition_table[petab.CONDITION_ID].apply(
@@ -351,6 +342,14 @@ else:
 
         measurement_table = pd.concat([measurement_table_phospho,
                                        measurement_table_proteomics])
+
+        measurement_table = measurement_table[
+            measurement_table[petab.PREEQUILIBRATION_CONDITION_ID].apply(
+                lambda x: x in ['c184A1', 'c184B5', 'cAU565', 'cBT20',
+                                'cBT474', 'cBT483', 'cBT549', 'cCAL120',
+                                'cCAL148']
+            )
+         ]
 
         condition_table = pd.DataFrame({
             petab.CONDITION_ID:

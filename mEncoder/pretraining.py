@@ -7,13 +7,12 @@ from pypesto.visualize import waterfall, parameters
 
 
 import petab
-import amici
 import os
 import fides
 import pandas as pd
 import numpy as np
-import theano
-import theano.tensor as tt
+import aesara
+import aesara.tensor as aet
 import pypesto.engine
 import matplotlib.pyplot as plt
 
@@ -102,11 +101,30 @@ def generate_cross_sample_pretraining_problem(
     :returns:
         pypesto Problem
     """
-    problem = ae.petab_importer.create_problem()
-    # make unbounded
-    problem.ub_full[:] = np.inf
-    problem.lb_full[:] = -np.inf
-    return problem
+
+    loss = ae.compile_embedding_loss()
+    loss_grad = ae.compile_embedding_loss_grad()
+    loss_hess = ae.compile_embedding_loss_hess()
+
+    def fun(x: np.ndarray) -> float:
+        return - float(loss(x))
+
+    def grad(x: np.ndarray) -> np.ndarray:
+        return - loss_grad(x)[0]
+
+    def hess(x: np.ndarray) -> np.ndarray:
+        return - loss_hess(x)[0]
+
+    obj = Objective(fun=fun, grad=grad, hess=hess)
+
+    x_names = ae.x_names[ae.n_encode_weights:]
+
+    return Problem(
+        objective=obj,
+        x_names=x_names,
+        lb=[-np.inf for _ in x_names],
+        ub=[np.inf for _ in x_names],
+    )
 
 
 def generate_encoder_inflate_pretraining_problem(
@@ -138,14 +156,14 @@ def generate_encoder_inflate_pretraining_problem(
     :returns:
         pypesto Problem
     """
-    least_squares = .5*tt.sum(tt.power(
+    least_squares = .5*aet.sum(aet.power(
         ae.encode_params(ae.encoder_pars) -
         pretrained_inputs[ae.sample_names].values.T, 2
     )[:])
 
-    loss = theano.function([ae.encoder_pars], least_squares)
-    loss_grad = theano.function(
-        [ae.encoder_pars], theano.grad(least_squares, [ae.encoder_pars])
+    loss = aesara.function([ae.encoder_pars], least_squares)
+    loss_grad = aesara.function(
+        [ae.encoder_pars], aesara.grad(least_squares, [ae.encoder_pars])
     )
 
     return Problem(
@@ -168,8 +186,8 @@ def generate_encoder_inflate_pretraining_problem(
 
 
 def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
-             fatol: float = 1e-2,
-             subspace: fides.SubSpaceDim = fides.SubSpaceDim.FULL,
+             fatol: float = 1e-8,
+             subspace: fides.SubSpaceDim = fides.SubSpaceDim.TWO,
              maxiter: int = int(1e3)) -> Result:
     """
     Pretrain the provided problem via optimization.
@@ -195,31 +213,26 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
         maximum number of iterations
     """
     opt = FidesOptimizer(
-        hessian_update=fides.BFGS(),
+        hessian_update=fides.HybridUpdate(),
         options={
-            'maxtime': 3600,
             fides.Options.FATOL: fatol,
             fides.Options.MAXTIME: 7200,
             fides.Options.MAXITER: maxiter,
             fides.Options.SUBSPACE_DIM: subspace,
-            fides.Options.REFINE_STEPBACK: False,
-            fides.Options.STEPBACK_STRAT: fides.StepBackStrategy.SINGLE_REFLECT
         }
     )
-
-    solver = problem.objective._objectives[0].amici_solver
-
-    solver.setMaxSteps(int(1e5))
-    solver.setSensitivityMethod(amici.SensitivityMethod.adjoint)
-    solver.setAbsoluteToleranceQuadratures(1e-10)
-    solver.setRelativeToleranceQuadratures(1e-4)
-    solver.setAbsoluteTolerance(1e-12)
-    solver.setRelativeTolerance(1e-8)
-    #solver.setAbsoluteToleranceSteadyState(1e-10)
-    #solver.setRelativeToleranceSteadyState(1e-8)
-
-    for e in problem.objective._objectives[0].edatas:
-        e.reinitializeFixedParameterInitialStates = True
+    if isinstance(problem.objective, pypesto.objective.AggregatedObjective):
+        problem.objective._objectives[0].guess_steadystate = False
+        solver = problem.objective._objectives[0].amici_solver
+        solver.setMaxSteps(int(1e5))
+        solver.setAbsoluteTolerance(1e-12)
+        solver.setRelativeTolerance(1e-8)
+        solver.setAbsoluteToleranceSteadyState(1e-6)
+        solver.setRelativeToleranceSteadyState(1e-4)
+        for e in problem.objective._objectives[0].edatas:
+            e.reinitializeFixedParameterInitialStates = True
+    else:
+        problem.objective.guess_steadystate = False
 
     optimize_options = OptimizeOptions(
         startpoint_resample=True, allow_failed_starts=False,
@@ -228,7 +241,7 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
     return minimize(
         problem, opt, n_starts=nstarts, options=optimize_options,
         startpoint_method=startpoint_method,
-        engine=pypesto.engine.MultiThreadEngine(n_threads=4)
+        engine=pypesto.engine.MultiThreadEngine(n_threads=1)
     )
 
 

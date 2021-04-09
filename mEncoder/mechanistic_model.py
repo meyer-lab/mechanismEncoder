@@ -33,7 +33,8 @@ def add_monomer_synth_deg(m_name: str,
                           psites: Optional[Iterable[str]] = None,
                           nsites: Optional[Iterable[str]] = None,
                           asites: Optional[Iterable[str]] = None,
-                          asite_states: Optional[Iterable[str]] = None):
+                          asite_states: Optional[Iterable[str]] = None,
+                          with_basal_activation: Optional[bool] = True):
     """
     Adds the respective monomer plus synthesis rules and basal
     activation/deactivation rules for all activateable sites
@@ -103,6 +104,8 @@ def add_monomer_synth_deg(m_name: str,
     #t_ss = Expression(f'{m_name}_ss', syn_rate/deg_rate)
     Initial(syn_prod, t)
 
+    if not with_basal_activation:
+        return m
 
     # basal activation
     for sites, labels, fstate, rstate in zip(
@@ -305,7 +308,8 @@ def add_inhibitor(model: Model, name: str, targets: List[str]):
     affinities = {
         target: Expression(
             f'inh_{target}',
-            Observable(f'target_{target}', model.monomers[target])/kd
+            Observable(f'target_{target}', model.monomers[target])/kd,
+            _export=False
         )
         for target in targets
     }
@@ -330,6 +334,9 @@ def add_inhibitor(model: Model, name: str, targets: List[str]):
         if target is None:
             continue
         expr.expr *= 1/(1 + inh * affinities[target])
+
+    model.expressions = pysb.ComponentSet(list(affinities.values()) +
+                                          list(model.expressions))
 
 
 def add_gf_bolus(model, name: str, created_monomers: List[str]):

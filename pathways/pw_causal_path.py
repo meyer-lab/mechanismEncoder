@@ -26,9 +26,7 @@ df = df[['Source', 'Target', 'Source data ID', 'Target data ID']]
 # remove duplicates
 df.drop_duplicates(inplace=True)
 
-proteins = ['RPS6', 'RAF1', 'MAPK3', 'AKT1',  'GSK3B',  'ARAF',
-            'GKS3A', 'JUNB', 'MYC', 'RB1', 'SHC1', 'JAK1', 'JAK3', 'MAPK1',
-            'CREB1', 'JUND', 'JUN', 'BRAF']
+proteins = ['RAF1', 'MAPK3',  'ARAF', 'MYC', 'MAPK1', 'JUND', 'BRAF']
 
 # filter by proteins
 df = df[df.apply(
@@ -39,6 +37,10 @@ df = df[df.apply(
 # filter network sig
 df = df[
     df['Source data ID'].apply(lambda x: '-by-network-sig' not in x)
+]
+
+df = df[
+    df['Target data ID'].apply(lambda x: x in list(df['Source data ID']))
 ]
 
 # collect proteins
@@ -68,7 +70,15 @@ for target in df['Target data ID'].unique():
                    'phosphorylation', activators)
 
 add_inhibitor(
-    model, 'trametinib', ['ARAF', 'BRAF', 'RAF1']
+    model, 'trametinib', ['ARAF', 'RAF1']
 )
+
+add_monomer_synth_deg('FLT3')
+for raf, sites in {
+    'RAF1': 'S621_S497_S296',
+    'ARAF': 'S257'
+}.items():
+    add_activation(model, raf, sites,
+                   'phosphorylation', ['FLT3'])
 
 add_observables(model)

@@ -1,5 +1,5 @@
 numpy==1.20.1
-scipy==1.6.1
+scipy==1.6.2
 pytest==6.2.2
 pytest-cov==2.11.1
 manubot==0.5.0
@@ -9,13 +9,13 @@ pandoc-eqnos==2.5.0
 pandoc-tablenos==2.3.0
 matplotlib==3.3.4
 seaborn==0.11.1
-Theano==1.0.5
+aesara==2.0.5
 git+https://github.com/pysb/pysb
 amici==0.11.15
 petab==0.1.18
 sympy==1.7.1
 snakemake==5.32.2
-fides==0.3.4
+fides==0.4.1
 pypesto==0.2.4
 scikit-learn==0.24.1
 synapseclient==2.3.0

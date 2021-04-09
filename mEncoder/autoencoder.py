@@ -1,21 +1,21 @@
 import os
 
-import theano
-import theano.tensor as tt
+import aesara
+import aesara.tensor as aet
 import numpy as np
 
 import petab
-import amici
 
 from pypesto.sample.theano import TheanoLogProbability
 
 from typing import Tuple
+from sklearn.decomposition import PCA
 
 from . import MODEL_FEATURE_PREFIX
 from .encoder import AutoEncoder
 from .petab_subproblem import load_petab, filter_observables
 
-TheanoFunction = theano.compile.function_module.Function
+AFunction = aesara.compile.Function
 
 
 class MechanisticAutoEncoder(AutoEncoder):
@@ -62,17 +62,6 @@ class MechanisticAutoEncoder(AutoEncoder):
 
         self.pypesto_subproblem = self.petab_importer.create_problem()
 
-        # extract sample names, ordering of those is important since samples
-        # must match when reshaping the inflated matrix
-        samples = []
-        for name in self.pypesto_subproblem.x_names:
-            if not name.startswith(MODEL_FEATURE_PREFIX):
-                continue
-
-            sample = name.split('__')[-1]
-            if sample not in samples:
-                samples.append(sample)
-
         input_data = full_measurements.loc[full_measurements.apply(
             lambda x: (x[petab.SIMULATION_CONDITION_ID] ==
                        x[petab.PREEQUILIBRATION_CONDITION_ID]) &
@@ -82,7 +71,21 @@ class MechanisticAutoEncoder(AutoEncoder):
             columns=petab.OBSERVABLE_ID,
             values=petab.MEASUREMENT,
             aggfunc=np.nanmean
-        ).loc[samples, :]
+        )
+
+        # extract sample names, ordering of those is important since samples
+        # must match when reshaping the inflated matrix
+        samples = []
+        for name in self.pypesto_subproblem.x_names:
+            if not name.startswith(MODEL_FEATURE_PREFIX):
+                continue
+
+            sample = name.split('__')[-1]
+            if sample not in samples and sample in input_data.index:
+                samples.append(sample)
+
+        input_data = input_data.loc[samples, :]
+
         # remove missing values
         input_data.dropna(axis='columns', how='any', inplace=True)
 
@@ -105,24 +108,25 @@ class MechanisticAutoEncoder(AutoEncoder):
         super().__init__(input_data=input_data.values, n_hidden=n_hidden,
                          n_params=self.n_model_inputs)
 
-        # set tolerances
-        self.pypesto_subproblem.objective._objectives[0].amici_solver\
-            .setAbsoluteTolerance(1e-12)
-        self.pypesto_subproblem.objective._objectives[0].amici_solver\
-            .setRelativeTolerance(1e-10)
-        self.pypesto_subproblem.objective._objectives[0].amici_solver\
-            .setAbsoluteToleranceSteadyState(1e-10)
-        self.pypesto_subproblem.objective._objectives[0].amici_solver\
-            .setRelativeToleranceSteadyState(1e-8)
-        #self.pypesto_subproblem.objective._objectives[0].amici_solver\
-        #    .setSensitivityMethod(amici.SensitivityMethod.adjoint)
+        # generate PCA embedding for pretraining
+        pca = PCA(n_components=self.n_hidden)
+        self.data_pca = pca.fit_transform(self.data)
+
+        solver = self.pypesto_subproblem.objective._objectives[0].amici_solver
+        solver.setMaxSteps(int(1e5))
+        solver.setAbsoluteTolerance(1e-12)
+        solver.setRelativeTolerance(1e-8)
+        solver.setAbsoluteToleranceSteadyState(1e-6)
+        solver.setRelativeToleranceSteadyState(1e-4)
+
+        for e in self.pypesto_subproblem.objective._objectives[0].edatas:
+            e.reinitializeFixedParameterInitialStates = True
+
+        self.pypesto_subproblem.objective._objectives[0].guess_steadystate \
+            = False
 
         # define model theano op
         self.loss = TheanoLogProbability(self.pypesto_subproblem)
-
-        # these are the kinetic parameters that are shared across all samples
-        self.kin_pars = tt.specify_shape(tt.vector('kinetic_parameters'),
-                                         (self.n_kin_params,))
 
         self.x_names = self.x_names + [
             name for ix, name in enumerate(self.pypesto_subproblem.x_names)
@@ -131,33 +135,91 @@ class MechanisticAutoEncoder(AutoEncoder):
         ]
 
         # assemble input to model theano op
-        encoded_pars = self.encode_params(self.encoder_pars)
-        self.model_pars = tt.concatenate([
-            self.kin_pars,
-            tt.reshape(encoded_pars,
-                       (self.n_model_inputs * self.n_samples,))],
+        self.x = aet.specify_shape(
+            aet.vector('x'),
+            (self.n_kin_params + self.n_encoder_pars + self.n_inflate_weights,)
+        )
+        encoded_pars = self.encode_params(self.x[:-self.n_kin_params])
+        self.model_pars = aet.concatenate([
+            self.x[-self.n_kin_params:],
+            aet.reshape(encoded_pars,
+                        (self.n_model_inputs * self.n_samples,))],
             axis=0
         )
 
-    def compile_loss(self) -> TheanoFunction:
+        # assemble embedding to model theano op for pretraining
+        self.x_embedding = aet.specify_shape(
+            aet.vector('x'),
+            (self.n_kin_params + self.n_model_inputs * self.n_samples,)
+        )
+        inflated_pars = self.inflate_params_restricted(
+            self.data_pca, self.x_embedding[:-self.n_kin_params]
+        )
+        self.embedding_model_pars = aet.concatenate([
+            self.x_embedding[-self.n_kin_params:],
+            aet.reshape(inflated_pars,
+                        (self.n_model_inputs * self.n_samples,))],
+            axis=0
+        )
+
+    def compile_loss(self) -> AFunction:
         """
         Compile a theano function that evaluates the loss function
         """
-        return theano.function(
-            [self.encoder_pars, self.kin_pars],
+        return aesara.function(
+            [self.x],
             self.loss(self.model_pars)
         )
 
-    def compile_loss_grad(self) -> TheanoFunction:
+    def compile_embedding_loss(self) -> AFunction:
+        """
+        Compile a theano function that evaluates the loss function
+        """
+        return aesara.function(
+            [self.x_embedding],
+            self.loss(self.embedding_model_pars)
+        )
+
+    def compile_loss_grad(self) -> AFunction:
         """
         Compile a theano function that evaluates the gradient of the loss
         function
         """
-        return theano.function(
-            [self.encoder_pars, self.kin_pars],
-            tt.concatenate(
-                [theano.grad(self.loss(self.model_pars), self.encoder_pars),
-                 theano.grad(self.loss(self.model_pars), self.kin_pars)],
-                axis=0
-            )
+        return aesara.function(
+            [self.x],
+            aesara.grad(self.loss(self.model_pars),
+                        [self.x]),
+        )
+
+    def compile_embedding_loss_grad(self) -> AFunction:
+        """
+        Compile a theano function that evaluates the gradient of the loss
+        function
+        """
+        return aesara.function(
+            [self.x_embedding],
+            aesara.grad(self.loss(self.embedding_model_pars),
+                        [self.x_embedding]),
+        )
+
+    def compile_loss_hess(self) -> AFunction:
+        """
+        Compile a theano function that evaluates the gradient of the loss
+        function
+        """
+        return aesara.function(
+            [self.x],
+            aesara.gradient.hessian(self.loss(self.model_pars),
+                                    [self.x_embedding])
+        )
+
+    def compile_embedding_loss_hess(self) -> AFunction:
+        """
+        Compile a theano function that evaluates the gradient of the loss
+        function
+        """
+        return aesara.function(
+            [self.x_embedding],
+            aesara.gradient.hessian(self.loss(self.embedding_model_pars),
+                                    [self.x_embedding])
         )
