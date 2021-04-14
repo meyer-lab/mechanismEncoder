@@ -145,7 +145,6 @@ else:
             'cellLine': petab.PREEQUILIBRATION_CONDITION_ID
         }, inplace=True)
 
-
         # filter unknown cell line ~68k entries (controls
         measurement_table = measurement_table[
             measurement_table[
@@ -346,8 +345,7 @@ else:
         measurement_table = measurement_table[
             measurement_table[petab.PREEQUILIBRATION_CONDITION_ID].apply(
                 lambda x: x in ['c184A1', 'c184B5', 'cAU565', 'cBT20',
-                                'cBT474', 'cBT483', 'cBT549', 'cCAL120',
-                                'cCAL148']
+                                'cBT474']
             )
          ]
 

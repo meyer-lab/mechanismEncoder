@@ -8,8 +8,6 @@ import pypesto
 import petab.visualize
 import numpy as np
 
-np.random.seed(0)
-
 import matplotlib.pyplot as plt
 
 import amici.petab_objective
@@ -19,6 +17,9 @@ from mEncoder.pretraining import (
     generate_per_sample_pretraining_problems, pretrain,
     store_and_plot_pretraining
 )
+from mEncoder import apply_solver_settings
+
+np.random.seed(0)
 
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
@@ -37,6 +38,11 @@ pretraindir = 'pretraining'
 prefix = f'{mae.pathway_name}__{mae.data_name}'
 for sample, importer in pretraining_problems.items():
     problem = importer.create_problem()
+    solver = problem.objective._objectives[0].amici_solver
+
+    apply_solver_settings(solver)
+    problem.objective._objectives[0].guess_steadystate = False
+
     model = importer.create_model()
     result = pretrain(problem, pypesto.startpoint.uniform, 20)
     output_prefix = f'{prefix}__{sample}'
@@ -47,6 +53,7 @@ for sample, importer in pretraining_problems.items():
     simulation = amici.petab_objective.simulate_petab(
         importer.petab_problem,
         model,
+        solver,
         problem_parameters=dict(zip(
             problem.x_names,
             result.optimize_result.list[0]['x'],

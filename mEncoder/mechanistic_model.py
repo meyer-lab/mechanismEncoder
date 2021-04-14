@@ -85,6 +85,7 @@ def add_monomer_synth_deg(m_name: str,
 
     #kdeg = Parameter(f'{m_name}_degradation_kdeg', 1.0)
     t = Parameter(f'{m_name}_eq', 100.0)
+    t0 = Expression(f'{m_name}_init', t * get_autoencoder_modulator(t))
     #ksyn = Expression(f'{m_name}_synthesis_ksyn', t*kdeg)
     #syn_rate = Expression(f'{m_name}_synthesis_rate',
     #                      ksyn * get_autoencoder_modulator(t))
@@ -102,7 +103,7 @@ def add_monomer_synth_deg(m_name: str,
     #deg_rate = Expression(f'{m_name}_degradation_rate', kdeg)
     #Rule(f'degradation_{m_name}', m() >> None, deg_rate)
     #t_ss = Expression(f'{m_name}_ss', syn_rate/deg_rate)
-    Initial(syn_prod, t)
+    Initial(syn_prod, t0)
 
     if not with_basal_activation:
         return m

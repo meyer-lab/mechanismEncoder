@@ -5,13 +5,12 @@ import aesara.tensor as aet
 import numpy as np
 
 import petab
-
-from pypesto.sample.theano import TheanoLogProbability
+import pypesto
 
 from typing import Tuple
 from sklearn.decomposition import PCA
 
-from . import MODEL_FEATURE_PREFIX
+from . import MODEL_FEATURE_PREFIX, apply_solver_settings
 from .encoder import AutoEncoder
 from .petab_subproblem import load_petab, filter_observables
 
@@ -112,21 +111,19 @@ class MechanisticAutoEncoder(AutoEncoder):
         pca = PCA(n_components=self.n_hidden)
         self.data_pca = pca.fit_transform(self.data)
 
-        solver = self.pypesto_subproblem.objective._objectives[0].amici_solver
-        solver.setMaxSteps(int(1e5))
-        solver.setAbsoluteTolerance(1e-12)
-        solver.setRelativeTolerance(1e-8)
-        solver.setAbsoluteToleranceSteadyState(1e-6)
-        solver.setRelativeToleranceSteadyState(1e-4)
+        if isinstance(self.pypesto_subproblem.objective,
+                      pypesto.objective.AmiciObjective):
+            amici_objective = self.pypesto_subproblem.objective
+        else:
+            amici_objective = self.pypesto_subproblem.objective._objectives[0]
 
-        for e in self.pypesto_subproblem.objective._objectives[0].edatas:
+        apply_solver_settings(amici_objective.amici_solver)
+
+        for e in amici_objective.edatas:
             e.reinitializeFixedParameterInitialStates = True
 
-        self.pypesto_subproblem.objective._objectives[0].guess_steadystate \
-            = False
-
-        # define model theano op
-        self.loss = TheanoLogProbability(self.pypesto_subproblem)
+        amici_objective.guess_steadystate = False
+        amici_objective.n_threads = 6
 
         self.x_names = self.x_names + [
             name for ix, name in enumerate(self.pypesto_subproblem.x_names)
@@ -160,66 +157,4 @@ class MechanisticAutoEncoder(AutoEncoder):
             aet.reshape(inflated_pars,
                         (self.n_model_inputs * self.n_samples,))],
             axis=0
-        )
-
-    def compile_loss(self) -> AFunction:
-        """
-        Compile a theano function that evaluates the loss function
-        """
-        return aesara.function(
-            [self.x],
-            self.loss(self.model_pars)
-        )
-
-    def compile_embedding_loss(self) -> AFunction:
-        """
-        Compile a theano function that evaluates the loss function
-        """
-        return aesara.function(
-            [self.x_embedding],
-            self.loss(self.embedding_model_pars)
-        )
-
-    def compile_loss_grad(self) -> AFunction:
-        """
-        Compile a theano function that evaluates the gradient of the loss
-        function
-        """
-        return aesara.function(
-            [self.x],
-            aesara.grad(self.loss(self.model_pars),
-                        [self.x]),
-        )
-
-    def compile_embedding_loss_grad(self) -> AFunction:
-        """
-        Compile a theano function that evaluates the gradient of the loss
-        function
-        """
-        return aesara.function(
-            [self.x_embedding],
-            aesara.grad(self.loss(self.embedding_model_pars),
-                        [self.x_embedding]),
-        )
-
-    def compile_loss_hess(self) -> AFunction:
-        """
-        Compile a theano function that evaluates the gradient of the loss
-        function
-        """
-        return aesara.function(
-            [self.x],
-            aesara.gradient.hessian(self.loss(self.model_pars),
-                                    [self.x_embedding])
-        )
-
-    def compile_embedding_loss_hess(self) -> AFunction:
-        """
-        Compile a theano function that evaluates the gradient of the loss
-        function
-        """
-        return aesara.function(
-            [self.x_embedding],
-            aesara.gradient.hessian(self.loss(self.embedding_model_pars),
-                                    [self.x_embedding])
         )

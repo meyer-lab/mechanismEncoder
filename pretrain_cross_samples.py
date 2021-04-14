@@ -15,12 +15,16 @@ import petab.visualize
 import amici.petab_objective
 import aesara
 
+from pypesto.store import OptimizationResultHDF5Reader
+
 from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.pretraining import (
     generate_cross_sample_pretraining_problem, pretrain,
     store_and_plot_pretraining
 )
-from mEncoder import MODEL_FEATURE_PREFIX
+from mEncoder import MODEL_FEATURE_PREFIX, apply_solver_settings
+
+np.random.seed(0)
 
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
@@ -30,14 +34,14 @@ mae = MechanisticAutoEncoder(N_HIDDEN, (
     os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
-), MODEL)
+), MODEL, par_modulation_scale=0.5)
 
 problem = generate_cross_sample_pretraining_problem(mae)
 pretraindir = 'pretraining'
 pretrained_samples = {}
 
 prefix = f'{mae.pathway_name}__{mae.data_name}'
-output_prefix = f'{prefix}__input'
+output_prefix = f'{prefix}__pca__{N_HIDDEN}'
 with open(os.path.join(pretraindir, f'{prefix}.txt'), 'r') as f:
     for line in f:
         # remove linebreak which is the last character of the string
@@ -104,21 +108,26 @@ def startpoints(**kwargs):
     return xs
 
 
-result = pretrain(problem, startpoints, 10,
-                  subspace=fides.SubSpaceDim.TWO, maxiter=int(1e3))
+rfile = os.path.join(pretraindir, output_prefix + '.hdf5')
 
-store_and_plot_pretraining(result, pretraindir, output_prefix)
+if not os.path.exists(rfile):
+    result = pretrain(problem, startpoints, 20,
+                      subspace=fides.SubSpaceDim.TWO, maxiter=int(1e4))
 
-N_STARTS = 5
-
-# plot residuals and pca of inputs for debugging purposes
-data_dicts = []
-fig_pca, axes_pca = plt.subplots(1, N_STARTS, figsize=(18.5, 10.5))
-
+    store_and_plot_pretraining(result, pretraindir, output_prefix)
+else:
+    reader = OptimizationResultHDF5Reader(rfile)
+    result = reader.read()
 
 importer = mae.petab_importer
 model = importer.create_model()
+solver = importer.create_solver()
 edatas = importer.create_edatas()
+
+for e in edatas:
+    e.reinitializeFixedParameterInitialStates = True
+
+apply_solver_settings(solver)
 
 x_fun = aesara.function(
     [mae.x_embedding],
@@ -129,25 +138,95 @@ x = x_fun(result.optimize_result.list[0]['x'])
 simulation = amici.petab_objective.simulate_petab(
     importer.petab_problem,
     model,
+    solver,
     problem_parameters=dict(zip(
         mae.pypesto_subproblem.x_names, x,
     )), scaled_parameters=True,
     edatas=edatas,
-
 )
+
 # Convert the simulation to PEtab format.
 simulation_df = amici.petab_objective.rdatas_to_simulation_df(
     simulation['rdatas'],
     model=model,
     measurement_df=importer.petab_problem.measurement_df,
 )
+
+visualization_table = []
+
+for sample in importer.petab_problem.measurement_df[
+    petab.PREEQUILIBRATION_CONDITION_ID
+].unique():
+    measurements_condition = importer.petab_problem.measurement_df[
+        importer.petab_problem.measurement_df[
+            petab.PREEQUILIBRATION_CONDITION_ID
+        ] == sample
+    ]
+
+    static_measurements = [
+        obs_id for obs_id
+        in measurements_condition[petab.OBSERVABLE_ID].unique()
+        if obs_id in list(importer.petab_problem.observable_df.index)
+        and (measurements_condition[
+            measurements_condition[petab.OBSERVABLE_ID] == obs_id
+        ][petab.TIME] == 0.0).all()
+    ]
+    dynamic_measurements = [
+        obs_id for obs_id
+        in measurements_condition[petab.OBSERVABLE_ID].unique()
+        if obs_id not in static_measurements
+        and obs_id in list(importer.petab_problem.observable_df.index)
+    ]
+    for static_obs in static_measurements:
+        visualization_table.append({
+            petab.PLOT_ID: f'{sample}_static',
+            petab.PLOT_NAME: f'{sample} static',
+            petab.Y_VALUES: static_obs,
+            petab.PLOT_TYPE_SIMULATION: petab.BAR_PLOT,
+            petab.LEGEND_ENTRY: f'{sample} {static_obs}',
+            petab.DATASET_ID: f'{sample}'
+        })
+
+    for condition in measurements_condition[
+        petab.SIMULATION_CONDITION_ID
+    ].unique():
+        for dynamic_obs in dynamic_measurements:
+            if len(measurements_condition[
+                (measurements_condition[petab.OBSERVABLE_ID] == dynamic_obs)
+                & (measurements_condition[petab.SIMULATION_CONDITION_ID] ==
+                   condition)
+            ]) == 0:
+                continue
+            visualization_table.append({
+                petab.PLOT_ID: f'{condition.split("__")[-1]}_{dynamic_obs}',
+                petab.PLOT_NAME: f'{condition.split("__")[-1]}_{dynamic_obs}',
+                petab.Y_VALUES: dynamic_obs,
+                petab.PLOT_TYPE_SIMULATION: petab.LINE_PLOT,
+                petab.LEGEND_ENTRY: sample,
+                petab.DATASET_ID: f'{condition}',
+            })
+
+visualization_table = pd.DataFrame(visualization_table)
+
+visualization_table[petab.Y_SCALE] = petab.LIN
+visualization_table[petab.X_SCALE] = petab.LIN
+visualization_table[petab.PLOT_TYPE_DATA] = petab.MEAN_AND_SD
+
+measurement_table = importer.petab_problem.measurement_df
+measurement_table[petab.DATASET_ID] = \
+    measurement_table[petab.SIMULATION_CONDITION_ID]
+
+simulation_df[petab.DATASET_ID] = simulation_df[petab.SIMULATION_CONDITION_ID]
+
 # Plot with PEtab
-petab.visualize.plot_data_and_simulation(
-    exp_data=importer.petab_problem.measurement_df,
+axes = petab.visualize.plot_data_and_simulation(
+    exp_data=measurement_table,
     exp_conditions=importer.petab_problem.condition_df,
     sim_data=simulation_df,
-    vis_spec=importer.petab_problem.visualization_df
+    vis_spec=visualization_table
 )
+[ax.get_legend().remove() for ax in axes.values()
+ if ax.get_legend() is not None]
 plt.tight_layout()
 plt.savefig(os.path.join(
     'figures', f'pretraining_{mae.data_name}.pdf'

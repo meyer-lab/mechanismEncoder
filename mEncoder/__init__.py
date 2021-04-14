@@ -1,8 +1,6 @@
 import os
 import amici.pysb_import
 import logging
-import importlib
-import sys
 import re
 import pysb
 import sympy as sp
@@ -62,9 +60,7 @@ def load_model(pathway_name: str,
     amici_model = model_module.getModel()
     solver = amici_model.getSolver()
 
-    solver.setMaxSteps(int(1e5))
-    solver.setAbsoluteToleranceSteadyState(1e-2)
-    solver.setRelativeToleranceSteadyState(1e-8)
+    apply_solver_settings(solver)
 
     return amici_model, solver
 
@@ -76,6 +72,14 @@ def plot_and_save_fig(filename):
 
     if filename is not None:
         plt.savefig(os.path.join(figures_path, filename))
+
+
+def apply_solver_settings(solver):
+    solver.setMaxSteps(int(1e5))
+    solver.setAbsoluteTolerance(1e-12)
+    solver.setRelativeTolerance(1e-10)
+    solver.setAbsoluteToleranceSteadyState(1e-10)
+    solver.setRelativeToleranceSteadyState(1e-10)
 
 
 parameter_boundaries_scales = {

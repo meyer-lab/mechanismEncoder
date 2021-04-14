@@ -1,9 +1,10 @@
-from pypesto import Problem, Objective, Result
+from pypesto import Problem, Result, Objective
 from amici.petab_import import PysbPetabProblem
 from pypesto.petab.pysb_importer import PetabImporterPysb
 from pypesto.optimize import FidesOptimizer, OptimizeOptions, minimize
 from pypesto.store import OptimizationResultHDF5Writer
 from pypesto.visualize import waterfall, parameters
+from pypesto.objective.aesara import AesaraObjective
 
 
 import petab
@@ -102,20 +103,10 @@ def generate_cross_sample_pretraining_problem(
         pypesto Problem
     """
 
-    loss = ae.compile_embedding_loss()
-    loss_grad = ae.compile_embedding_loss_grad()
-    loss_hess = ae.compile_embedding_loss_hess()
-
-    def fun(x: np.ndarray) -> float:
-        return - float(loss(x))
-
-    def grad(x: np.ndarray) -> np.ndarray:
-        return - loss_grad(x)[0]
-
-    def hess(x: np.ndarray) -> np.ndarray:
-        return - loss_hess(x)[0]
-
-    obj = Objective(fun=fun, grad=grad, hess=hess)
+    obj = AesaraObjective(
+        ae.pypesto_subproblem.objective, ae.x_embedding,
+        ae.embedding_model_pars
+    )
 
     x_names = ae.x_names[ae.n_encode_weights:]
 
@@ -213,9 +204,10 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
         maximum number of iterations
     """
     opt = FidesOptimizer(
-        hessian_update=fides.HybridUpdate(),
+        hessian_update=fides.BFGS(),
         options={
             fides.Options.FATOL: fatol,
+            fides.Options.XTOL: 1e-8,
             fides.Options.MAXTIME: 7200,
             fides.Options.MAXITER: maxiter,
             fides.Options.SUBSPACE_DIM: subspace,
@@ -240,8 +232,7 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
 
     return minimize(
         problem, opt, n_starts=nstarts, options=optimize_options,
-        startpoint_method=startpoint_method,
-        engine=pypesto.engine.MultiThreadEngine(n_threads=1)
+        startpoint_method=startpoint_method
     )
 
 

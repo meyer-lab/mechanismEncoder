@@ -8,10 +8,10 @@ from .autoencoder import MechanisticAutoEncoder
 from . import parameter_boundaries_scales
 
 from pypesto.optimize import (
-    IpoptOptimizer, NLoptOptimizer, FidesOptimizer,
-    minimize, OptimizeOptions
+    FidesOptimizer, minimize, OptimizeOptions
 )
-from pypesto import Problem, HistoryOptions, Result, Objective
+from pypesto import Problem, HistoryOptions, Result
+from pypesto.objective.aesara import AesaraObjective
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 trace_path = os.path.join(basedir, 'traces')
@@ -21,7 +21,7 @@ TRACE_FILE_TEMPLATE = '{pathway}__{data}__{optimizer}__{n_hidden}__{job}__' \
 
 def generate_pypesto_objective(
         ae: MechanisticAutoEncoder
-) -> Objective:
+) -> AesaraObjective:
     """
     Creates a pypesto objective function (this is the loss function) that
     needs to be minimized to train the respective autoencoder
@@ -32,21 +32,9 @@ def generate_pypesto_objective(
     :returns:
         Objective function that needs to be minimized for training.
     """
-    loss = ae.compile_loss()
-    loss_grad = ae.compile_loss_grad()
 
-    def fun(x: np.ndarray) -> float:
-        encoder_pars = x[0:ae.n_encoder_pars]
-        kinetic_pars = x[ae.n_encoder_pars:]
-        return - float(loss(encoder_pars, kinetic_pars))
-
-    def grad(x: np.ndarray) -> np.ndarray:
-        encoder_pars = x[:ae.n_encoder_pars]
-        kinetic_pars = x[ae.n_encoder_pars:]
-        return - np.asarray(loss_grad(encoder_pars, kinetic_pars))
-
-    return Objective(
-        fun=fun, grad=grad,
+    return AesaraObjective(
+        ae.pypesto_subproblem.objective, ae.x, ae.model_pars
     )
 
 
