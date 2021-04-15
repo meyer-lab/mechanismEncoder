@@ -1,4 +1,4 @@
-from pypesto import Problem, Result, Objective
+from pypesto import Problem, Result
 from amici.petab_import import PysbPetabProblem
 from pypesto.petab.pysb_importer import PetabImporterPysb
 from pypesto.optimize import FidesOptimizer, OptimizeOptions, minimize
@@ -6,29 +6,28 @@ from pypesto.store import OptimizationResultHDF5Writer
 from pypesto.visualize import waterfall, parameters
 from pypesto.objective.aesara import AesaraObjective
 
-
 import petab
 import os
 import fides
 import pandas as pd
 import numpy as np
-import aesara
-import aesara.tensor as aet
-import pypesto.engine
 import matplotlib.pyplot as plt
 
-from typing import Dict, Callable
+from typing import Callable
 from pysb import Model
 
 from .autoencoder import MechanisticAutoEncoder
-from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, load_pathway
+from . import (
+    MODEL_FEATURE_PREFIX, load_pathway,
+)
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 
 
 def generate_per_sample_pretraining_problems(
-        ae: MechanisticAutoEncoder
-) -> Dict[str, PetabImporterPysb]:
+        ae: MechanisticAutoEncoder,
+        sample: str
+) -> PetabImporterPysb:
     """
     Creates a pypesto problem that can be used to train the
     mechanistic model individually on every sample
@@ -52,40 +51,46 @@ def generate_per_sample_pretraining_problems(
     # has the observables added and this might lead to issues.
     clean_model = load_pathway('pw_' + ae.pathway_name)
 
-    samples = [
-        c for c in pp.condition_df.index
-        if c in pp.measurement_df[petab.PREEQUILIBRATION_CONDITION_ID].unique()
+    ret = {}
+    mdf = pp.measurement_df[
+        pp.measurement_df[petab.PREEQUILIBRATION_CONDITION_ID]
+        == sample
     ]
+    cdf = pp.condition_df[[
+        name.startswith(sample)
+        for name in pp.condition_df.index
+    ]]
+    vdf = pd.read_csv(
+        os.path.join('data',
+                     f'{ae.data_name}__'
+                     f'{sample}__visualization.tsv'), sep='\t'
+    )
+    spars = set(
+        e
+        for t in mdf[petab.OBSERVABLE_PARAMETERS].apply(lambda x: x.split(';'))
+        for e in t
+    )
+    pdf = pp.parameter_df[[
+        (not name.startswith(MODEL_FEATURE_PREFIX) and (
+            (not name.endswith('_scale') and not name.endswith('offset'))
+            or name in spars
+         ))
+        or name.endswith(sample)
+        for name in pp.parameter_df.index
+    ]]
 
-    return {
-        sample: PetabImporterPysb(PysbPetabProblem(
-            parameter_df=pp.parameter_df[[
-                not name.startswith(MODEL_FEATURE_PREFIX)
-                or name.endswith(sample)
-                for name in pp.parameter_df.index
-            ]],
-            observable_df=pp.observable_df,
-            measurement_df=pp.measurement_df[
-                pp.measurement_df[petab.PREEQUILIBRATION_CONDITION_ID]
-                == sample
-            ],
-            condition_df=pp.condition_df[[
-                name.startswith(sample)
-                for name in pp.condition_df.index
-            ]],
-            visualization_df=pd.read_csv(
-                os.path.join('data',
-                             f'{ae.data_name}__'
-                             f'{sample}__visualization.tsv'), sep='\t'
-            ),
-            pysb_model=Model(base=clean_model, name=pp.pysb_model.name),
-        ), output_folder=os.path.join(
-            basedir, 'amici_models',
-            f'{pp.pysb_model.name}_'
-            f'{ae.data_name}_petab'
-        ))
-        for sample in samples
-    }
+    return PetabImporterPysb(PysbPetabProblem(
+        parameter_df=pdf,
+        observable_df=pp.observable_df,
+        measurement_df=mdf,
+        condition_df=cdf,
+        visualization_df=vdf,
+        pysb_model=Model(base=clean_model, name=pp.pysb_model.name),
+    ), output_folder=os.path.join(
+        basedir, 'amici_models',
+        f'{pp.pysb_model.name}_'
+        f'{ae.data_name}_petab'
+    ))
 
 
 def generate_cross_sample_pretraining_problem(
@@ -115,64 +120,6 @@ def generate_cross_sample_pretraining_problem(
         x_names=x_names,
         lb=[-np.inf for _ in x_names],
         ub=[np.inf for _ in x_names],
-    )
-
-
-def generate_encoder_inflate_pretraining_problem(
-        ae: MechanisticAutoEncoder, pretrained_inputs: pd.DataFrame,
-        pars: pd.DataFrame
-) -> Problem:
-    """
-    Creates a pypesto problem that can be used to train encoder and inflate
-    parameters. This is done based on the precomputed input parameters that
-    were generated during cross sample pretraining. This function defines a
-    least squares problem ||W_p*W*x - p||, where `W` is the encoder matrix,
-    `W_p` is the inflate matrix, x is the input data and p are the
-    pretrained input parameters. Optimization is performed over variables
-    `W_p` and `W`.
-
-    :param ae:
-        Mechanistic autoencoder that will be pretrained
-
-    :param pretrained_inputs:
-        pretrained input parameters computed by performing cross sample
-        pretraining
-
-    :param pars:
-        corresponding population input parameters that were pretrained along
-        with the pretrained inputs. This input does not affect the solution,
-        but will be stored as fixed parameters in the result such that it is
-        available in later pretraining steps
-
-    :returns:
-        pypesto Problem
-    """
-    least_squares = .5*aet.sum(aet.power(
-        ae.encode_params(ae.encoder_pars) -
-        pretrained_inputs[ae.sample_names].values.T, 2
-    )[:])
-
-    loss = aesara.function([ae.encoder_pars], least_squares)
-    loss_grad = aesara.function(
-        [ae.encoder_pars], aesara.grad(least_squares, [ae.encoder_pars])
-    )
-
-    return Problem(
-        objective=Objective(
-            fun=lambda x: np.float(loss(x[:ae.n_encoder_pars])),
-            grad=lambda x: loss_grad(x[:ae.n_encoder_pars])[0]
-        ),
-        ub=[np.inf for _ in ae.x_names[:ae.n_encoder_pars]],
-        lb=[-np.inf for _ in ae.x_names[:ae.n_encoder_pars]],
-        lb_init=[parameter_boundaries_scales[name.split('_')[-1]][0]
-                 for name in ae.x_names[:ae.n_encoder_pars]],
-        ub_init=[parameter_boundaries_scales[name.split('_')[-1]][1]
-                 for name in ae.x_names[:ae.n_encoder_pars]],
-        x_names=ae.x_names[:ae.n_encoder_pars] + list(pars.index),
-        x_fixed_indices=list(range(ae.n_encoder_pars,
-                                   ae.n_encoder_pars+ae.n_kin_params)),
-        dim_full=ae.n_encoder_pars+ae.n_kin_params,
-        x_fixed_vals=pars.values
     )
 
 
@@ -213,18 +160,7 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
             fides.Options.SUBSPACE_DIM: subspace,
         }
     )
-    if isinstance(problem.objective, pypesto.objective.AggregatedObjective):
-        problem.objective._objectives[0].guess_steadystate = False
-        solver = problem.objective._objectives[0].amici_solver
-        solver.setMaxSteps(int(1e5))
-        solver.setAbsoluteTolerance(1e-12)
-        solver.setRelativeTolerance(1e-8)
-        solver.setAbsoluteToleranceSteadyState(1e-6)
-        solver.setRelativeToleranceSteadyState(1e-4)
-        for e in problem.objective._objectives[0].edatas:
-            e.reinitializeFixedParameterInitialStates = True
-    else:
-        problem.objective.guess_steadystate = False
+
 
     optimize_options = OptimizeOptions(
         startpoint_resample=True, allow_failed_starts=False,

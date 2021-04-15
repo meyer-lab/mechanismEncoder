@@ -342,13 +342,6 @@ else:
         measurement_table = pd.concat([measurement_table_phospho,
                                        measurement_table_proteomics])
 
-        measurement_table = measurement_table[
-            measurement_table[petab.PREEQUILIBRATION_CONDITION_ID].apply(
-                lambda x: x in ['c184A1', 'c184B5', 'cAU565', 'cBT20',
-                                'cBT474']
-            )
-         ]
-
         condition_table = pd.DataFrame({
             petab.CONDITION_ID:
                 measurement_table[petab.SIMULATION_CONDITION_ID].unique()
@@ -425,16 +418,20 @@ else:
     measurement_table[petab.DATASET_ID] = measurement_table[
         petab.SIMULATION_CONDITION_ID
     ]
-    observable_table[petab.OBSERVABLE_FORMULA] = \
-        [
-            f'log({obs}_scale * ({obs} + {obs}_offset))'
-            for obs in observable_obs
-        ]
+    observable_table[petab.OBSERVABLE_FORMULA] = [
+        f'observableParameter1_{obs}_obs * log({obs} + 1e-16) + '
+        f'observableParameter2_{obs}_obs'
+        for obs in observable_obs
+    ]
     observable_table[petab.NOISE_DISTRIBUTION] = 'normal'
-    observable_table[petab.NOISE_FORMULA] = \
-        observable_table[petab.OBSERVABLE_ID].apply(
-            lambda x: '0.1' if x.startswith('p') else '1.0'
+    observable_table[petab.NOISE_FORMULA] = 1.0
+
+    measurement_table[petab.OBSERVABLE_PARAMETERS] = \
+        measurement_table[petab.OBSERVABLE_ID].apply(
+            lambda x: f'{x}_scale;{x}_offset'
         )
+
+    measurement_table[petab.NOISE_PARAMETERS] = ''
 
     for sample in measurement_table[
         petab.PREEQUILIBRATION_CONDITION_ID

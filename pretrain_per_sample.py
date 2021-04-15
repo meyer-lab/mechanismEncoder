@@ -12,92 +12,74 @@ import matplotlib.pyplot as plt
 
 import amici.petab_objective
 
+from pypesto.store import OptimizationResultHDF5Reader
+
 from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.pretraining import (
     generate_per_sample_pretraining_problems, pretrain,
     store_and_plot_pretraining
 )
-from mEncoder import apply_solver_settings
+from mEncoder import apply_objective_settings
 
 np.random.seed(0)
 
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
-N_HIDDEN = 1
+SAMPLE = sys.argv[3]
 
-mae = MechanisticAutoEncoder(N_HIDDEN, (
+mae = MechanisticAutoEncoder(1, (
     os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
-), MODEL)
+), MODEL, [SAMPLE])
 
-pretraining_problems = generate_per_sample_pretraining_problems(mae)
+importer = generate_per_sample_pretraining_problems(mae, SAMPLE)
 
 pretrained_samples = []
 pretraindir = 'pretraining'
-prefix = f'{mae.pathway_name}__{mae.data_name}'
-for sample, importer in pretraining_problems.items():
-    problem = importer.create_problem()
-    solver = problem.objective._objectives[0].amici_solver
+output_prefix = f'{mae.pathway_name}__{mae.data_name}__{SAMPLE}'
+problem = importer.create_problem()
+model = importer.create_model()
+apply_objective_settings(problem)
 
-    apply_solver_settings(solver)
-    problem.objective._objectives[0].guess_steadystate = False
-
-    model = importer.create_model()
+rfile = os.path.join(pretraindir, output_prefix + '.hdf5')
+if not os.path.exists(rfile):
     result = pretrain(problem, pypesto.startpoint.uniform, 20)
-    output_prefix = f'{prefix}__{sample}'
 
     store_and_plot_pretraining(result, pretraindir, output_prefix)
-    pretrained_samples.append(output_prefix + '.csv')
+else:
+    reader = OptimizationResultHDF5Reader(rfile)
+    result = reader.read()
 
-    simulation = amici.petab_objective.simulate_petab(
-        importer.petab_problem,
-        model,
-        solver,
-        problem_parameters=dict(zip(
-            problem.x_names,
-            result.optimize_result.list[0]['x'],
-        )), scaled_parameters=True,
-        edatas=problem.objective._objectives[0].edatas,
+pretrained_samples.append(output_prefix + '.csv')
 
-    )
-    # Convert the simulation to PEtab format.
-    simulation_df = amici.petab_objective.rdatas_to_simulation_df(
-        simulation['rdatas'],
-        model=model,
-        measurement_df=importer.petab_problem.measurement_df,
-    )
-    # Plot with PEtab
-    ordering_cols = [
-        petab.PREEQUILIBRATION_CONDITION_ID, petab.SIMULATION_CONDITION_ID,
-        petab.OBSERVABLE_ID, petab.TIME
-    ]
-    exp_data = importer.petab_problem.measurement_df.sort_values(
-        by=ordering_cols
-    ).reset_index().drop(columns=['index'])
-    sim_data = simulation_df.sort_values(
-        by=ordering_cols
-    ).reset_index().drop(columns=['index'])
-    petab.visualize.plot_data_and_simulation(
-        exp_data=exp_data,
-        exp_conditions=importer.petab_problem.condition_df,
-        sim_data=sim_data,
-        vis_spec=importer.petab_problem.visualization_df
-    )
-    plt.tight_layout()
-    plt.savefig(os.path.join(
-        'figures', f'pretraining_{mae.data_name}_{sample}.pdf'
-    ))
-
-with open(os.path.join(pretraindir,
-                       f'{prefix}.txt'), 'w') as f:
-    for file in pretrained_samples:
-        f.write(f'{file}\n')
-
-
-
-
-
-
-
-
+x = problem.get_reduced_vector(result.optimize_result.list[0]['x'],
+                               problem.x_free_indices)
+simulation = problem.objective(x, return_dict=True)
+# Convert the simulation to PEtab format.
+simulation_df = amici.petab_objective.rdatas_to_simulation_df(
+    simulation['rdatas'],
+    model=model,
+    measurement_df=importer.petab_problem.measurement_df,
+)
+# Plot with PEtab
+ordering_cols = [
+    petab.PREEQUILIBRATION_CONDITION_ID, petab.SIMULATION_CONDITION_ID,
+    petab.OBSERVABLE_ID, petab.TIME
+]
+exp_data = importer.petab_problem.measurement_df.sort_values(
+    by=ordering_cols
+).reset_index().drop(columns=['index'])
+sim_data = simulation_df.sort_values(
+    by=ordering_cols
+).reset_index().drop(columns=['index'])
+petab.visualize.plot_data_and_simulation(
+    exp_data=exp_data,
+    exp_conditions=importer.petab_problem.condition_df,
+    sim_data=sim_data,
+    vis_spec=importer.petab_problem.visualization_df
+)
+plt.tight_layout()
+plt.savefig(os.path.join(
+    'pretraining', f'{output_prefix}_fit.pdf'
+))

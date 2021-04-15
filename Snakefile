@@ -2,14 +2,14 @@ import os
 
 from mEncoder.training import trace_path, TRACE_FILE_TEMPLATE
 
-HIDDEN_LAYERS = [2]
-PATHWAYS = ['FLT3_MAPK_AKT_STAT']
-DATASETS = ['synthetic', 'aml_ptrc', 'cppa_skin', 'cppa_breast']
-OPTIMIZERS = ['fides']
+HIDDEN_LAYERS = [3]
+PATHWAYS = ['EGFR_MAPK']
+DATASETS = ['dream_cytof']
+SAMPLES = ['c184A1', 'c184B5', 'cAU565', 'cBT20', 'cBT474', 'cBT483',
+           'cBT549', 'cCAL148', 'cCAL120']
+samplestr = ';'.join(SAMPLES)
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
-
-localrules: process_data
 
 rule process_data:
     input:
@@ -57,14 +57,15 @@ rule pretrain_per_sample:
         data=rules.process_data.output.datafiles,
     output:
         pretraining=os.path.join(
-            'pretraining', '{model}__{data}__{model}.txt'
+            'pretraining', '{model}__{data}__{model}__{sample}.csv'
         )
     wildcard_constraints:
         model='[\w_]+',
         data='[\w]+',
-        sample='[\w_]+0',
+        sample='[\w_]+',
     shell:
-        'python3 {input.script} {wildcards.model} {wildcards.data}'
+        'python3 {input.script} {wildcards.model} {wildcards.data} '
+        '{wildcards.sample}'
 
 
 rule pretrain_cross_sample:
@@ -72,37 +73,25 @@ rule pretrain_cross_sample:
         script='pretrain_cross_samples.py',
         pretraining_code=os.path.join('mEncoder', 'pretraining.py'),
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
-        pretrain_per_sample=rules.pretrain_per_sample.output.pretraining,
+        pretrain_per_sample=expand(
+            os.path.join(
+                'pretraining', '{{model}}__{{data}}__{{model}}__{sample}.csv'
+            ),
+            sample=SAMPLES
+        ),
         model=rules.compile_mechanistic_model.output.model,
         data=rules.process_data.output.datafiles,
     output:
         pretraining=os.path.join(
-            'pretraining', '{model}__{data}__{model}__input.csv'
-        )
-    wildcard_constraints:
-        model='[\w_]+',
-        data='[\w]+',
-    shell:
-        'python3 {input.script} {wildcards.model} {wildcards.data}'
-
-rule pretrain_encoder_inflate:
-    input:
-        script='pretrain_encoder_inflate.py',
-        pretraining_code=os.path.join('mEncoder', 'pretraining.py'),
-        model_code=os.path.join('mEncoder', 'encoder.py'),
-        pretrain_cross_sample=rules.pretrain_cross_sample.output.pretraining
-    output:
-        pretraining=os.path.join(
             'pretraining',
-            '{model}__{data}__{model}__{n_hidden}__decoder_inflate.csv'
+            '{model}__{data}__{model}__pca__{n_hidden}.csv'
         )
     wildcard_constraints:
         model='[\w_]+',
         data='[\w]+',
-        n_hidden='[0-9]+'
     shell:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
-        '{wildcards.n_hidden}'
+        '{samplestr} pca {wildcards.n_hidden}'
 
 
 rule estimate_parameters:
@@ -112,28 +101,19 @@ rule estimate_parameters:
         training_code=os.path.join('mEncoder', 'training.py'),
         autoencoder_code=os.path.join('mEncoder', 'autoencoder.py'),
         dataset=rules.process_data.output.datafiles,
-        pretrain_encoder=rules.pretrain_encoder_inflate.output.pretraining,
+        pretrain_encoder=rules.pretrain_cross_sample.output.pretraining,
         model=rules.compile_mechanistic_model.output.model,
     output:
         result=os.path.join('results', '{model}', '{data}',
-                            '{optimizer}__{n_hidden}__{job}.pickle'),
-        trace=os.path.join(
-            trace_path,
-            TRACE_FILE_TEMPLATE.format(pathway='{model}',
-                                       data='{data}__{model}',
-                                       optimizer='{optimizer}',
-                                       n_hidden='{n_hidden}',
-                                       job='{job}').replace('{id}', '0')
-         )
+                            samplestr + '__{n_hidden}__{job}.pickle'),
     wildcard_constraints:
         model='[\w_]+',
         data='[\w]+',
-        optimzer='[\w-]+',
         n_hidden='[0-9]+',
         job='[0-9]+',
     shell:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
-        '{wildcards.optimizer} {wildcards.n_hidden} {wildcards.job}'
+        '{samplestr} {wildcards.n_hidden} {wildcards.job}'
 
 rule collect_estimation_results:
     input:
@@ -148,16 +128,15 @@ rule collect_estimation_results:
          ), job=STARTS)
     output:
         result=os.path.join('results', '{model}', '{data}',
-                            '{optimizer}__{n_hidden}__full.pickle'),
+                            samplestr + '__{n_hidden}__full.pickle'),
     wildcard_constraints:
         model='[\w_]+',
         data='[\w_]+',
-        optimzer='[\w-]+',
         n_hidden='[0-9]+',
         job='[0-9]+',
     shell:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
-        '{wildcards.n_hidden} {wildcards.optimizer}'
+        '{samplestr} {wildcards.n_hidden}'
 
 rule visualize_estimation_results:
     input:
@@ -184,14 +163,12 @@ rule collect_estimation:
     input:
          expand(
              rules.collect_estimation_results.output.result,
-             model=PATHWAYS, data=DATASETS, optimizer=OPTIMIZERS,
-             n_hidden=HIDDEN_LAYERS,
+             model=PATHWAYS, data=DATASETS, n_hidden=HIDDEN_LAYERS,
          )
 
 rule visualize_estimation:
     input:
          expand(
              rules.visualize_estimation_results.output.plots,
-             model=PATHWAYS, data=DATASETS, optimizer=OPTIMIZERS,
-             n_hidden=HIDDEN_LAYERS,
+             model=PATHWAYS, data=DATASETS, n_hidden=HIDDEN_LAYERS,
          )

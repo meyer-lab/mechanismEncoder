@@ -5,6 +5,7 @@ import re
 import pysb
 import sympy as sp
 import amici
+import pypesto
 import pysb.export
 import matplotlib.pyplot as plt
 from typing import Tuple
@@ -82,12 +83,31 @@ def apply_solver_settings(solver):
     solver.setRelativeToleranceSteadyState(1e-10)
 
 
+def apply_objective_settings(problem):
+    if isinstance(problem.objective, pypesto.objective.AmiciObjective):
+        amiobjective = problem.objective
+    elif isinstance(problem.objective, pypesto.objective.AggregatedObjective):
+        amiobjective = problem.objective._objectives[0]
+    elif isinstance(problem.objective,
+                    pypesto.objective.aesara.AesaraObjective):
+        base_objective = problem.objective.base_objective
+        if isinstance(base_objective, pypesto.objective.AggregatedObjective):
+            amiobjective = base_objective._objectives[0]
+        elif isinstance(base_objective, pypesto.objective.AmiciObjective):
+            amiobjective = base_objective
+
+    amiobjective.guess_steadystate = False
+    apply_solver_settings(amiobjective.amici_solver)
+    for e in amiobjective.edatas:
+        e.reinitializeFixedParameterInitialStates = True
+
+
 parameter_boundaries_scales = {
     'kdeg': (-8, -3, 'log10'),      # [1/[t]]
     'eq': (-4, 4, 'log10'),          # [[c]]
     'kcat': (-4, 4, 'log10'),        # [1/([t]*[c])]
-    'scale': (-4, 0, 'log10'),       # [1/[c]]
-    'offset': (0, 4, 'log10'),     # [[c]]
+    'scale': (-5, 5, 'lin'),       # [1/[c]]
+    'offset': (-5, 5, 'lin'),     # [[c]]
     'weight': (-1, 1, 'lin'),       # [-]
     'koff': (-5, 2, 'log10'),      # [1/[t]]
     'kd':   (-4, 4, 'log10'),       # [[c]]

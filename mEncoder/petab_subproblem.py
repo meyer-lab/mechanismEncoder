@@ -1,6 +1,5 @@
 import os
 import petab
-import pysb
 
 import pandas as pd
 import numpy as np
@@ -11,12 +10,13 @@ from pypesto.petab.pysb_importer import PetabImporterPysb
 from . import parameter_boundaries_scales, MODEL_FEATURE_PREFIX, \
     load_pathway, basedir
 
-from typing import Tuple
+from typing import Tuple, Sequence
 
 
 def load_petab(datafiles: Tuple[str, str, str],
                pathway_name: str,
-               par_input_scale: float):
+               par_input_scale: float,
+               samples: Sequence[str] = None):
     """
     Imports data from a csv and converts it to the petab format. This
     function is used to connect the mechanistic model to the specified data
@@ -37,6 +37,17 @@ def load_petab(datafiles: Tuple[str, str, str],
     measurement_table = pd.read_csv(datafiles[0], index_col=0, sep='\t')
     condition_table = pd.read_csv(datafiles[1], index_col=0, sep='\t')
     observable_table = pd.read_csv(datafiles[2], index_col=0, sep='\t')
+
+    if samples:
+        measurement_table = measurement_table[
+            measurement_table[petab.PREEQUILIBRATION_CONDITION_ID].apply(
+                lambda x: x in samples
+            )
+        ]
+        condition_table = condition_table.loc[
+            [c for c in condition_table.index
+             if c.split('__')[0] in samples], :
+        ]
 
     model = load_pathway(pathway_name)
 
@@ -69,12 +80,10 @@ def load_petab(datafiles: Tuple[str, str, str],
     # PARAMETER TABLE
     # this defines the full set of parameters including boundaries, nominal
     # values, scale, priors and whether they will be estimated or not.
-    params = [par for par in model.parameters
+    params = [par.name for par in model.parameters
               if par.name not in condition_table.columns] + \
-        [pysb.Parameter(f'{obs.replace("_obs","")}_scale', 1.0)
-         for obs in observable_table.index] + \
-        [pysb.Parameter(f'{obs.replace("_obs", "")}_offset', 0.0)
-         for obs in observable_table.index]
+             [f'{obs}_scale' for obs in observable_table.index] + \
+             [f'{obs}_offset' for obs in observable_table.index]
 
     transforms = {
         'lin': lambda x: x,
@@ -83,16 +92,18 @@ def load_petab(datafiles: Tuple[str, str, str],
 
     # base definition of id, upper and lower bounds, scale and value
     param_defs = [{
-        petab.PARAMETER_ID: par.name,
+        petab.PARAMETER_ID: par,
         petab.LOWER_BOUND: transforms[parameter_boundaries_scales[
-            par.name.split('_')[-1]][2]
-        ](parameter_boundaries_scales[par.name.split('_')[-1]][0]),
+            par.split('_')[-1]][2]
+        ](parameter_boundaries_scales[par.split('_')[-1]][0]),
         petab.UPPER_BOUND: transforms[parameter_boundaries_scales[
-            par.name.split('_')[-1]][2]
-        ](parameter_boundaries_scales[par.name.split('_')[-1]][1]),
+            par.split('_')[-1]][2]
+        ](parameter_boundaries_scales[par.split('_')[-1]][1]),
         petab.PARAMETER_SCALE: parameter_boundaries_scales[
-            par.name.split('_')[-1]][2],
-        petab.NOMINAL_VALUE: par.value,
+            par.split('_')[-1]][2],
+        petab.NOMINAL_VALUE: model.parameters[par].value
+        if par in model.parameters.keys()
+        else 1.0
     } for par in params]
 
     # add additional input parameters for every base condition
@@ -150,3 +161,15 @@ def filter_observables(petab_problem: petab.Problem):
             lambda x: x in petab_problem.observable_df.index
         ), :
     ]
+    # filter obsolete observable pars
+    obs_pars = set(
+        p
+        for ir, r in petab_problem.measurement_df.iterrows()
+        for p in r[petab.OBSERVABLE_PARAMETERS].split(';')
+    )
+    for par in list(petab_problem.parameter_df.index):
+        if not par.endswith('_scale') and not par.endswith('_offset'):
+            continue
+        if par not in obs_pars:
+            petab_problem.parameter_df.drop(index=par, inplace=True)
+

@@ -6,8 +6,9 @@ import numpy as np
 
 import petab
 import pypesto
+from pypesto.hierarchical.problem import PARAMETER_TYPE
 
-from typing import Tuple
+from typing import Tuple, Sequence
 from sklearn.decomposition import PCA
 
 from . import MODEL_FEATURE_PREFIX, apply_solver_settings
@@ -22,6 +23,7 @@ class MechanisticAutoEncoder(AutoEncoder):
                  n_hidden: int,
                  datafiles: Tuple[str, str, str],
                  pathway_name: str,
+                 samples: Sequence[str],
                  par_modulation_scale: float = 1 / 2):
         """
         loads the mechanistic model as theano operator with loss as output and
@@ -53,13 +55,22 @@ class MechanisticAutoEncoder(AutoEncoder):
 
         self.par_modulation_scale = par_modulation_scale
         self.petab_importer = load_petab(datafiles, 'pw_' + pathway_name,
-                                         par_modulation_scale)
+                                         par_modulation_scale, samples)
 
         full_measurements = self.petab_importer.petab_problem.measurement_df
         filter_observables(self.petab_importer.petab_problem)
         petab.lint_problem(self.petab_importer.petab_problem)
 
-        self.pypesto_subproblem = self.petab_importer.create_problem()
+        self.petab_importer.petab_problem.parameter_df[PARAMETER_TYPE] = [
+            'offset' if par_id.endswith('_offset')
+            else 'scaling' if par_id.endswith('_scale')
+            else ''
+            for par_id in self.petab_importer.petab_problem.parameter_df.index
+        ]
+
+        self.pypesto_subproblem = self.petab_importer.create_problem(
+            hierarchical=True
+        )
 
         input_data = full_measurements.loc[full_measurements.apply(
             lambda x: (x[petab.SIMULATION_CONDITION_ID] ==
