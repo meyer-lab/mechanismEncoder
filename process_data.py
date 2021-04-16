@@ -517,6 +517,3 @@ else:
     )
     observable_table.set_index(petab.OBSERVABLE_ID, inplace=True)
     observable_table.to_csv(observable_file, sep='\t')
-
-
-

@@ -24,8 +24,8 @@ generate_pathway(model, erbb_cascade)
 active_rtks = ['EGFR__Y1173_p', 'ERBB2__Y1248_p']
 
 mapk_cascade = [
-    ('RAF1',  {'S338':      active_rtks + ['EGF']}),
-    ('BRAF',  {'S445':      active_rtks + ['EGF']}),
+    ('RAF1',  {'S338':      active_rtks}),
+    ('BRAF',  {'S445':      active_rtks}),
     ('MAP2K1',   {'S218_S222': ['RAF1__S338_p', 'BRAF__S445_p']}),
     ('MAP2K2',   {'S222_S226': ['RAF1__S338_p', 'BRAF__S445_p']}),
     ('MAPK1',  {'T185_Y187': ['MAP2K1__S218_p__S222_p',

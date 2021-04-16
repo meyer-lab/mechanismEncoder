@@ -1,4 +1,5 @@
 import os
+import sys
 
 from mEncoder.training import trace_path, TRACE_FILE_TEMPLATE
 
@@ -6,7 +7,7 @@ HIDDEN_LAYERS = [3]
 PATHWAYS = ['EGFR_MAPK']
 DATASETS = ['dream_cytof']
 SAMPLES = ['c184A1', 'c184B5', 'cAU565', 'cBT20', 'cBT474', 'cBT483',
-           'cBT549', 'cCAL148', 'cCAL120']
+           'cBT549', 'cCAL148', 'cCAL120', 'cCAL851']
 samplestr = ';'.join(SAMPLES)
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
@@ -62,7 +63,7 @@ rule pretrain_per_sample:
     wildcard_constraints:
         model='[\w_]+',
         data='[\w]+',
-        sample='[\w_]+',
+        sample='c[\w_]+',
     shell:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
         '{wildcards.sample}'
@@ -119,13 +120,9 @@ rule collect_estimation_results:
     input:
         script='collect_estimation.py',
         trace=expand(os.path.join(
-            trace_path,
-            TRACE_FILE_TEMPLATE.format(pathway='{{model}}',
-                                       data='{{data}}__{{model}}',
-                                       optimizer='{{optimizer}}',
-                                       n_hidden='{{n_hidden}}',
-                                       job='{job}').replace('{id}', '0')
-         ), job=STARTS)
+            'results', '{{model}}', '{{data}}',
+            samplestr + '__{{n_hidden}}__{job}.pickle'
+        ), job=STARTS)
     output:
         result=os.path.join('results', '{model}', '{data}',
                             samplestr + '__{n_hidden}__full.pickle'),
@@ -145,10 +142,9 @@ rule visualize_estimation_results:
     output:
         plots=expand(os.path.join(
             'figures',
-            '__'.join(['{{model}}', '{{data}}', '{{n_hidden}}',
-                       '{{optimizer}}']) + '__{plot}.pdf'
-        ), plot=['waterfall', 'optimizer_trace', 'embedding', 'fit',
-                 'optimizer_convergence'])
+            '__'.join(['{{model}}', '{{data}}', '{{n_hidden}}'])
+            + '__{plot}.pdf'
+        ), plot=['waterfall', 'embedding', 'fit'])
     wildcard_constraints:
         model='[\w_]+',
         data='[\w_]+',
@@ -157,7 +153,7 @@ rule visualize_estimation_results:
         job='[0-9]+',
     shell:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
-        '{wildcards.n_hidden} {wildcards.optimizer}'
+        '{wildcards.n_hidden}'
 
 rule collect_estimation:
     input:

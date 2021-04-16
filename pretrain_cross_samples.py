@@ -11,10 +11,12 @@ import numpy as np
 import scipy.linalg as la
 import matplotlib.pyplot as plt
 import fides
+import pypesto
 import petab.visualize
 import amici.petab_objective
 
 from pypesto.store import OptimizationResultHDF5Reader
+from pypesto.optimize import FidesOptimizer
 
 from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.pretraining import (
@@ -29,7 +31,7 @@ MODEL = sys.argv[1]
 DATA = sys.argv[2]
 SAMPLES = sys.argv[3].split(';')
 INIT = sys.argv[4]
-N_HIDDEN = sys.argv[5]
+N_HIDDEN = int(sys.argv[5])
 
 mae = MechanisticAutoEncoder(N_HIDDEN, (
     os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
@@ -106,8 +108,18 @@ rfile = os.path.join(pretraindir, output_prefix + '.hdf5')
 apply_objective_settings(problem)
 
 if not os.path.exists(rfile):
-    result = pretrain(problem, startpoints, 20,
-                      subspace=fides.SubSpaceDim.TWO, maxiter=int(1e4))
+    optimizer = FidesOptimizer(
+        hessian_update=fides.HybridUpdate(),
+        options={
+            fides.Options.FATOL: 1e-6,
+            fides.Options.XTOL: 1e-8,
+            fides.Options.MAXTIME: 7200,
+            fides.Options.MAXITER: 1e3,
+        }
+    )
+    result = pretrain(problem, pypesto.startpoint.uniform, 50,
+                      optimizer)
+    store_and_plot_pretraining(result, pretraindir, output_prefix)
 
     store_and_plot_pretraining(result, pretraindir, output_prefix)
 else:

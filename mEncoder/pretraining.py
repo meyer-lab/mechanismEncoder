@@ -1,14 +1,13 @@
 from pypesto import Problem, Result
 from amici.petab_import import PysbPetabProblem
 from pypesto.petab.pysb_importer import PetabImporterPysb
-from pypesto.optimize import FidesOptimizer, OptimizeOptions, minimize
+from pypesto.optimize import OptimizeOptions, minimize
 from pypesto.store import OptimizationResultHDF5Writer
 from pypesto.visualize import waterfall, parameters
 from pypesto.objective.aesara import AesaraObjective
 
 import petab
 import os
-import fides
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -51,7 +50,6 @@ def generate_per_sample_pretraining_problems(
     # has the observables added and this might lead to issues.
     clean_model = load_pathway('pw_' + ae.pathway_name)
 
-    ret = {}
     mdf = pp.measurement_df[
         pp.measurement_df[petab.PREEQUILIBRATION_CONDITION_ID]
         == sample
@@ -124,9 +122,7 @@ def generate_cross_sample_pretraining_problem(
 
 
 def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
-             fatol: float = 1e-8,
-             subspace: fides.SubSpaceDim = fides.SubSpaceDim.TWO,
-             maxiter: int = int(1e3)) -> Result:
+             optimizer, engine=None) -> Result:
     """
     Pretrain the provided problem via optimization.
 
@@ -150,25 +146,15 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
     :param maxiter:
         maximum number of iterations
     """
-    opt = FidesOptimizer(
-        hessian_update=fides.BFGS(),
-        options={
-            fides.Options.FATOL: fatol,
-            fides.Options.XTOL: 1e-8,
-            fides.Options.MAXTIME: 7200,
-            fides.Options.MAXITER: maxiter,
-            fides.Options.SUBSPACE_DIM: subspace,
-        }
-    )
-
 
     optimize_options = OptimizeOptions(
         startpoint_resample=True, allow_failed_starts=False,
     )
 
     return minimize(
-        problem, opt, n_starts=nstarts, options=optimize_options,
-        startpoint_method=startpoint_method
+        problem, optimizer, n_starts=nstarts, options=optimize_options,
+        startpoint_method=startpoint_method,
+        engine=engine
     )
 
 

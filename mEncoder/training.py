@@ -15,8 +15,7 @@ from pypesto.objective.aesara import AesaraObjective
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 trace_path = os.path.join(basedir, 'traces')
-TRACE_FILE_TEMPLATE = '{pathway}__{data}__{optimizer}__{n_hidden}__{job}__' \
-                    '{{id}}.csv'
+TRACE_FILE_TEMPLATE = '{pathway}__{data}__{n_hidden}__{job}__{{id}}.csv'
 
 
 def generate_pypesto_objective(
