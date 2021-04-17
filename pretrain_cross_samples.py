@@ -116,7 +116,7 @@ optimizer = FidesOptimizer(
         fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.TWO,
     }
 )
-result = pretrain(problem, pypesto.startpoint.uniform, 1, optimizer)
+result = pretrain(problem, startpoints, 1, optimizer)
 store_and_plot_pretraining(result, pretraindir, output_prefix)
 
 importer = mae.petab_importer
