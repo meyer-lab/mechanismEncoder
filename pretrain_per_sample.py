@@ -37,7 +37,6 @@ mae = MechanisticAutoEncoder(1, (
 
 importer = generate_per_sample_pretraining_problems(mae, SAMPLE)
 
-pretrained_samples = []
 pretraindir = 'pretraining'
 output_prefix = f'{mae.pathway_name}__{mae.data_name}__{SAMPLE}'
 problem = importer.create_problem()
@@ -61,8 +60,7 @@ if not os.path.exists(rfile):
 else:
     reader = OptimizationResultHDF5Reader(rfile)
     result = reader.read()
-
-pretrained_samples.append(output_prefix + '.csv')
+    store_and_plot_pretraining(result, pretraindir, output_prefix)
 
 x = problem.get_reduced_vector(result.optimize_result.list[0]['x'],
                                problem.x_free_indices)
