@@ -3,8 +3,8 @@ import os
 HIDDEN_LAYERS = [3]
 PATHWAYS = ['EGFR_MAPK']
 DATASETS = ['dream_cytof']
-SAMPLES = ['c184A1', 'c184B5', 'cAU565', 'cBT20', 'cBT474', 'cBT483',
-           'cBT549', 'cCAL148', 'cCAL120', 'cCAL851']
+SAMPLES = ['c184A1', 'cBT20', 'cBT474', 'cBT549', 'cCAL148', 'cCAL851',
+           'cCAL51', 'cDU4475', 'cEFM192A', 'cEVSAT']
 samplestr = '.'.join(SAMPLES)
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
@@ -85,7 +85,7 @@ rule pretrain_cross_sample:
     output:
         pretraining=os.path.join(
             'pretraining',
-            '{model}__{data}__{model}__pca__{n_hidden}__{job}.csv'
+            '{model}__{data}__{model}__pca__{n_hidden}__{job}.hfd5'
         )
     wildcard_constraints:
         model='[\w_]+',

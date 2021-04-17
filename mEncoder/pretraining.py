@@ -5,6 +5,7 @@ from pypesto.optimize import OptimizeOptions, minimize
 from pypesto.store import OptimizationResultHDF5Writer
 from pypesto.visualize import waterfall, parameters
 from pypesto.objective.aesara import AesaraObjective
+from pypesto.objective import AggregatedObjective, AmiciObjective
 
 import petab
 import os
@@ -112,6 +113,11 @@ def generate_cross_sample_pretraining_problem(
     )
 
     x_names = ae.x_names[ae.n_encode_weights:]
+
+    if isinstance(obj.base_objective, AmiciObjective):
+        obj.base_objective.n_threads = 4
+    elif isinstance(obj.base_objective, AggregatedObjective):
+        obj.base_objective._objectives[0].n_threads = 4
 
     return Problem(
         objective=obj,

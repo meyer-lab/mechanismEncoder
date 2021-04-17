@@ -11,11 +11,9 @@ import numpy as np
 import scipy.linalg as la
 import matplotlib.pyplot as plt
 import fides
-import pypesto
 import petab.visualize
 import amici.petab_objective
 
-from pypesto.store import OptimizationResultHDF5Reader
 from pypesto.optimize import FidesOptimizer
 
 from mEncoder.autoencoder import MechanisticAutoEncoder
@@ -45,7 +43,7 @@ pretraindir = 'pretraining'
 pretrained_samples = {}
 
 prefix = f'{mae.pathway_name}__{mae.data_name}'
-output_prefix = f'{prefix}__pca__{N_HIDDEN}__JOB'
+output_prefix = f'{prefix}__pca__{N_HIDDEN}__{JOB}'
 
 if INIT == 'pca':
     for sample in SAMPLES:
