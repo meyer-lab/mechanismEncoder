@@ -28,7 +28,7 @@ DATA = sys.argv[2]
 SAMPLES = sys.argv[3].split('.')
 INIT = sys.argv[4]
 N_HIDDEN = int(sys.argv[5])
-JOB = int(sys.argv[5])
+JOB = int(sys.argv[6])
 
 np.random.seed(JOB)
 
