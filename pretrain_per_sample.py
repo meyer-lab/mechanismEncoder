@@ -60,6 +60,7 @@ if not os.path.exists(rfile):
 else:
     reader = OptimizationResultHDF5Reader(rfile)
     result = reader.read()
+    result.problem = problem
     store_and_plot_pretraining(result, pretraindir, output_prefix)
 
 x = problem.get_reduced_vector(result.optimize_result.list[0]['x'],

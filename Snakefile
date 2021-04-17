@@ -1,7 +1,4 @@
 import os
-import sys
-
-from mEncoder.training import trace_path, TRACE_FILE_TEMPLATE
 
 HIDDEN_LAYERS = [3]
 PATHWAYS = ['EGFR_MAPK']
