@@ -210,6 +210,6 @@ axes = petab.visualize.plot_data_and_simulation(
  if ax.get_legend() is not None]
 plt.tight_layout()
 plt.savefig(os.path.join(
-    'figures', f'pretraining_{mae.data_name}.pdf'
+    'figures', f'{output_prefix}_fit.pdf'
 ))
 
