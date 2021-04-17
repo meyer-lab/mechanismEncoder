@@ -25,13 +25,14 @@ from mEncoder.pretraining import (
 )
 from mEncoder import MODEL_FEATURE_PREFIX, apply_objective_settings
 
-np.random.seed(0)
-
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
 SAMPLES = sys.argv[3].split(';')
 INIT = sys.argv[4]
 N_HIDDEN = int(sys.argv[5])
+JOB = int(sys.argv[5])
+
+np.random.seed(JOB)
 
 mae = MechanisticAutoEncoder(N_HIDDEN, (
     os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
@@ -44,7 +45,7 @@ pretraindir = 'pretraining'
 pretrained_samples = {}
 
 prefix = f'{mae.pathway_name}__{mae.data_name}'
-output_prefix = f'{prefix}__pca__{N_HIDDEN}'
+output_prefix = f'{prefix}__pca__{N_HIDDEN}__JOB'
 
 if INIT == 'pca':
     for sample in SAMPLES:
@@ -117,7 +118,7 @@ if not os.path.exists(rfile):
             fides.Options.MAXITER: 1e3,
         }
     )
-    result = pretrain(problem, pypesto.startpoint.uniform, 50,
+    result = pretrain(problem, pypesto.startpoint.uniform, 1,
                       optimizer)
     store_and_plot_pretraining(result, pretraindir, output_prefix)
 

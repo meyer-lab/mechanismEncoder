@@ -85,14 +85,16 @@ rule pretrain_cross_sample:
     output:
         pretraining=os.path.join(
             'pretraining',
-            '{model}__{data}__{model}__pca__{n_hidden}.csv'
+            '{model}__{data}__{model}__pca__{n_hidden}__{job}.csv'
         )
     wildcard_constraints:
         model='[\w_]+',
         data='[\w]+',
+        n_hidden='[0-9]+',
+        job='[0-9]+',
     shell:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
-        '{samplestr} pca {wildcards.n_hidden}'
+        '{samplestr} pca {wildcards.n_hidden} {wildcards.job}'
 
 
 rule estimate_parameters:

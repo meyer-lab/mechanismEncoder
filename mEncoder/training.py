@@ -86,36 +86,17 @@ def train(ae: MechanisticAutoEncoder,
         Pypesto optimization results.
     """
     pypesto_problem = create_pypesto_problem(ae)
-
-    if optimizer == 'ipopt':
-        opt = IpoptOptimizer(
-            options={
-                'maxiter': maxiter,
-                'tol': ftol,
-                'disp': 5,
-            }
-        )
-    elif optimizer.startswith('NLOpt_'):
-        opt = NLoptOptimizer(
-            method=getattr(nlopt, optimizer.replace('NLOpt_', '')),
-            options={
-                'maxtime': 3600,
-
-                'ftol_abs': ftol,
-            }
-        )
-    elif optimizer == 'fides':
-        opt = FidesOptimizer(
-            hessian_update=fides.BFGS(),
-            options={
-                'maxtime': 3600,
-                fides.Options.FATOL: ftol,
-                fides.Options.MAXTIME: 3600,
-                fides.Options.MAXITER: maxiter,
-                fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.FULL
-            },
-            verbose=logging.INFO
-        )
+    opt = FidesOptimizer(
+        hessian_update=fides.BFGS(),
+        options={
+            'maxtime': 3600,
+            fides.Options.FATOL: ftol,
+            fides.Options.MAXTIME: 3600,
+            fides.Options.MAXITER: maxiter,
+            fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.TWO
+        },
+        verbose=logging.INFO
+    )
 
     os.makedirs(trace_path, exist_ok=True)
 
