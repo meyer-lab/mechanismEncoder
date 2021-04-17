@@ -27,7 +27,7 @@ from mEncoder import MODEL_FEATURE_PREFIX, apply_objective_settings
 
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
-SAMPLES = sys.argv[3].split(';')
+SAMPLES = sys.argv[3].split('.')
 INIT = sys.argv[4]
 N_HIDDEN = int(sys.argv[5])
 JOB = int(sys.argv[5])
@@ -104,28 +104,20 @@ if INIT == 'pca':
         return xs
 
 
-rfile = os.path.join(pretraindir, output_prefix + '.hdf5')
-
 apply_objective_settings(problem)
 
-if not os.path.exists(rfile):
-    optimizer = FidesOptimizer(
-        hessian_update=fides.HybridUpdate(),
-        options={
-            fides.Options.FATOL: 1e-6,
-            fides.Options.XTOL: 1e-8,
-            fides.Options.MAXTIME: 7200,
-            fides.Options.MAXITER: 1e3,
-        }
-    )
-    result = pretrain(problem, pypesto.startpoint.uniform, 1,
-                      optimizer)
-    store_and_plot_pretraining(result, pretraindir, output_prefix)
-
-    store_and_plot_pretraining(result, pretraindir, output_prefix)
-else:
-    reader = OptimizationResultHDF5Reader(rfile)
-    result = reader.read()
+optimizer = FidesOptimizer(
+    hessian_update=fides.HybridUpdate(),
+    options={
+        fides.Options.FATOL: 1e-6,
+        fides.Options.XTOL: 1e-8,
+        fides.Options.MAXTIME: 7200,
+        fides.Options.MAXITER: 1e3,
+        fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.TWO,
+    }
+)
+result = pretrain(problem, pypesto.startpoint.uniform, 1, optimizer)
+store_and_plot_pretraining(result, pretraindir, output_prefix)
 
 importer = mae.petab_importer
 model = importer.create_model()

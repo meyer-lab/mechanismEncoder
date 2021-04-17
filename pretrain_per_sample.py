@@ -43,25 +43,19 @@ problem = importer.create_problem()
 model = importer.create_model()
 apply_objective_settings(problem)
 
-rfile = os.path.join(pretraindir, output_prefix + '.hdf5')
-if not os.path.exists(rfile):
-    optimizer = FidesOptimizer(
-        hessian_update=fides.HybridUpdate(),
-        options={
-            fides.Options.FATOL: 1e-6,
-            fides.Options.XTOL: 1e-8,
-            fides.Options.MAXTIME: 7200,
-            fides.Options.MAXITER: 1e3,
-        }
-    )
-    result = pretrain(problem, pypesto.startpoint.uniform, 50,
-                      optimizer, pypesto.engine.MultiThreadEngine(4))
-    store_and_plot_pretraining(result, pretraindir, output_prefix)
-else:
-    reader = OptimizationResultHDF5Reader(rfile)
-    result = reader.read()
-    result.problem = problem
-    store_and_plot_pretraining(result, pretraindir, output_prefix)
+optimizer = FidesOptimizer(
+    hessian_update=fides.HybridUpdate(),
+    options={
+        fides.Options.FATOL: 1e-6,
+        fides.Options.XTOL: 1e-8,
+        fides.Options.MAXTIME: 7200,
+        fides.Options.MAXITER: 1e3,
+        fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.TWO,
+    }
+)
+result = pretrain(problem, pypesto.startpoint.uniform, 50,
+                  optimizer, pypesto.engine.MultiThreadEngine(4))
+store_and_plot_pretraining(result, pretraindir, output_prefix)
 
 x = problem.get_reduced_vector(result.optimize_result.list[0]['x'],
                                problem.x_free_indices)

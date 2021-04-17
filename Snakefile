@@ -5,7 +5,7 @@ PATHWAYS = ['EGFR_MAPK']
 DATASETS = ['dream_cytof']
 SAMPLES = ['c184A1', 'c184B5', 'cAU565', 'cBT20', 'cBT474', 'cBT483',
            'cBT549', 'cCAL148', 'cCAL120', 'cCAL851']
-samplestr = ';'.join(SAMPLES)
+samplestr = '.'.join(SAMPLES)
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
 
@@ -56,6 +56,9 @@ rule pretrain_per_sample:
     output:
         pretraining=os.path.join(
             'pretraining', '{model}__{data}__{model}__{sample}.csv'
+        ),
+        result=os.path.join(
+            'pretraining', '{model}__{data}__{model}__{sample}.hdf5'
         )
     wildcard_constraints:
         model='[\w_]+',
