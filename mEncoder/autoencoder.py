@@ -100,7 +100,8 @@ class MechanisticAutoEncoder(AutoEncoder):
         input_data.dropna(axis='columns', how='any', inplace=True)
 
         # filter highly varying
-        input_data = input_data.loc[:, input_data.var(axis=0) > 1]
+        if len(samples) > 3:
+            input_data = input_data.loc[:, input_data.var(axis=0) > 1]
 
         self.n_visible = input_data.shape[1]
         self.n_samples = input_data.shape[0]
