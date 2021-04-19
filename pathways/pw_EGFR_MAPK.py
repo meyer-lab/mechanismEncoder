@@ -42,7 +42,7 @@ Observable('MEK_S221',
            model.monomers['MAP2K1'](S222='p') +
            model.monomers['MAP2K2'](S226='p'))
 
-add_inhibitor(model, 'iEGFR', ['EGFR'])
+add_inhibitor(model, 'iEGFR', ['EGFR', 'ERBB2'])
 add_inhibitor(model, 'iMEK', ['MAP2K1', 'MAP2K2'])
 #add_inhibitor(model, 'iPI3K', ['PIK3CA'])
 #add_inhibitor(model, 'iPKC', ['MAP2K1', 'MAP2K2'])

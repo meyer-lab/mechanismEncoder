@@ -41,7 +41,8 @@ add_monomer_synth_deg('MTOR', asites=['C'],
 
 # AKT
 akt_cascade = [
-    ('PDPK1',  {'S241':      active_rtks}),
+    ('PIK3CA', {'pip2':      active_rtks}),
+    ('PDPK1',  {'S241':      ['PIK3CA__pip2_p']}),
     ('AKT1',   {'T308':      ['PDPK1__S241_p'],
                 'S473':      ['MTOR__C_c2']}),
     ('AKT2',   {'T309':      ['PDPK1__S241_p'],
@@ -107,7 +108,7 @@ Observable('MEK_S221',
            model.monomers['MAP2K1'](S222='p') +
            model.monomers['MAP2K2'](S226='p'))
 
-add_inhibitor(model, 'iEGFR', ['EGFR'])
+add_inhibitor(model, 'iEGFR', ['EGFR', 'ERBB2'])
 add_inhibitor(model, 'iMEK', ['MAP2K1', 'MAP2K2'])
 add_inhibitor(model, 'iPI3K', ['PIK3CA'])
 #add_inhibitor(model, 'iPKC', ['MAP2K1', 'MAP2K2'])
