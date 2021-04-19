@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 
 import amici.petab_objective
 
-from pypesto.store import OptimizationResultHDF5Reader
 from pypesto.optimize import FidesOptimizer
 
 from mEncoder.autoencoder import MechanisticAutoEncoder

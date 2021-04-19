@@ -99,6 +99,9 @@ class MechanisticAutoEncoder(AutoEncoder):
         # remove missing values
         input_data.dropna(axis='columns', how='any', inplace=True)
 
+        # filter highly varying
+        input_data = input_data.loc[:, input_data.var(axis=0) > 1]
+
         self.n_visible = input_data.shape[1]
         self.n_samples = input_data.shape[0]
         self.n_model_inputs = int(sum(name.startswith(MODEL_FEATURE_PREFIX)
@@ -115,6 +118,7 @@ class MechanisticAutoEncoder(AutoEncoder):
         input_data -= input_data.mean()
 
         self.sample_names = list(input_data.index)
+        self.data_cols = list(input_data.columns)
         super().__init__(input_data=input_data.values, n_hidden=n_hidden,
                          n_params=self.n_model_inputs)
 

@@ -24,22 +24,9 @@ generate_pathway(model, erbb_cascade)
 active_rtks = ['EGFR__Y1173_p', 'ERBB2__Y1248_p']
 stat_rtks = ['EGFR__Y1173_p', 'ERBB2__Y1248_p']
 
-# MAPK
-for ras_name in ['HRAS', 'KRAS', 'NRAS']:
-    add_monomer_synth_deg(ras_name, nsites=['N'])
-    add_activation(
-        model, ras_name, 'N', 'nucleotide_exchange',
-        active_rtks
-    )
-
 mapk_cascade = [
-    ('RAF1',  {'S338':      ['KRAS__N_gtp', 'HRAS__N_gtp', 'NRAS__N_gtp']}),
-    ('BRAF',  {'S445':      ['KRAS__N_gtp', 'HRAS__N_gtp', 'NRAS__N_gtp']}),
-    ('ARAF',  {'S299':      ['KRAS__N_gtp', 'HRAS__N_gtp', 'NRAS__N_gtp']}),
-    ('MAP2K1',   {'S218_S222': ['RAF1__S338_p', 'BRAF__S445_p',
-                                'ARAF__S299_p']}),
-    ('MAP2K2',   {'S222_S226': ['RAF1__S338_p', 'BRAF__S445_p',
-                                'ARAF__S299_p']}),
+    ('MAP2K1',   {'S218_S222': active_rtks}),
+    ('MAP2K2',   {'S222_S226': active_rtks}),
     ('MAPK1',  {'T185_Y187': ['MAP2K1__S218_p__S222_p',
                               'MAP2K2__S222_p__S226_p']}),
     ('MAPK3',  {'T202_Y204': ['MAP2K1__S218_p__S222_p',
@@ -54,9 +41,7 @@ add_monomer_synth_deg('MTOR', asites=['C'],
 
 # AKT
 akt_cascade = [
-    ('PIK3CA', {'pip2':      ['KRAS__N_gtp', 'HRAS__N_gtp', 'NRAS__N_gtp'] +
-                              active_rtks}),
-    ('PDPK1',  {'S241':      ['PIK3CA__pip2_p']}),
+    ('PDPK1',  {'S241':      active_rtks}),
     ('AKT1',   {'T308':      ['PDPK1__S241_p'],
                 'S473':      ['MTOR__C_c2']}),
     ('AKT2',   {'T309':      ['PDPK1__S241_p'],
@@ -77,9 +62,9 @@ add_activation(
 
 # S6
 s6_cascade = [
-    ('RPS6KB1', {'S412': ['MTOR__C_c1']}),
-    ('RPS6KA1', {'S380': active_erk}),
-    ('RPS6',    {'S235_S236': ['RPS6KA1__S380_p', 'RPS6KB1__S412_p']}),
+    ('RPS6KB1', {'S412': ['MTOR__C_c1']}),  # p70S6K
+    ('RPS6KA1', {'S380': active_erk}),  # p90RSK
+    ('RPS6',    {'S235_S236': ['RPS6KA1__S380_p', 'RPS6KB1__S412_p']}), # S6
 ]
 generate_pathway(model, s6_cascade)
 

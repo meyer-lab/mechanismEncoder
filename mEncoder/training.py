@@ -3,15 +3,16 @@ import pandas as pd
 import os
 import fides
 import logging
+import scipy.linalg as la
 
 from .autoencoder import MechanisticAutoEncoder
-from . import parameter_boundaries_scales
 
 from pypesto.optimize import (
     FidesOptimizer, minimize, OptimizeOptions
 )
-from pypesto import Problem, HistoryOptions, Result
+from pypesto import Problem, Result
 from pypesto.objective.aesara import AesaraObjective
+
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 trace_path = os.path.join(basedir, 'traces')
@@ -59,7 +60,7 @@ def create_pypesto_problem(
 
 
 def train(ae: MechanisticAutoEncoder,
-          optimizer: str = 'fides',
+          samplestr: str,
           ftol: float = 1e-3,
           maxiter: int = 1e4,
           n_starts: int = 1,
@@ -70,8 +71,6 @@ def train(ae: MechanisticAutoEncoder,
 
     :param ae:
         Autoencoder that will be trained
-    :param optimizer:
-        Optimizer string that specifies the optimizer that will be used
     :param ftol:
         function tolerance that is used to assess optimizer convergence
     :param maxiter:
@@ -98,25 +97,6 @@ def train(ae: MechanisticAutoEncoder,
         verbose=logging.INFO
     )
 
-    os.makedirs(trace_path, exist_ok=True)
-
-    history_options = HistoryOptions(
-        trace_record=True,
-        trace_record_hess=False,
-        trace_record_res=False,
-        trace_record_sres=False,
-        trace_record_schi2=False,
-        storage_file=os.path.join(
-            trace_path,
-            TRACE_FILE_TEMPLATE.format(pathway=ae.pathway_name,
-                                       data=ae.data_name,
-                                       optimizer=optimizer,
-                                       n_hidden=ae.n_hidden,
-                                       job=seed)
-        ),
-        trace_save_iter=10
-    )
-
     np.random.seed(seed)
 
     optimize_options = OptimizeOptions(
@@ -124,40 +104,19 @@ def train(ae: MechanisticAutoEncoder,
         allow_failed_starts=True,
     )
 
-    decoder_par_pretraining = os.path.join(
-        'pretraining', f'{ae.pathway_name}__{ae.data_name}__{ae.n_hidden}'
-                       f'__decoder_inflate.csv'
+    pca_pretraining = os.path.join(
+        'pretraining', f'{ae.pathway_name}__{ae.data_name}__pca'
+                       f'__{samplestr}__{ae.n_hidden}__{seed}.csv'
     )
-    has_decoder_par_pretraing = os.path.exists(decoder_par_pretraining)
-    if has_decoder_par_pretraing:
-        decoder_pars = pd.read_csv(decoder_par_pretraining)[
-            ae.x_names
-        ]
+    pretraining = pd.read_csv(pca_pretraining, index_col=0)
 
-    lb = np.asarray([
-        parameter_boundaries_scales[name.split('_')[-1]][0]
-        for name in pypesto_problem.x_names
-    ])
-    ub = np.asarray([
-        parameter_boundaries_scales[name.split('_')[-1]][1]
-        for name in pypesto_problem.x_names
-    ])
+    w = np.expand_dims(la.lstsq(ae.data, ae.data_pca)[0].flatten(), 1)
 
-    def startpoint(**kwargs):
-
-        if has_decoder_par_pretraing and seed < len(decoder_pars):
-            xs = decoder_pars.iloc[seed, :]
-        else:
-            xs = np.random.random((kwargs['n_starts'],
-                                   ae.n_encoder_pars + ae.n_kin_params)) \
-                * (ub - lb) + lb
-        return xs
+    pypesto_problem.x_guesses_full = np.hstack([w.T, pretraining.values])
 
     return minimize(
         pypesto_problem,
         opt,
         n_starts=n_starts,
         options=optimize_options,
-        history_options=history_options,
-        startpoint_method=startpoint
     )

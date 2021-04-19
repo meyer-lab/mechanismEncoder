@@ -25,7 +25,7 @@ from mEncoder import MODEL_FEATURE_PREFIX, apply_objective_settings
 
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
-SAMPLES = sys.argv[3].split('.')
+SAMPLES = sys.argv[3]
 INIT = sys.argv[4]
 N_HIDDEN = int(sys.argv[5])
 JOB = int(sys.argv[6])
@@ -36,14 +36,14 @@ mae = MechanisticAutoEncoder(N_HIDDEN, (
     os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
-), MODEL, SAMPLES, par_modulation_scale=0.5)
+), MODEL, SAMPLES.split('.'), par_modulation_scale=0.5)
 
 problem = generate_cross_sample_pretraining_problem(mae)
 pretraindir = 'pretraining'
 pretrained_samples = {}
 
 prefix = f'{mae.pathway_name}__{mae.data_name}'
-output_prefix = f'{prefix}__pca__{N_HIDDEN}__{JOB}'
+output_prefix = f'{prefix}__{SAMPLES}__pca__{N_HIDDEN}__{JOB}'
 
 if INIT == 'pca':
     for sample in SAMPLES:
@@ -210,6 +210,6 @@ axes = petab.visualize.plot_data_and_simulation(
  if ax.get_legend() is not None]
 plt.tight_layout()
 plt.savefig(os.path.join(
-    'figures', f'{output_prefix}_fit.pdf'
+    'pretraining', f'{output_prefix}_fit.pdf'
 ))
 
