@@ -46,7 +46,7 @@ prefix = f'{mae.pathway_name}__{mae.data_name}'
 output_prefix = f'{prefix}__{SAMPLES}__pca__{N_HIDDEN}__{JOB}'
 
 if INIT == 'pca':
-    for sample in SAMPLES:
+    for sample in SAMPLES.split('.'):
         df = pd.read_csv(
             os.path.join(pretraindir, f'{prefix}__{sample}.csv'), index_col=[0]
         )
@@ -109,7 +109,7 @@ optimizer = FidesOptimizer(
     options={
         fides.Options.FATOL: 1e-6,
         fides.Options.XTOL: 1e-8,
-        fides.Options.MAXTIME: 7200,
+        fides.Options.MAXTIME: 3600 * 10,
         fides.Options.MAXITER: 1e3,
         fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.TWO,
     }
