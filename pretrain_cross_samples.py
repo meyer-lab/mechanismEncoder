@@ -79,7 +79,7 @@ if INIT == 'pca':
                 ]
                 for pretraining in pretrained_samples.values()
             ])
-            par_combo.index = SAMPLES
+            par_combo.index = SAMPLES.split('.')
             means = par_combo.mean()
             par_combo -= means
             inputs = [
