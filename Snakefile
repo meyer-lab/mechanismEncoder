@@ -85,7 +85,8 @@ rule pretrain_cross_sample:
     output:
         pretraining=os.path.join(
             'pretraining',
-            '{model}__{data}__{model}__pca__{n_hidden}__{job}.hdf5'
+            f'{{model}}__{{data}}__{{model}}__{samplestr}__pca__'
+            f'{{n_hidden}}__{{job}}.hdf5'
         )
     wildcard_constraints:
         model='[\w_]+',

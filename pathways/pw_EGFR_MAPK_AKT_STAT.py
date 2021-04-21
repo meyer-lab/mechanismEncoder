@@ -14,26 +14,27 @@ for rtkf_name in rtkfs:
     add_monomer_synth_deg(rtkf_name)
     add_gf_bolus(model, rtkf_name, [rtkf_name])
 
-
 erbb_cascade = [
     ('EGFR',  {'Y1173': ['EGF']}),
-    ('ERBB2', {'Y1248': ['EGF']}),
+    ('ERBB2', {'Y1248': ['EGFR__Y1173_p']}),
 ]
 generate_pathway(model, erbb_cascade)
 
 active_rtks = ['EGFR__Y1173_p', 'ERBB2__Y1248_p']
 stat_rtks = ['EGFR__Y1173_p', 'ERBB2__Y1248_p']
 
+
+active_erk = ['MAPK1__T185_p__Y187_p', 'MAPK3__T202_p__Y204_p']
 mapk_cascade = [
-    ('MAP2K1',   {'S218_S222': active_rtks}),
-    ('MAP2K2',   {'S222_S226': active_rtks}),
-    ('MAPK1',  {'T185_Y187': ['MAP2K1__S218_p__S222_p',
-                              'MAP2K2__S222_p__S226_p']}),
-    ('MAPK3',  {'T202_Y204': ['MAP2K1__S218_p__S222_p',
-                              'MAP2K2__S222_p__S226_p']}),
+    ('MAP2K1', {'S218_S222': (active_rtks, active_erk)}),
+    ('MAP2K2', {'S222_S226': (active_rtks, active_erk)}),
+    ('MAPK1', {'T185_Y187': ['MAP2K1__S218_p__S222_p',
+                             'MAP2K2__S222_p__S226_p']}),
+    ('MAPK3', {'T202_Y204': ['MAP2K1__S218_p__S222_p',
+                             'MAP2K2__S222_p__S226_p']}),
 ]
 generate_pathway(model, mapk_cascade)
-active_erk = ['MAPK1__T185_p__Y187_p', 'MAPK3__T202_p__Y204_p']
+
 # MTOR
 
 add_monomer_synth_deg('MTOR', asites=['C'],
@@ -44,15 +45,14 @@ akt_cascade = [
     ('PIK3CA', {'pip2':      active_rtks}),
     ('PDPK1',  {'S241':      ['PIK3CA__pip2_p']}),
     ('AKT1',   {'T308':      ['PDPK1__S241_p'],
-                'S473':      ['MTOR__C_c2']}),
+                'S473':      ['MTOR__C_c2', 'AKT1__T308_p']}),
     ('AKT2',   {'T309':      ['PDPK1__S241_p'],
-                'S473':      ['MTOR__C_c2']}),
+                'S473':      ['MTOR__C_c2', 'AKT2__T309_p']}),
     ('AKT3',   {'T305':      ['PDPK1__S241_p'],
-                'S473':      ['MTOR__C_c2']}),
+                'S473':      ['MTOR__C_c2', 'AKT3__T305_p']}),
 ]
 generate_pathway(model, akt_cascade)
-active_akt = ['AKT1__T308_p__S473_p', 'AKT2__T309_p__S473_p',
-              'AKT3__T305_p__S473_p']
+active_akt = ['AKT1__T308_p', 'AKT2__T309_p', 'AKT3__T305_p']
 
 add_activation(
     model, 'MTOR', 'C', 'activation',

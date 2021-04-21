@@ -22,17 +22,18 @@ erbb_cascade = [
 generate_pathway(model, erbb_cascade)
 
 active_rtks = ['EGFR__Y1173_p', 'ERBB2__Y1248_p']
+active_erk = ['MAPK1__T185_p__Y187_p', 'MAPK3__T202_p__Y204_p']
 
 mapk_cascade = [
-    ('MAP2K1',   {'S218_S222': active_rtks}),
-    ('MAP2K2',   {'S222_S226': active_rtks}),
+    ('MAP2K1',   {'S218_S222': (active_rtks, active_erk)}),
+    ('MAP2K2',   {'S222_S226': (active_rtks, active_erk)}),
     ('MAPK1',  {'T185_Y187': ['MAP2K1__S218_p__S222_p',
                               'MAP2K2__S222_p__S226_p']}),
     ('MAPK3',  {'T202_Y204': ['MAP2K1__S218_p__S222_p',
                               'MAP2K2__S222_p__S226_p']}),
 ]
 generate_pathway(model, mapk_cascade)
-active_erk = ['MAPK1__T185_p__Y187_p', 'MAPK3__T202_p__Y204_p']
+
 
 Observable('ERK_T202_Y204',
            model.monomers['MAPK1'](T185='p', Y187='p') +

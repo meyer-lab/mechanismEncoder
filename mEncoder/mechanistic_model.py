@@ -25,8 +25,14 @@ def generate_pathway(model: Model,
         add_monomer_synth_deg(p_name, psites=site_activators.keys())
 
     for p_name, site_activators in proteins:
-        for site, activators in site_activators.items():
-            add_activation(model, p_name, site, 'phosphorylation', activators)
+        for site, modulators in site_activators.items():
+            if isinstance(modulators, list):
+                activators = modulators
+                deactivators = []
+            else:
+                activators, deactivators = modulators
+            add_activation(model, p_name, site, 'phosphorylation', activators,
+                           deactivators)
 
 
 def add_monomer_synth_deg(m_name: str,
@@ -71,6 +77,7 @@ def add_monomer_synth_deg(m_name: str,
         asite_states = ['inactive', 'active']
 
     sites = psites + nsites + asites + ['inh']
+    sites = sorted(sites)
 
     m = Monomer(
         m_name, sites=sites,
