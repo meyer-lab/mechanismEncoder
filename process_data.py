@@ -78,6 +78,7 @@ def observable_id_to_model_expr(obs_id: str,
             r'^P\.S6$': 'RPS6_S235_S236',
             r'^P\.AKT\.THR308\.': 'AKT_T308',
             r'^P\.4EBP1': 'EIF4EBP1_T37_T46',
+            r'^P\.SRC': 'SRC_T419',
         }
     else:
         raise ValueError('Dataset not supported!')

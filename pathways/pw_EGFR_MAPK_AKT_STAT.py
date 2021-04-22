@@ -32,6 +32,7 @@ mapk_cascade = [
                              'MAP2K2__S222_p__S226_p']}),
     ('MAPK3', {'T202_Y204': ['MAP2K1__S218_p__S222_p',
                              'MAP2K2__S222_p__S226_p']}),
+    ('RPS6KA1', {'S380': active_erk})  # p90RSK
 ]
 generate_pathway(model, mapk_cascade)
 
@@ -63,16 +64,17 @@ add_activation(
 
 add_activation(
     model, 'MTOR', 'C', 'activation',
-    active_erk,
+    'RPS6KA1__S380_p',
     [],
     site_states=['c0', 'c1']
 )
 
 # S6
 s6_cascade = [
-    ('RPS6KB1', {'S412': ['MTOR__C_c1']}),  # p70S6K
-    ('RPS6KA1', {'S380': active_erk}),  # p90RSK
-    ('RPS6',    {'S235_S236': ['RPS6KA1__S380_p', 'RPS6KB1__S412_p']}),  # S6
+    ('RPS6KB1', {'S412': ['MTOR__C_c1'],
+                 'T252': ['PDPK1__S241_p']}),  # p70S6K
+    ('RPS6',    {'S235_S236': ['RPS6KA1__S380_p',
+                               'RPS6KB1__S412_p__T252_p']}),  # S6
 ]
 generate_pathway(model, s6_cascade)
 
@@ -85,15 +87,16 @@ generate_pathway(model, gsk_cascade)
 
 # STAT
 stat_cascade = [
-    ('STAT1', {'Y727': (active_rtks, active_erk)}),
-    ('STAT3', {'Y705': (active_rtks, active_erk)}),
-    ('STAT5A', {'Y694': (active_rtks, active_erk)}),
+    ('SRC',    {'Y419': active_rtks}),
+    ('STAT1',  {'Y727': active_erk}),
+    ('STAT3',  {'Y705': ['SRC__Y419_p',  *active_erk, 'EGFR__Y1173_p']}),
+    ('STAT5A', {'Y694': ['SRC__Y419_p', 'EGFR__Y1173_p']}),
 ]
 generate_pathway(model, stat_cascade)
 
 
 mtor_cascade = [
-    ('EIF4EBP1', {'T37_T46': ['MTOR__C_c1']}),
+    ('EIF4EBP1', {'T37_T46': ['MTOR__C_c1', *active_erk]}),
 ]
 generate_pathway(model, mtor_cascade)
 
