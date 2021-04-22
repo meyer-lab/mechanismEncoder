@@ -21,6 +21,7 @@ from mEncoder.pretraining import (
     generate_cross_sample_pretraining_problem, pretrain,
     store_and_plot_pretraining
 )
+from mEncoder.plotting import plot_cross_samples
 from mEncoder import MODEL_FEATURE_PREFIX, apply_objective_settings
 
 MODEL = sys.argv[1]
@@ -29,8 +30,6 @@ SAMPLES = sys.argv[3]
 INIT = sys.argv[4]
 N_HIDDEN = int(sys.argv[5])
 JOB = int(sys.argv[6])
-
-np.random.seed(JOB)
 
 mae = MechanisticAutoEncoder(N_HIDDEN, (
     os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
@@ -110,10 +109,11 @@ optimizer = FidesOptimizer(
         fides.Options.FATOL: 1e-6,
         fides.Options.XTOL: 1e-8,
         fides.Options.MAXTIME: 3600 * 10,
-        fides.Options.MAXITER: 1e3,
+        fides.Options.MAXITER: 1,
         fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.TWO,
     }
 )
+np.random.seed(JOB)
 result = pretrain(problem, startpoints, 1, optimizer)
 store_and_plot_pretraining(result, pretraindir, output_prefix)
 
@@ -133,83 +133,8 @@ simulation_df = amici.petab_objective.rdatas_to_simulation_df(
     measurement_df=importer.petab_problem.measurement_df,
 )
 
-visualization_table = []
-
-for sample in importer.petab_problem.measurement_df[
-    petab.PREEQUILIBRATION_CONDITION_ID
-].unique():
-    measurements_condition = importer.petab_problem.measurement_df[
-        importer.petab_problem.measurement_df[
-            petab.PREEQUILIBRATION_CONDITION_ID
-        ] == sample
-    ]
-
-    static_measurements = [
-        obs_id for obs_id
-        in measurements_condition[petab.OBSERVABLE_ID].unique()
-        if obs_id in list(importer.petab_problem.observable_df.index)
-        and (measurements_condition[
-            measurements_condition[petab.OBSERVABLE_ID] == obs_id
-        ][petab.TIME] == 0.0).all()
-    ]
-    dynamic_measurements = [
-        obs_id for obs_id
-        in measurements_condition[petab.OBSERVABLE_ID].unique()
-        if obs_id not in static_measurements
-        and obs_id in list(importer.petab_problem.observable_df.index)
-    ]
-    for static_obs in static_measurements:
-        visualization_table.append({
-            petab.PLOT_ID: f'{sample}_static',
-            petab.PLOT_NAME: f'{sample} static',
-            petab.Y_VALUES: static_obs,
-            petab.PLOT_TYPE_SIMULATION: petab.BAR_PLOT,
-            petab.LEGEND_ENTRY: f'{sample} {static_obs}',
-            petab.DATASET_ID: f'{sample}'
-        })
-
-    for condition in measurements_condition[
-        petab.SIMULATION_CONDITION_ID
-    ].unique():
-        for dynamic_obs in dynamic_measurements:
-            if len(measurements_condition[
-                (measurements_condition[petab.OBSERVABLE_ID] == dynamic_obs)
-                & (measurements_condition[petab.SIMULATION_CONDITION_ID] ==
-                   condition)
-            ]) == 0:
-                continue
-            visualization_table.append({
-                petab.PLOT_ID: f'{condition.split("__")[-1]}_{dynamic_obs}',
-                petab.PLOT_NAME: f'{condition.split("__")[-1]}_{dynamic_obs}',
-                petab.Y_VALUES: dynamic_obs,
-                petab.PLOT_TYPE_SIMULATION: petab.LINE_PLOT,
-                petab.LEGEND_ENTRY: sample,
-                petab.DATASET_ID: f'{condition}',
-            })
-
-visualization_table = pd.DataFrame(visualization_table)
-
-visualization_table[petab.Y_SCALE] = petab.LIN
-visualization_table[petab.X_SCALE] = petab.LIN
-visualization_table[petab.PLOT_TYPE_DATA] = petab.MEAN_AND_SD
-
-measurement_table = importer.petab_problem.measurement_df
-measurement_table[petab.DATASET_ID] = \
-    measurement_table[petab.SIMULATION_CONDITION_ID]
-
-simulation_df[petab.DATASET_ID] = simulation_df[petab.SIMULATION_CONDITION_ID]
-
 # Plot with PEtab
-axes = petab.visualize.plot_data_and_simulation(
-    exp_data=measurement_table,
-    exp_conditions=importer.petab_problem.condition_df,
-    sim_data=simulation_df,
-    vis_spec=visualization_table
-)
-[ax.get_legend().remove() for ax in axes.values()
- if ax.get_legend() is not None]
-plt.tight_layout()
-plt.savefig(os.path.join(
-    'pretraining', f'{output_prefix}_fit.pdf'
-))
-
+plot_cross_samples(importer.petab_problem.measurement_df,
+                   simulation_df,
+                   'pretraining',
+                   output_prefix)

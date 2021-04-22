@@ -1,6 +1,6 @@
 import os
 
-HIDDEN_LAYERS = [3]
+HIDDEN_LAYERS = [3, 5, 10]
 PATHWAYS = ['EGFR_MAPK', 'EGFR_MAPK_AKT_STAT']
 DATASETS = ['dream_cytof']
 SAMPLES = ['c184A1', 'cBT20', 'cBT474', 'cBT549', 'cCAL148', 'cCAL851',
