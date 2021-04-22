@@ -64,7 +64,7 @@ add_activation(
 
 add_activation(
     model, 'MTOR', 'C', 'activation',
-    'RPS6KA1__S380_p',
+    ['RPS6KA1__S380_p'],
     [],
     site_states=['c0', 'c1']
 )
