@@ -38,11 +38,11 @@ generate_pathway(model, mapk_cascade)
 # MTOR
 
 add_monomer_synth_deg('MTOR', asites=['C'],
-                      asite_states=['c1', 'c2'])
+                      asite_states=['c0', 'c1', 'c2'])
 
 # AKT
 akt_cascade = [
-    ('PIK3CA', {'pip2':      active_rtks}),
+    ('PIK3CA', {'pip2':      (active_rtks, active_erk)}),
     ('PDPK1',  {'S241':      ['PIK3CA__pip2_p']}),
     ('AKT1',   {'T308':      ['PDPK1__S241_p'],
                 'S473':      ['MTOR__C_c2', 'AKT1__T308_p']}),
@@ -58,35 +58,42 @@ add_activation(
     model, 'MTOR', 'C', 'activation',
     active_akt,
     [],
-    site_states=['c1', 'c2']
+    site_states=['c0', 'c2']
+)
+
+add_activation(
+    model, 'MTOR', 'C', 'activation',
+    active_erk,
+    [],
+    site_states=['c0', 'c1']
 )
 
 # S6
 s6_cascade = [
     ('RPS6KB1', {'S412': ['MTOR__C_c1']}),  # p70S6K
     ('RPS6KA1', {'S380': active_erk}),  # p90RSK
-    ('RPS6',    {'S235_S236': ['RPS6KA1__S380_p', 'RPS6KB1__S412_p']}), # S6
+    ('RPS6',    {'S235_S236': ['RPS6KA1__S380_p', 'RPS6KB1__S412_p']}),  # S6
 ]
 generate_pathway(model, s6_cascade)
 
 # GSK
 gsk_cascade = [
-    ('GSK3B', {'S9': ['AKT1__T308_p__S473_p', 'RPS6KA1__S380_p',
+    ('GSK3B', {'S9': [*active_akt, 'RPS6KA1__S380_p',
                       'RPS6KB1__S412_p']})
 ]
 generate_pathway(model, gsk_cascade)
 
 # STAT
 stat_cascade = [
-    ('STAT1', {'Y727': active_erk}),
-    ('STAT3', {'Y705': stat_rtks}),
-    ('STAT5A', {'Y694': stat_rtks}),
+    ('STAT1', {'Y727': (active_rtks, active_erk)}),
+    ('STAT3', {'Y705': (active_rtks, active_erk)}),
+    ('STAT5A', {'Y694': (active_rtks, active_erk)}),
 ]
 generate_pathway(model, stat_cascade)
 
 
 mtor_cascade = [
-    ('EIF4EBP1', {'T37_T46': ['MTOR__C_c1', 'MAPK1__T185_p__Y187_p']}),
+    ('EIF4EBP1', {'T37_T46': ['MTOR__C_c1']}),
 ]
 generate_pathway(model, mtor_cascade)
 

@@ -105,12 +105,13 @@ def apply_objective_settings(problem):
 parameter_boundaries_scales = {
     'kdeg': (-8, -3, 'log10'),      # [1/[t]]
     'eq': (-4, 4, 'log10'),          # [[c]]
-    'kcat': (-4, 4, 'log10'),        # [1/([t]*[c])]
-    'scale': (-5, 5, 'lin'),       # [1/[c]]
-    'offset': (-5, 5, 'lin'),     # [[c]]
+    'kcat': (-4, 5, 'log10'),        # [1/([t]*[c])]
+    'scale': (-10, 5, 'lin'),       # [1/[c]]
+    'offset': (-10, 5, 'lin'),     # [[c]]
     'weight': (-1, 1, 'lin'),       # [-]
     'koff': (-5, 2, 'log10'),      # [1/[t]]
-    'kd':   (-4, 4, 'log10'),       # [[c]]
+    'kd':   (-6, 4, 'log10'),       # [[c]]
+    'kw':   (-6, 3, 'log10'),       # [1/[c]]
 }
 
 MODEL_FEATURE_PREFIX = 'INPUT_'

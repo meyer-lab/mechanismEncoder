@@ -117,12 +117,11 @@ def add_monomer_synth_deg(m_name: str,
 
     # basal activation
     for sites, labels, fstate, rstate in zip(
-        [psites, nsites, asites],
+        [psites, nsites],
         [('phosphorylation', 'dephosphorylation'),
-         ('gtp_exchange', 'gdp_exchange'),
-         ('activation', 'deactivation')],
-        ['p', 'gtp', asite_states[1]],
-        ['u', 'gdp', asite_states[0]]
+         ('gtp_exchange', 'gdp_exchange')],
+        ['p', 'gtp'],
+        ['u', 'gdp']
     ):
         for site in sites:
             kcats = [
@@ -139,6 +138,16 @@ def add_monomer_synth_deg(m_name: str,
             #     m(**{site: rstate}) | m(**{site: fstate}), *rates)
             Rule(F'{m_name}_{site}_base',
                  m(**{site: fstate}) >> m(**{site: rstate}), *rates)
+
+    for asite in asites:
+        for state in asite_states[1:]:
+
+            kcat = Parameter(f'{m_name}_deactivation_{state}_base_kcat', 1.0)
+            rate = Expression(f'{m_name}_deactivation_{state}_base_rate',
+                              kcat * get_autoencoder_modulator(kcat))
+
+            Rule(F'{m_name}_deactivation_{state}_base',
+                 m(**{asite: state}) >> m(**{asite: asite_states[0]}), rate)
 
     return m
 
@@ -248,42 +257,47 @@ def add_activation(
 
     for s in sites:
         if s not in mono.site_states \
-                or len(mono.site_states[s]) != len(valid_states) \
                 or any(state not in mono.site_states[s]
                        for state in valid_states):
             raise ValueError(f'{s} is not a valid target for '
                              f'{activation_type}.')
 
     if activation_type == 'phosphorylation':
-        forward = 'phosphorylation_' + site
-        backward = 'dephosphorylation_' + site
+        forward = 'phosphorylation'
+        backward = 'dephosphorylation'
     elif activation_type == 'nucleotide_exchange':
         forward = 'gtp_exchange'
         backward = 'gdp_exchange'
     elif activation_type == 'activation':
-        forward = 'gtp_exchange'
-        backward = 'gdp_exchange'
+        forward = f'activation_{site_states[1]}'
+        backward = f'deactivation_{site_states[1]}'
     else:
         raise ValueError(f'Invalid activation type {activation_type}.')
-    fstate = {site: valid_states[0] for site in sites}
-    rstate = {site: valid_states[1] for site in sites}
+    fstate = {s: valid_states[0] for s in sites}
+    rstate = {s: valid_states[1] for s in sites}
 
-    for label, educts, products, modulators in zip(
-            [forward,        backward],
-            [mono(**fstate), mono(**rstate)],
-            [mono(**rstate), mono(**fstate)],
-            [activators, deactivators],
-    ):
-        for modulator in modulators:
-            kcat = Parameter(f'{m_name}_{label}_{site}_{modulator}_kcat', 1.0)
-            rate_expr = kcat * add_or_get_modulator_obs(model, modulator)
-            # if label == forward:
-            rate_expr *= get_autoencoder_modulator(kcat)
-            rate = Expression(f'{m_name}_{label}_{site}_{modulator}_rate',
-                              rate_expr)
+    kcat = Parameter(f'{m_name}_{forward}_{site}_base_kcat', 1.0)
+    rate_expr = kcat
+    rate_expr *= get_autoencoder_modulator(kcat)
 
-            Rule(F'{m_name}_{label}_{site}_{modulator}', educts >> products,
-                 rate)
+    num = 0.0
+    for activator in activators:
+        weight = Parameter(f'{m_name}_activation_{site}_{activator}_kw', 1.0)
+        num += weight * get_autoencoder_modulator(weight) * \
+            add_or_get_modulator_obs(model, activator)
+
+    denum = 1.0
+    for deactivator in deactivators:
+        weight = Parameter(f'{m_name}_deactivation_{site}_{deactivator}_kw',
+                           1.0)
+        denum += weight * get_autoencoder_modulator(weight) * \
+            add_or_get_modulator_obs(model, deactivator)
+
+    rate = kcat * num / denum
+
+    Rule(f'{m_name}_{forward}_{site}_activation',
+         mono(**fstate) >> mono(**rstate),
+         Expression(f'{m_name}_{forward}_{site}_activation_rate', rate))
 
 
 def get_autoencoder_modulator(par: Parameter):
@@ -325,9 +339,9 @@ def add_inhibitor(model: Model, name: str, targets: List[str]):
     for expr in model.expressions:
         if expr.name.startswith('inh_'):
             continue
-        target = next((
+        target, observable = next((
             next(
-                mp.monomer.name
+                (mp.monomer.name, s)
                 for cp in s.reaction_pattern.complex_patterns
                 for mp in cp.monomer_patterns
                 if mp.monomer.name in targets
@@ -338,10 +352,11 @@ def add_inhibitor(model: Model, name: str, targets: List[str]):
                 for cp in s.reaction_pattern.complex_patterns
                 for mp in cp.monomer_patterns
             )
-        ), None)
+        ), (None, None))
         if target is None:
             continue
-        expr.expr *= 1/(1 + inh * affinities[target])
+        expr.expr = expr.expr.subs(observable,
+                                   observable/(1 + inh * affinities[target]))
 
     model.expressions = pysb.ComponentSet(list(affinities.values()) +
                                           list(model.expressions))

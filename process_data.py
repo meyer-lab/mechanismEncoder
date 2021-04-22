@@ -418,8 +418,13 @@ else:
     measurement_table[petab.DATASET_ID] = measurement_table[
         petab.SIMULATION_CONDITION_ID
     ]
+    if DATA == 'dream_cytof':
+        obs_trafo = lambda x: f'asinh({x}/5)'
+    else:
+        obs_trafo = lambda x: f'log({x} + 1e-16)'
+
     observable_table[petab.OBSERVABLE_FORMULA] = [
-        f'observableParameter1_{obs}_obs * log({obs} + 1e-16) + '
+        f'observableParameter1_{obs}_obs * {obs_trafo(obs)} + '
         f'observableParameter2_{obs}_obs'
         for obs in observable_obs
     ]

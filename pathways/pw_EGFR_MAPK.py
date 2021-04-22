@@ -1,8 +1,8 @@
 from pysb import Model, Observable
 
 from mEncoder.mechanistic_model import (
-    add_monomer_synth_deg, generate_pathway, add_activation,
-    add_observables, add_inhibitor, add_gf_bolus, cleanup_unused
+    add_monomer_synth_deg, generate_pathway,
+    add_observables, add_inhibitor, add_gf_bolus,
 )
 
 model = Model('EGFR_MAPK')
