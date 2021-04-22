@@ -9,9 +9,7 @@ import os
 import pandas as pd
 import numpy as np
 import scipy.linalg as la
-import matplotlib.pyplot as plt
 import fides
-import petab.visualize
 import amici.petab_objective
 
 from pypesto.optimize import FidesOptimizer
@@ -109,7 +107,7 @@ optimizer = FidesOptimizer(
         fides.Options.FATOL: 1e-6,
         fides.Options.XTOL: 1e-8,
         fides.Options.MAXTIME: 3600 * 10,
-        fides.Options.MAXITER: 1,
+        fides.Options.MAXITER: 1e3,
         fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.TWO,
     }
 )

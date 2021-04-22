@@ -80,4 +80,3 @@ def plot_cross_samples(measurement_df, simulation_df, figdir, prefix):
 
     plt.tight_layout()
     plot.save(os.path.join(figdir, f'{prefix}_fit_static.pdf'))
-
