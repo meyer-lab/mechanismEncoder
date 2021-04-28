@@ -290,7 +290,13 @@ def add_activation(
     rstate = {s: valid_states[1] for s in sites}
 
     kr = Parameter(f'{m_name}_{forward}_{site}_kr', 1.0)
-    koff = model.expressions[f'{m_name}_{reverse}_{site}_base_rate']
+    if len(site.split('_')) > 1:
+        koff = 0.0
+        for s in site.split('_'):
+            koff += model.expressions[f'{m_name}_{reverse}_{s}_base_rate']
+        koff /= len(site.split('_'))
+    else:
+        koff = model.expressions[f'{m_name}_{reverse}_{site}_base_rate']
     rate_expr = kr * koff * get_autoencoder_modulator(kr)
 
     num = 0.0
