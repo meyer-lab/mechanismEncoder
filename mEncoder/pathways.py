@@ -61,7 +61,6 @@ def add_MTOR_AKT(model):
                   'S473': ['MTOR__C_c2', 'AKT2__T309_p']}),
         ('AKT3', {'T305': ['PDPK1__S241_p'],
                   'S473': ['MTOR__C_c2', 'AKT3__T305_p']}),
-        ('CREB1', {'S133': ['AKT1__T308_p', 'AKT2__T309_p']})
     ]
     generate_pathway(model, akt_cascade)
 
@@ -119,11 +118,13 @@ def add_S6(model):
     ]
     generate_pathway(model, gsk_cascade)
 
-    #EIF4
+    # TFs
     EIF4_cascade = [
         ('EIF4EBP1', {'T37_T46': ['MTOR__C_c1',
                                   'GSK3B__S9_p',
                                   *active_erk]}),
+        ('CREB1', {'S133': ['AKT1__T308_p', 'AKT2__T309_p',
+                            'RPS6KA1__S380_p']})
     ]
     generate_pathway(model, EIF4_cascade)
 
