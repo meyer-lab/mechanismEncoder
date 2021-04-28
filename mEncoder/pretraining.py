@@ -103,7 +103,6 @@ def generate_cross_sample_pretraining_problem(
     obj = AesaraObjective(
         ae.pypesto_subproblem.objective, ae.x_embedding,
         ae.embedding_model_pars,
-        x_names=x_names
     )
 
     if isinstance(obj.base_objective, AmiciObjective):
