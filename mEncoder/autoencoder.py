@@ -11,7 +11,7 @@ from pypesto.hierarchical.problem import PARAMETER_TYPE
 from typing import Tuple, Sequence
 from sklearn.decomposition import PCA
 
-from . import MODEL_FEATURE_PREFIX, apply_solver_settings
+from . import MODEL_FEATURE_PREFIX, apply_objective_settings
 from .encoder import AutoEncoder
 from .petab_subproblem import load_petab, filter_observables
 
@@ -68,9 +68,7 @@ class MechanisticAutoEncoder(AutoEncoder):
             for par_id in self.petab_importer.petab_problem.parameter_df.index
         ]
 
-        self.pypesto_subproblem = self.petab_importer.create_problem(
-            hierarchical=False
-        )
+        self.pypesto_subproblem = self.petab_importer.create_problem()
 
         input_data = full_measurements.loc[full_measurements.apply(
             lambda x: (x[petab.SIMULATION_CONDITION_ID] ==
@@ -127,18 +125,12 @@ class MechanisticAutoEncoder(AutoEncoder):
         pca = PCA(n_components=self.n_hidden)
         self.data_pca = pca.fit_transform(self.data)
 
+        apply_objective_settings(self.pypesto_subproblem, pathway_name)
         if isinstance(self.pypesto_subproblem.objective,
                       pypesto.objective.AmiciObjective):
             amici_objective = self.pypesto_subproblem.objective
         else:
             amici_objective = self.pypesto_subproblem.objective._objectives[0]
-
-        apply_solver_settings(amici_objective.amici_solver)
-
-        for e in amici_objective.edatas:
-            e.reinitializeFixedParameterInitialStates = True
-
-        amici_objective.guess_steadystate = False
         amici_objective.n_threads = 6
 
         self.x_names = self.x_names + [

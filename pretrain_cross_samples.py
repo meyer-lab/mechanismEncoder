@@ -147,8 +147,6 @@ store_and_plot_pretraining(result, pretraindir, output_prefix)
 
 importer = mae.petab_importer
 model = importer.create_model()
-solver = importer.create_solver()
-edatas = importer.create_edatas()
 
 x = problem.get_reduced_vector(result.optimize_result.list[0]['x'],
                                problem.x_free_indices)

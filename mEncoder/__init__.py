@@ -84,7 +84,7 @@ def apply_solver_settings(solver):
     solver.setRelativeToleranceSteadyState(1e-8)
 
 
-def apply_objective_settings(problem):
+def apply_objective_settings(problem, pathway_name):
     if isinstance(problem.objective, pypesto.objective.AmiciObjective):
         amiobjective = problem.objective
     elif isinstance(problem.objective, pypesto.objective.AggregatedObjective):
@@ -101,6 +101,14 @@ def apply_objective_settings(problem):
     apply_solver_settings(amiobjective.amici_solver)
     for e in amiobjective.edatas:
         e.reinitializeFixedParameterInitialStates = True
+        if pathway_name.startswith('EGFR'):
+            fp = list(e.fixedParameters)
+            fp[amiobjective.amici_model.getFixedParameterIds().index(
+               'EGF_0')] \
+                = 0
+            e.fixedParametersPresimulation = tuple(fp)
+            e.t_presim = 15
+
 
 
 parameter_boundaries_scales = {

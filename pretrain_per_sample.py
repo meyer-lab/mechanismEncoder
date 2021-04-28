@@ -37,7 +37,7 @@ pretraindir = 'pretraining'
 output_prefix = f'{mae.pathway_name}__{mae.data_name}__{SAMPLE}'
 problem = importer.create_problem()
 model = importer.create_model()
-apply_objective_settings(problem)
+apply_objective_settings(problem, MODEL)
 
 optimizer = FidesOptimizer(
     hessian_update=fides.HybridUpdate(),
