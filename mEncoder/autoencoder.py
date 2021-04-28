@@ -131,7 +131,7 @@ class MechanisticAutoEncoder(AutoEncoder):
             amici_objective = self.pypesto_subproblem.objective
         else:
             amici_objective = self.pypesto_subproblem.objective._objectives[0]
-        amici_objective.n_threads = 6
+        amici_objective.n_threads = 4
 
         self.x_names = self.x_names + [
             name for ix, name in enumerate(self.pypesto_subproblem.x_names)

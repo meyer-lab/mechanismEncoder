@@ -129,7 +129,7 @@ elif INIT == 'sampling':
 
         return xs
 
-apply_objective_settings(problem)
+apply_objective_settings(problem, MODEL)
 
 optimizer = FidesOptimizer(
     hessian_update=fides.HybridUpdate(),
