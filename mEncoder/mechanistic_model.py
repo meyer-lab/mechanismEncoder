@@ -9,8 +9,12 @@ from pysb import (
 import pysb.bng
 
 
-def generate_pathway(model: Model,
-                     proteins: Iterable[Tuple[str, Dict[str, Iterable[str]]]]):
+def generate_pathway(
+        model: Model,
+        proteins: Iterable[Tuple[str, Dict[str, Iterable[str]]]],
+        species_with_synth = None,
+        add_baseline_activation='none'
+):
     """
     Adds synthesis and phospho-signal transduction rules to the model
     based on the input specifications
@@ -21,8 +25,16 @@ def generate_pathway(model: Model,
     :param proteins:
         pathway specification
     """
-    for p_name, site_activators in proteins:
-        add_monomer_synth_deg(p_name, psites=site_activators.keys())
+    if species_with_synth is None:
+        species_with_synth = []
+
+    for ip, (p_name, site_activators) in enumerate(proteins):
+        add_monomer_synth_deg(
+            p_name, psites=site_activators.keys(),
+            with_synth=p_name in species_with_synth,
+            with_basal_activation=add_baseline_activation == 'all' or
+            (add_baseline_activation == 'first' and ip == 0)
+        )
 
     for p_name, site_activators in proteins:
         for site, modulators in site_activators.items():
@@ -40,7 +52,8 @@ def add_monomer_synth_deg(m_name: str,
                           nsites: Optional[Iterable[str]] = None,
                           asites: Optional[Iterable[str]] = None,
                           asite_states: Optional[Iterable[str]] = None,
-                          with_basal_activation: Optional[bool] = True):
+                          with_basal_activation: Optional[bool] = False,
+                          with_synth=False):
     """
     Adds the respective monomer plus synthesis rules and basal
     activation/deactivation rules for all activateable sites
@@ -90,64 +103,64 @@ def add_monomer_synth_deg(m_name: str,
         }
     )
 
-    #kdeg = Parameter(f'{m_name}_degradation_kdeg', 1.0)
     t = Parameter(f'{m_name}_eq', 100.0)
-    t0 = Expression(f'{m_name}_init', t * get_autoencoder_modulator(t))
-    #ksyn = Expression(f'{m_name}_synthesis_ksyn', t*kdeg)
-    #syn_rate = Expression(f'{m_name}_synthesis_rate',
-    #                      ksyn * get_autoencoder_modulator(t))
+    t_mod = get_autoencoder_modulator(t)
+    t0 = Expression(f'{m_name}_init', t * t_mod)
 
     syn_prod = m(
-        **{site:
-           'u' if site in psites
-           else 'gdp' if site in nsites
-           else None if site == 'inh'
-           else asite_states[0]
+        **{site: 'u' if site in psites else 'gdp' if site in nsites
+           else None if site == 'inh' else asite_states[0]
            for site in sites}
     )
 
-    #Rule(f'synthesis_{m_name}', None >> syn_prod, syn_rate)
-    #deg_rate = Expression(f'{m_name}_degradation_rate', kdeg)
-    #Rule(f'degradation_{m_name}', m() >> None, deg_rate)
-    #t_ss = Expression(f'{m_name}_ss', syn_rate/deg_rate)
+    if with_synth:
+        kdeg = Parameter(f'{m_name}_degradation_kdeg')
+        deg_rate = Expression(f'{m_name}_degradation_rate',
+                              kdeg * get_autoencoder_modulator(kdeg))
+        syn_rate = Expression(f'{m_name}_synthesis_rate',
+                              t0 * deg_rate)
+        Rule(f'synthesis_{m_name}', None >> syn_prod, syn_rate)
+        Rule(f'degradation_{m_name}', m() >> None, deg_rate)
+
     Initial(syn_prod, t0)
 
-    if not with_basal_activation:
-        return m
-
-    # basal activation
-    for sites, labels, fstate, rstate in zip(
-        [psites, nsites],
-        [('phosphorylation', 'dephosphorylation'),
-         ('gtp_exchange', 'gdp_exchange')],
-        ['p', 'gtp'],
-        ['u', 'gdp']
+    # basal deactivation
+    for sites, labels, states in zip(
+        [psites, nsites, asites],
+        [('dephosphorylation', 'phosphorylation'),
+         ('gdp_exchange', 'gtp_exchange'),
+         ('deactivation',
+          *[f'activation_{state}' for state in asite_states[1:]])],
+        [('u', 'p'), ('gdp', 'gtp'), asite_states]
     ):
         for site in sites:
-            kcats = [
-                Parameter(f'{m_name}_{label}_{site}_base_kcat', 1.0)
-                for label in labels[1:]
-            ]
-            rates = [
-                Expression(f'{m_name}_{label}_{site}_base_rate',
-                           kcat * get_autoencoder_modulator(kcat))
-                for kcat, label in zip(kcats, labels[1:])
-            ]
+            for state in states[1:]:
+                if with_basal_activation:
+                    rp = m(**{site: state}) | m(**{site: states[0]})
+                else:
+                    rp = m(**{site: state}) >> m(**{site: states[0]})
 
-            #Rule(F'{m_name}_{site}_base',
-            #     m(**{site: rstate}) | m(**{site: fstate}), *rates)
-            Rule(F'{m_name}_{site}_base',
-                 m(**{site: fstate}) >> m(**{site: rstate}), *rates)
+                kbase = Parameter(
+                    f'{m_name}_{labels[0]}_{site}_base_kcat'
+                )
+                rates = [
+                    Expression(
+                        f'{m_name}_{labels[0]}_{site}_base_rate',
+                        kbase * get_autoencoder_modulator(kbase)
+                    )
+                ]
+                if with_basal_activation:
+                    kr = Parameter(
+                        f'{m_name}_{labels[1]}_{site}_base_kr'
+                    )
+                    rates += [
+                        Expression(
+                            f'{m_name}_{labels[1]}_{site}_base_rate',
+                            kr * get_autoencoder_modulator(kr) * rates[0]
+                        )
+                    ]
 
-    for asite in asites:
-        for state in asite_states[1:]:
-
-            kcat = Parameter(f'{m_name}_deactivation_{state}_base_kcat', 1.0)
-            rate = Expression(f'{m_name}_deactivation_{state}_base_rate',
-                              kcat * get_autoencoder_modulator(kcat))
-
-            Rule(F'{m_name}_deactivation_{state}_base',
-                 m(**{asite: state}) >> m(**{asite: asite_states[0]}), rate)
+                Rule(F'{m_name}_base_regulation_{site}_{state}', rp, *rates)
 
     return m
 
@@ -264,40 +277,56 @@ def add_activation(
 
     if activation_type == 'phosphorylation':
         forward = 'phosphorylation'
-        backward = 'dephosphorylation'
+        reverse = 'dephosphorylation'
     elif activation_type == 'nucleotide_exchange':
         forward = 'gtp_exchange'
-        backward = 'gdp_exchange'
+        reverse = 'gdp_exchange'
     elif activation_type == 'activation':
         forward = f'activation_{site_states[1]}'
-        backward = f'deactivation_{site_states[1]}'
+        reverse = f'deactivation_{site_states[1]}'
     else:
         raise ValueError(f'Invalid activation type {activation_type}.')
     fstate = {s: valid_states[0] for s in sites}
     rstate = {s: valid_states[1] for s in sites}
 
-    kcat = Parameter(f'{m_name}_{forward}_{site}_base_kcat', 1.0)
-    rate_expr = kcat
-    rate_expr *= get_autoencoder_modulator(kcat)
+    kr = Parameter(f'{m_name}_{forward}_{site}_kr', 1.0)
+    koff = model.expressions[f'{m_name}_{reverse}_{site}_base_rate']
+    rate_expr = kr * koff * get_autoencoder_modulator(kr)
 
     num = 0.0
     for activator in activators:
-        weight = Parameter(f'{m_name}_activation_{site}_{activator}_kw', 1.0)
-        num += weight * get_autoencoder_modulator(weight) * \
-            add_or_get_modulator_obs(model, activator)
+        factor = add_or_get_modulator_obs(model, activator)
+        if len(activators) > 1:
+            weight = Parameter(f'{m_name}_{forward}_{site}_{activator}_kw')
+            factor *= weight * get_autoencoder_modulator(weight)
+
+        num += factor
 
     denum = 1.0
     for deactivator in deactivators:
-        weight = Parameter(f'{m_name}_deactivation_{site}_{deactivator}_kw',
-                           1.0)
-        denum += weight * get_autoencoder_modulator(weight) * \
-            add_or_get_modulator_obs(model, deactivator)
+        weight = Parameter(
+            f'{m_name}_deactivation_{site}_{deactivator}_kw')
+        denum += add_or_get_modulator_obs(model, deactivator) * weight * \
+            get_autoencoder_modulator(weight)
 
-    rate = kcat * num / denum
+    rate = rate_expr * num / denum
 
     Rule(f'{m_name}_{forward}_{site}_activation',
          mono(**fstate) >> mono(**rstate),
          Expression(f'{m_name}_{forward}_{site}_activation_rate', rate))
+
+
+def add_degradation(model: Model, targets):
+
+    for target in targets:
+        mono_name, site_conditions = site_states_from_string(target)
+        kr = Parameter(f'degradation_{target}_kr')
+        deg_rate = model.expressions[f'{mono_name}_degradation_rate']
+        rate = Expression(f'degradation_{target}_rate',
+                          kr * get_autoencoder_modulator(kr) * deg_rate)
+        Rule(f'degradation_{target}',
+             model.monomers[mono_name](**site_conditions) >> None,
+             rate)
 
 
 def get_autoencoder_modulator(par: Parameter):
@@ -326,15 +355,23 @@ def add_observables(model: Model):
 
 def add_inhibitor(model: Model, name: str, targets: List[str]):
     inh = Parameter(f'{name}_0', 0.0)
-    kd = Parameter(f'{name}_kd', 0.0)
-    affinities = {
-        target: Expression(
+
+    affinities = {}
+    for target in targets:
+        if target not in model.monomers.keys():
+            continue
+        kd = Parameter(f'{name}_{target}_kd', 0.0)
+        kmod = get_autoencoder_modulator(kd)
+
+        affinities[target] = Expression(
             f'inh_{target}',
-            Observable(f'target_{target}', model.monomers[target])/kd,
+            Observable(f'target_{target}', model.monomers[target])
+            / (kd * kmod),
             _export=False
         )
-        for target in targets
-    }
+
+    if not affinities:
+        return
 
     for expr in model.expressions:
         if expr.name.startswith('inh_'):
@@ -362,18 +399,9 @@ def add_inhibitor(model: Model, name: str, targets: List[str]):
                                           list(model.expressions))
 
 
-def add_gf_bolus(model, name: str, created_monomers: List[str]):
-    bolus = Monomer(f'{name}_ext')
-    Initial(bolus(), Parameter(f'{name}_0', 0.0), fixed=True)
-    for created_monomer in created_monomers:
-        koff = Parameter(f'{name}_{created_monomer}_koff', 0.1)
-        kd = Parameter(f'{name}_{created_monomer}_kd', 1.0)
-        kon = Expression(f'{name}_{created_monomer}_kon', kd * koff)
-        Rule(
-            f'{name}_ext_to_{created_monomer}',
-            bolus() | model.monomers[created_monomer](inh=None),
-            kon, koff
-        )
+def add_gf_bolus(name: str):
+    bolus = Monomer(f'{name}', sites=['inh'])
+    Initial(bolus(inh=None), Parameter(f'{name}_0', 0.0), fixed=True)
 
 
 def cleanup_unused(model):
@@ -444,11 +472,6 @@ def cleanup_unused(model):
         rule for rule in model.rules
         if rule_reaction_count[rule.name] > 0
     ])
-
-    # model.observables = [
-    #     obs for obs in model.observables
-    #     if len(obs.coefficients) > 0
-    # ]
 
     model.reset_equations()
 

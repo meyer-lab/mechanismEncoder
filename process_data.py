@@ -17,7 +17,7 @@ from mEncoder import load_pathway
 
 from phosphoData.phosphoAML_PTRCdata import getAllData
 
-basedir = os.path.dirname(os.path.dirname(__file__))
+basedir = os.path.dirname(os.path.abspath(__file__))
 
 
 def observable_id_to_model_expr(obs_id: str,
@@ -78,7 +78,10 @@ def observable_id_to_model_expr(obs_id: str,
             r'^P\.S6$': 'RPS6_S235_S236',
             r'^P\.AKT\.THR308\.': 'AKT_T308',
             r'^P\.4EBP1': 'EIF4EBP1_T37_T46',
-            r'^P\.SRC': 'SRC_T419',
+            r'^P\.SRC': 'SRC_Y419',
+            r'^P\.p.PLCG2': 'PLCG2_Y759',
+            r'^P\.BTK': 'BTK_Y551',
+            r'^P\.CREB': 'CREB1_S133',
         }
     else:
         raise ValueError('Dataset not supported!')
@@ -256,7 +259,63 @@ else:
     if DATA == 'dream_cytof':
         syn = synapseclient.Synapse()
         syn.login()
-        df_median_phospho = pd.read_csv(syn.get('syn20613384').path)
+        files = [
+            'syn20613594',  # 184A1
+            'syn20613595',  # BT20
+            'syn20613596',  # BT474
+            'syn20613597',  # BT549
+            'syn20613598',  # CAL148
+            'syn20613599',  # CAL51
+            'syn20613600',  # CAL851
+            'syn20613601',  # DU4475
+            'syn20613660',  # EFM192A
+            'syn20613665',  # EVSAT
+            'syn20613668',  # HBL100
+            'syn20613674',  # HCC1187
+            'syn20613687',  # HCC1395
+            'syn20613696',  # HCC1419
+            'syn20613702',  # HCC1500
+            'syn20613708',  # HCC1569
+            'syn20613710',  # HCC1599
+            'syn20613719',  # HCC1937
+            'syn20613739',  # HCC1954
+            'syn20613793',  # HCC2157
+            'syn20613802',  # HCC2185
+            'syn20613814',  # HCC3153
+            'syn20613821',  # HCC38
+            'syn20613832',  # HCC70
+            'syn20613849',  # HDQP1
+            'syn20613865',  # JIMT1
+            'syn20613880',  # MCF10A
+            'syn20613911',  # MCF10F
+            'syn20613920',  # MCF7
+            'syn20613935',  # MDAMB134VI
+            'syn20613939',  # MDAMB157
+            'syn20613943',  # MDAMB175VII
+            'syn20613962',  # MDAMB361
+            'syn20613975',  # MDAMB415
+            'syn20613988',  # MDAMB453
+            'syn20613930',  # MDAkb2
+            'syn20613995',  # MFM223
+            'syn20614008',  # MPE600
+            'syn20614033',  # MX1
+            'syn20614045',  # OCUBM
+            'syn20614052',  # T47D
+            'syn20614063',  # UACC812
+            'syn20614074',  # UACC893
+            'syn20614085',  # ZR7530
+        ]
+        median_data = []
+        for file in files:
+            df = pd.read_csv(syn.get(file).path)
+            for ids, data in df.groupby(['treatment', 'cell_line', 'time',
+                                         'fileID']):
+                med = data.median()
+                med['treatment'] = ids[0]
+                med['cell_line'] = ids[1]
+                median_data.append(med)
+        df_median_phospho = pd.concat(median_data, axis=1).T
+        df_median_phospho.drop(columns=['fileID', 'cellID'], inplace=True)
         measurement_table_phospho = pd.melt(
             df_median_phospho,
             id_vars=['cell_line', 'treatment', 'time'],
@@ -416,13 +475,8 @@ else:
             if observable_id_to_model_expr(x, observable_mode, model) != ''
             else x
         )
-    measurement_table[petab.DATASET_ID] = measurement_table[
-        petab.SIMULATION_CONDITION_ID
-    ]
-    if DATA == 'dream_cytof':
-        obs_trafo = lambda x: f'asinh({x}/5)'
-    else:
-        obs_trafo = lambda x: f'log({x} + 1e-16)'
+
+    obs_trafo = lambda x: f'log({x} + 1e-16)'
 
     observable_table[petab.OBSERVABLE_FORMULA] = [
         f'observableParameter1_{obs}_obs * {obs_trafo(obs)} + '
@@ -430,82 +484,19 @@ else:
         for obs in observable_obs
     ]
     observable_table[petab.NOISE_DISTRIBUTION] = 'normal'
-    observable_table[petab.NOISE_FORMULA] = 1.0
+    observable_table[petab.NOISE_FORMULA] = [
+        1.0 for obs in observable_obs
+    ]
+
+    def obs_pars(x):
+        pars = f'{x[petab.OBSERVABLE_ID]}_scale;' \
+               f'{x[petab.OBSERVABLE_ID]}_offset'
+        return pars
 
     measurement_table[petab.OBSERVABLE_PARAMETERS] = \
-        measurement_table[petab.OBSERVABLE_ID].apply(
-            lambda x: f'{x}_scale;{x}_offset'
-        )
+        measurement_table.apply(obs_pars, axis=1)
 
     measurement_table[petab.NOISE_PARAMETERS] = ''
-
-    for sample in measurement_table[
-        petab.PREEQUILIBRATION_CONDITION_ID
-    ].unique():
-        measurements_sample = measurement_table[
-            measurement_table[petab.PREEQUILIBRATION_CONDITION_ID] == sample
-        ]
-        conditions = [
-            c for c in
-            measurements_sample[petab.SIMULATION_CONDITION_ID].unique()
-        ]
-
-        visualization_table = []
-        for condition in conditions:
-            measurements_condition = measurements_sample[
-                measurements_sample[petab.SIMULATION_CONDITION_ID] == condition
-            ]
-
-            condition_name = condition.replace(
-                f'{sample}__', ''
-            ).replace(sample, 'baseline')
-
-            static_measurements = [
-                obs_id for obs_id
-                in measurements_condition[petab.OBSERVABLE_ID].unique()
-                if obs_id in observable_table[petab.OBSERVABLE_ID].unique()
-                and (measurements_condition[
-                    measurements_condition[petab.OBSERVABLE_ID] == obs_id
-                ][petab.TIME] == 0.0).all()
-            ]
-            dynamic_measurements = [
-                obs_id for obs_id
-                in measurements_condition[petab.OBSERVABLE_ID].unique()
-                if obs_id not in static_measurements
-                and obs_id in observable_table[petab.OBSERVABLE_ID].unique()
-            ]
-            for static_obs in static_measurements:
-                visualization_table.append({
-                    petab.PLOT_ID: f'{condition}_static',
-                    petab.PLOT_NAME: f'{condition_name} static',
-                    petab.Y_VALUES: static_obs,
-                    petab.PLOT_TYPE_SIMULATION: petab.BAR_PLOT,
-                    petab.LEGEND_ENTRY: f'{condition_name} {static_obs}',
-                    petab.DATASET_ID: condition,
-                })
-
-            for dynamic_obs in dynamic_measurements:
-                visualization_table.append({
-                    petab.PLOT_ID: f'{sample}_{dynamic_obs}',
-                    petab.PLOT_NAME: dynamic_obs,
-                    petab.Y_VALUES: dynamic_obs,
-                    petab.PLOT_TYPE_SIMULATION: petab.LINE_PLOT,
-                    petab.LEGEND_ENTRY: condition_name,
-                    petab.DATASET_ID: condition,
-                })
-
-        visualization_table = pd.DataFrame(visualization_table)
-
-        visualization_table[petab.Y_SCALE] = petab.LIN
-        visualization_table[petab.X_SCALE] = petab.LIN
-        #visualization_table[petab.Y_LABEL] = 'measurement'
-        visualization_table[petab.PLOT_TYPE_DATA] = \
-            petab.MEAN_AND_SD
-
-        visualization_file = os.path.join(
-            datadir, f'{DATA}__{MODEL}__{sample}__visualization.tsv'
-        )
-        visualization_table.to_csv(visualization_file, sep='\t')
 
     measurement_file = os.path.join(
             datadir, f'{DATA}__{MODEL}__measurements.tsv'
@@ -515,6 +506,7 @@ else:
     condition_file = os.path.join(
         datadir, f'{DATA}__{MODEL}__conditions.tsv'
     )
+    print(datadir)
     condition_table.set_index(petab.CONDITION_ID, inplace=True)
     condition_table.to_csv(condition_file, sep='\t')
 

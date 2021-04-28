@@ -19,11 +19,10 @@ mae = MechanisticAutoEncoder(
         os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
     ), MODEL, SAMPLES.split('.')
 )
-result = train(mae, SAMPLES,
-               maxiter=int(1e3), n_starts=1, seed=JOB, ftol=1e-6)
+result = train(mae, SAMPLES, n_starts=1, seed=JOB)
 outfile = os.path.join('results', MODEL, DATA,
                        f'{SAMPLES}__{N_HIDDEN}__{JOB}.pickle')
-
+os.makedirs(os.path.join('results', MODEL, DATA), exist_ok=True)
 with open(outfile, 'wb') as f:
     pickle.dump(result.optimize_result, f)
 

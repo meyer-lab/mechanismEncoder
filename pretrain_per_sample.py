@@ -6,10 +6,7 @@ import sys
 import os
 import fides
 import pypesto
-import petab.visualize
 import numpy as np
-
-import matplotlib.pyplot as plt
 
 import amici.petab_objective
 
@@ -20,6 +17,7 @@ from mEncoder.pretraining import (
     generate_per_sample_pretraining_problems, pretrain,
     store_and_plot_pretraining
 )
+from mEncoder.plotting import plot_single_sample
 from mEncoder import apply_objective_settings
 
 np.random.seed(0)
@@ -35,7 +33,6 @@ mae = MechanisticAutoEncoder(1, (
 ), MODEL, [SAMPLE])
 
 importer = generate_per_sample_pretraining_problems(mae, SAMPLE)
-
 pretraindir = 'pretraining'
 output_prefix = f'{mae.pathway_name}__{mae.data_name}__{SAMPLE}'
 problem = importer.create_problem()
@@ -52,7 +49,7 @@ optimizer = FidesOptimizer(
         fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.TWO,
     }
 )
-result = pretrain(problem, pypesto.startpoint.uniform, 50,
+result = pretrain(problem, pypesto.startpoint.uniform, 10,
                   optimizer, pypesto.engine.MultiThreadEngine(4))
 store_and_plot_pretraining(result, pretraindir, output_prefix)
 
@@ -65,24 +62,7 @@ simulation_df = amici.petab_objective.rdatas_to_simulation_df(
     model=model,
     measurement_df=importer.petab_problem.measurement_df,
 )
-# Plot with PEtab
-ordering_cols = [
-    petab.PREEQUILIBRATION_CONDITION_ID, petab.SIMULATION_CONDITION_ID,
-    petab.OBSERVABLE_ID, petab.TIME
-]
-exp_data = importer.petab_problem.measurement_df.sort_values(
-    by=ordering_cols
-).reset_index().drop(columns=['index'])
-sim_data = simulation_df.sort_values(
-    by=ordering_cols
-).reset_index().drop(columns=['index'])
-petab.visualize.plot_data_and_simulation(
-    exp_data=exp_data,
-    exp_conditions=importer.petab_problem.condition_df,
-    sim_data=sim_data,
-    vis_spec=importer.petab_problem.visualization_df
-)
-plt.tight_layout()
-plt.savefig(os.path.join(
-    'pretraining', f'{output_prefix}_fit.pdf'
-))
+plot_single_sample(importer.petab_problem.measurement_df,
+                   simulation_df,
+                   'pretraining',
+                   output_prefix)

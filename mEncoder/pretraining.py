@@ -18,7 +18,7 @@ from pysb import Model
 
 from .autoencoder import MechanisticAutoEncoder
 from . import (
-    MODEL_FEATURE_PREFIX, load_pathway,
+    MODEL_FEATURE_PREFIX, load_pathway, parameter_boundaries_scales
 )
 
 basedir = os.path.dirname(os.path.dirname(__file__))
@@ -45,8 +45,6 @@ def generate_per_sample_pretraining_problems(
         for x in ae.petab_importer.petab_problem.parameter_df.index
     ]
     pp = ae.petab_importer.petab_problem
-    pp.parameter_df[petab.LOWER_BOUND] /= 10 ** ae.par_modulation_scale
-    pp.parameter_df[petab.UPPER_BOUND] *= 10 ** ae.par_modulation_scale
     # create fresh model from scratch since the petab imported one already
     # has the observables added and this might lead to issues.
     clean_model = load_pathway('pw_' + ae.pathway_name)
@@ -59,11 +57,6 @@ def generate_per_sample_pretraining_problems(
         name.startswith(sample)
         for name in pp.condition_df.index
     ]]
-    vdf = pd.read_csv(
-        os.path.join('data',
-                     f'{ae.data_name}__'
-                     f'{sample}__visualization.tsv'), sep='\t'
-    )
     spars = set(
         e
         for t in mdf[petab.OBSERVABLE_PARAMETERS].apply(lambda x: x.split(';'))
@@ -83,7 +76,6 @@ def generate_per_sample_pretraining_problems(
         observable_df=pp.observable_df,
         measurement_df=mdf,
         condition_df=cdf,
-        visualization_df=vdf,
         pysb_model=Model(base=clean_model, name=pp.pysb_model.name),
     ), output_folder=os.path.join(
         basedir, 'amici_models',
@@ -106,13 +98,13 @@ def generate_cross_sample_pretraining_problem(
     :returns:
         pypesto Problem
     """
+    x_names = ae.x_names[ae.n_encode_weights:]
 
     obj = AesaraObjective(
         ae.pypesto_subproblem.objective, ae.x_embedding,
-        ae.embedding_model_pars
+        ae.embedding_model_pars,
+        x_names=x_names
     )
-
-    x_names = ae.x_names[ae.n_encode_weights:]
 
     if isinstance(obj.base_objective, AmiciObjective):
         obj.base_objective.n_threads = 4
@@ -122,8 +114,10 @@ def generate_cross_sample_pretraining_problem(
     return Problem(
         objective=obj,
         x_names=x_names,
-        lb=[-np.inf for _ in x_names],
-        ub=[np.inf for _ in x_names],
+        lb=[parameter_boundaries_scales[xname.split('_')[-1]][0]
+            for xname in x_names],
+        ub=[parameter_boundaries_scales[xname.split('_')[-1]][1]
+            for xname in x_names],
     )
 
 

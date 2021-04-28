@@ -3,6 +3,7 @@ import amici.pysb_import
 import logging
 import re
 import pysb
+import sys
 import sympy as sp
 import amici
 import pypesto
@@ -16,7 +17,7 @@ figures_path = os.path.join(basedir, 'figures')
 
 def load_pathway(pathway_name: str) -> pysb.Model:
     model_file = os.path.join(basedir, 'pathways', pathway_name + '.py')
-
+    sys.path.insert(0, os.path.join(basedir, 'pathways'))
     model = amici.pysb_import.pysb_model_from_path(model_file)
 
     with open(os.path.join(basedir, 'pysb_models',
@@ -78,9 +79,9 @@ def plot_and_save_fig(filename):
 def apply_solver_settings(solver):
     solver.setMaxSteps(int(1e5))
     solver.setAbsoluteTolerance(1e-12)
-    solver.setRelativeTolerance(1e-10)
-    solver.setAbsoluteToleranceSteadyState(1e-10)
-    solver.setRelativeToleranceSteadyState(1e-10)
+    solver.setRelativeTolerance(1e-12)
+    solver.setAbsoluteToleranceSteadyState(1e-8)
+    solver.setRelativeToleranceSteadyState(1e-8)
 
 
 def apply_objective_settings(problem):
@@ -103,15 +104,16 @@ def apply_objective_settings(problem):
 
 
 parameter_boundaries_scales = {
-    'kdeg': (-8, -3, 'log10'),      # [1/[t]]
+    'kdeg': (-6, -2, 'log10'),       # [1/[t]]
     'eq': (-4, 4, 'log10'),          # [[c]]
-    'kcat': (-4, 5, 'log10'),        # [1/([t]*[c])]
-    'scale': (-10, 5, 'lin'),       # [1/[c]]
-    'offset': (-10, 5, 'lin'),     # [[c]]
-    'weight': (-1, 1, 'lin'),       # [-]
-    'koff': (-5, 2, 'log10'),      # [1/[t]]
-    'kd':   (-6, 4, 'log10'),       # [[c]]
-    'kw':   (-6, 3, 'log10'),       # [1/[c]]
+    'kcat': (-3, 3, 'log10'),        # [1/([t]*[c])]
+    'kr': (-3, 3, 'log10'),          # [-]
+    'scale': (0, 10, 'lin'),         # [1/[c]]
+    'offset': (-10, 10, 'lin'),        # [[c]]
+    'weight': (-1, 1, 'lin'),        # [-]
+    'koff': (-3, 2, 'log10'),        # [1/[t]]
+    'kd':   (-3, 2, 'log10'),       # [[c]]
+    'kw':   (-3, 2, 'log10'),        # [1/[c]]
 }
 
 MODEL_FEATURE_PREFIX = 'INPUT_'

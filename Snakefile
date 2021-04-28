@@ -1,7 +1,7 @@
 import os
 
-HIDDEN_LAYERS = [3, 5, 10]
-PATHWAYS = ['EGFR_MAPK', 'EGFR_MAPK_AKT_STAT']
+HIDDEN_LAYERS = [3, 5]
+PATHWAYS = ['EGFR', 'EGFR_MAPK', 'EGFR_MAPK_AKT']
 DATASETS = ['dream_cytof']
 SAMPLES = ['c184A1', 'cBT20', 'cBT474', 'cBT549', 'cCAL148', 'cCAL851',
            'cCAL51', 'cDU4475', 'cEFM192A', 'cEVSAT']
@@ -14,9 +14,8 @@ rule process_data:
         script='process_data.py',
         data_code=os.path.join('mEncoder', 'generate_data.py'),
         enc_code=os.path.join('mEncoder', 'encoder.py'),
-        bounds=os.path.join('mEncoder', '__init__.py'),
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
-        pathway=os.path.join('pathways', 'pw_FLT3_MAPK_AKT_STAT.py')
+        pathway=os.path.join('mEncoder', 'pathways.py')
     output:
         datafiles=expand(
             os.path.join('data', '{{data}}__{{model}}__{file}.tsv'),
@@ -35,6 +34,7 @@ rule compile_mechanistic_model:
         enc_code=os.path.join('mEncoder', 'encoder.py'),
         autoencoder_code=os.path.join('mEncoder', 'autoencoder.py'),
         pathway=os.path.join('pathways', 'pw_{model}.py'),
+        pathways=os.path.join('mEncoder', 'pathways.py'),
         data=rules.process_data.output.datafiles
     output:
         model=os.path.join('amici_models', '{model}_{data}__{model}_petab',

@@ -61,8 +61,6 @@ def create_pypesto_problem(
 
 def train(ae: MechanisticAutoEncoder,
           samplestr: str,
-          ftol: float = 1e-3,
-          maxiter: int = 1e4,
           n_starts: int = 1,
           seed: int = 0) -> Result:
     """
@@ -71,10 +69,6 @@ def train(ae: MechanisticAutoEncoder,
 
     :param ae:
         Autoencoder that will be trained
-    :param ftol:
-        function tolerance that is used to assess optimizer convergence
-    :param maxiter:
-        maximum number of optimization iterations
     :param n_starts:
         number of local starts that will be performed
     :param seed:
@@ -86,13 +80,13 @@ def train(ae: MechanisticAutoEncoder,
     """
     pypesto_problem = create_pypesto_problem(ae)
     opt = FidesOptimizer(
-        hessian_update=fides.BFGS(),
+        hessian_update=fides.HybridUpdate(),
         options={
-            'maxtime': 3600,
-            fides.Options.FATOL: ftol,
-            fides.Options.MAXTIME: 3600,
-            fides.Options.MAXITER: maxiter,
-            fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.TWO
+            fides.Options.FATOL: 1e-6,
+            fides.Options.XTOL: 1e-8,
+            fides.Options.MAXTIME: 3600 * 10,
+            fides.Options.MAXITER: 1e3,
+            fides.Options.SUBSPACE_DIM: fides.SubSpaceDim.TWO,
         },
         verbose=logging.INFO
     )
@@ -105,14 +99,15 @@ def train(ae: MechanisticAutoEncoder,
     )
 
     pca_pretraining = os.path.join(
-        'pretraining', f'{ae.pathway_name}__{ae.data_name}__pca'
-                       f'__{samplestr}__{ae.n_hidden}__{seed}.csv'
+        'pretraining', f'{ae.pathway_name}__{ae.data_name}'
+                       f'__{samplestr}__pca__{ae.n_hidden}__{seed}.csv'
     )
     pretraining = pd.read_csv(pca_pretraining, index_col=0)
 
     w = np.expand_dims(la.lstsq(ae.data, ae.data_pca)[0].flatten(), 1)
 
-    pypesto_problem.x_guesses_full = np.hstack([w.T, pretraining.values])
+    pypesto_problem.x_guesses_full = \
+        np.expand_dims(np.hstack([w[:, 0], pretraining.values[0, :]]), 1).T
 
     return minimize(
         pypesto_problem,

@@ -24,7 +24,7 @@ class MechanisticAutoEncoder(AutoEncoder):
                  datafiles: Tuple[str, str, str],
                  pathway_name: str,
                  samples: Sequence[str],
-                 par_modulation_scale: float = 1 / 2):
+                 par_modulation_scale: float = 1):
         """
         loads the mechanistic model as theano operator with loss as output and
         decoder output as input
@@ -69,7 +69,7 @@ class MechanisticAutoEncoder(AutoEncoder):
         ]
 
         self.pypesto_subproblem = self.petab_importer.create_problem(
-            hierarchical=True
+            hierarchical=False
         )
 
         input_data = full_measurements.loc[full_measurements.apply(
@@ -155,7 +155,7 @@ class MechanisticAutoEncoder(AutoEncoder):
         encoded_pars = self.encode_params(self.x[:-self.n_kin_params])
         self.model_pars = aet.concatenate([
             self.x[-self.n_kin_params:],
-            aet.reshape(encoded_pars,
+            aet.reshape(encoded_pars.T,
                         (self.n_model_inputs * self.n_samples,))],
             axis=0
         )
@@ -170,7 +170,7 @@ class MechanisticAutoEncoder(AutoEncoder):
         )
         self.embedding_model_pars = aet.concatenate([
             self.x_embedding[-self.n_kin_params:],
-            aet.reshape(inflated_pars,
+            aet.reshape(inflated_pars.T,
                         (self.n_model_inputs * self.n_samples,))],
             axis=0
         )

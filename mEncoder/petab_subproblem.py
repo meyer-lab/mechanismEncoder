@@ -80,10 +80,18 @@ def load_petab(datafiles: Tuple[str, str, str],
     # PARAMETER TABLE
     # this defines the full set of parameters including boundaries, nominal
     # values, scale, priors and whether they will be estimated or not.
+
+    obs_pars = sorted(list(set([
+        par
+        for pars in measurement_table[petab.OBSERVABLE_PARAMETERS]
+        for par in pars.split(';')
+        if par and any(
+            obs in par for obs in observable_table.index
+        )
+    ])))
+
     params = [par.name for par in model.parameters
-              if par.name not in condition_table.columns] + \
-             [f'{obs}_scale' for obs in observable_table.index] + \
-             [f'{obs}_offset' for obs in observable_table.index]
+              if par.name not in condition_table.columns] + obs_pars
 
     transforms = {
         'lin': lambda x: x,
@@ -103,6 +111,8 @@ def load_petab(datafiles: Tuple[str, str, str],
             par.split('_')[-1]][2],
         petab.NOMINAL_VALUE: model.parameters[par].value
         if par in model.parameters.keys()
+        else 4.0 if par.endswith('offset') and par.startswith('p')
+        else 0.0 if par.endswith('offset') and par.startswith('t')
         else 1.0
     } for par in params]
 
@@ -133,7 +143,7 @@ def load_petab(datafiles: Tuple[str, str, str],
         for name in parameter_table.index
     ]
     parameter_table[petab.OBJECTIVE_PRIOR_PARAMETERS] = [
-        f'0.0;{par_input_scale * 2}' if name.startswith(MODEL_FEATURE_PREFIX)
+        f'0.0;{par_input_scale}' if name.startswith(MODEL_FEATURE_PREFIX)
         else f'{parameter_table.loc[name, petab.LOWER_BOUND]};'
              f'{parameter_table.loc[name, petab.UPPER_BOUND]}'
         for name in parameter_table.index

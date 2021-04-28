@@ -12,14 +12,14 @@ import pypesto.visualize
 
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
-N_HIDDEN = int(sys.argv[3])
-OPTIMIZER = sys.argv[4]
+SAMPLES = sys.argv[3]
+N_HIDDEN = int(sys.argv[4])
 
 mae = MechanisticAutoEncoder(N_HIDDEN, (
     os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
-), MODEL)
+), MODEL, SAMPLES.split('.'))
 problem = create_pypesto_problem(mae)
 
 optimizer_results = []
@@ -34,7 +34,7 @@ trace_files = os.listdir(trace_path)
 
 for file in trace_files:
     if re.match(TRACE_FILE_TEMPLATE.format(
-        pathway=MODEL, data=f'{DATA}__{MODEL}', optimizer=OPTIMIZER,
+        pathway=MODEL, data=f'{DATA}__{MODEL}',
         n_hidden=N_HIDDEN, job=r'[0-9]*'
     ).replace('{id}', '0'), file):
         splitted = [int(s) for s in os.path.splitext(file)[0].split('__')
