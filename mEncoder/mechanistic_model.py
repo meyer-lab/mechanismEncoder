@@ -127,35 +127,35 @@ def add_monomer_synth_deg(m_name: str,
     # basal deactivation
     for sites, labels, states in zip(
         [psites, nsites, asites],
-        [('dephosphorylation', 'phosphorylation'),
-         ('gdp_exchange', 'gtp_exchange'),
-         ('deactivation',
-          *[f'activation_{state}' for state in asite_states[1:]])],
+        [[('dephosphorylation', 'phosphorylation')],
+         [('gdp_exchange', 'gtp_exchange')],
+         [(f'deactivation_{state}', f'activation_{state}')
+            for state in asite_states[1:]]],
         [('u', 'p'), ('gdp', 'gtp'), asite_states]
     ):
         for site in sites:
-            for state in states[1:]:
+            for state, label in zip(states[1:], labels):
                 if with_basal_activation:
                     rp = m(**{site: state}) | m(**{site: states[0]})
                 else:
                     rp = m(**{site: state}) >> m(**{site: states[0]})
 
                 kbase = Parameter(
-                    f'{m_name}_{labels[0]}_{site}_base_kcat'
+                    f'{m_name}_{label[0]}_{site}_base_kcat'
                 )
                 rates = [
                     Expression(
-                        f'{m_name}_{labels[0]}_{site}_base_rate',
+                        f'{m_name}_{label[0]}_{site}_base_rate',
                         kbase * get_autoencoder_modulator(kbase)
                     )
                 ]
                 if with_basal_activation:
                     kr = Parameter(
-                        f'{m_name}_{labels[1]}_{site}_base_kr'
+                        f'{m_name}_{label[1]}_{site}_base_kr'
                     )
                     rates += [
                         Expression(
-                            f'{m_name}_{labels[1]}_{site}_base_rate',
+                            f'{m_name}_{label[1]}_{site}_base_rate',
                             kr * get_autoencoder_modulator(kr) * rates[0]
                         )
                     ]
