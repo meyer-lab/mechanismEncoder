@@ -134,7 +134,7 @@ rule collect_estimation_results:
         script='collect_estimation.py',
         trace=expand(os.path.join(
             results_dir, '{{model}}', '{{data}}',
-            samplestr + '__{{n_hidden}}__{job}.pickle'
+            samplestr + '__{{n_hidden}}__{job}.hdf5'
         ), job=STARTS)
     output:
         result=os.path.join(results_dir, '{model}', '{data}',
