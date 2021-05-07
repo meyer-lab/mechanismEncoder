@@ -8,13 +8,13 @@ PATHWAYS = ['EGFR', 'EGFR_MAPK', 'EGFR_MAPK_AKT', 'EGFR_MAPK_AKT_STAT',
 DATASETS = ['dream_cytof']
 
 SAMPLES = ['c184A1', 'cBT20', 'cBT474', 'cBT549', 'cCAL148', 'cCAL851',
-           'cCAL51', 'cDU4475', 'cEFM192A', 'cEVSAT', 'HBL100', 'HCC1187',
-           'HCC1395', 'HCC1419', 'HCC1500', 'HCC1569', 'HCC1599', 'HCC1937',
-           'HCC1954', 'HCC2157', 'HCC2185', 'HCC3153', 'HCC38', 'HCC70',
-           'HDQP1', 'JIMT1', 'MCF10A', 'MCF10F', 'MCF7', 'MDAMB134VI',
-           'MDAMB157', 'MDAMB175VII', 'MDAMB361', 'MDAMB415', 'MDAMB453',
-           'MDAkb2', 'MFM223', 'MPE600', 'MX1', 'OCUBM', 'T47D', 'UACC812',
-           'UACC893', 'ZR7530']
+           'cCAL51', 'cDU4475', 'cEFM192A', 'cEVSAT', 'cHBL100', 'cHCC1187',
+           'cHCC1395', 'cHCC1419', 'cHCC1500', 'cHCC1569', 'cHCC1599',
+           'cHCC1937', 'cHCC1954', 'cHCC2157', 'cHCC2185', 'cHCC3153',
+           'cHCC38', 'cHCC70', 'cHDQP1', 'cJIMT1', 'cMCF10A', 'cMCF10F',
+           'cMCF7', 'cMDAMB134VI', 'cMDAMB157', 'cMDAMB175VII', 'cMDAMB361',
+           'cMDAMB415', 'cMDAMB453', 'cMDAkb2', 'cMFM223', 'cMPE600', 'cMX1',
+           'cOCUBM', 'cT47D', 'cUACC812', 'cUACC893', 'cZR7530']
 samplestr = '.'.join(SAMPLES)
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
