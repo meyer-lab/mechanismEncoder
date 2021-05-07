@@ -79,7 +79,7 @@ if INIT == 'pca':
             par_combo = pd.concat([
                 pretraining[
                     pretraining.index == np.min([np.random.poisson(2, 1)[0],
-                                                 len(pretraining)])
+                                                 len(pretraining)-1])
                 ]
                 for pretraining in pretrained_samples.values()
             ])
