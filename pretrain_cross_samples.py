@@ -34,11 +34,12 @@ INIT = sys.argv[4]
 N_HIDDEN = int(sys.argv[5])
 JOB = int(sys.argv[6])
 
+samples = training_samples(Wildcards(DATA, SAMPLES))
 mae = MechanisticAutoEncoder(N_HIDDEN, (
     os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
-), MODEL, training_samples(Wildcards(DATA, SAMPLES)))
+), MODEL, samples)
 
 problem = generate_cross_sample_pretraining_problem(mae)
 pretrained_samples = {}
@@ -47,7 +48,7 @@ prefix = f'{mae.pathway_name}__{mae.data_name}'
 output_prefix = f'{prefix}__{SAMPLES}__{INIT}__{N_HIDDEN}__{JOB}'
 
 if INIT == 'pca':
-    for sample in SAMPLES.split('.'):
+    for sample in samples:
         df = pd.read_csv(
             os.path.join(pretrain_dir, f'{prefix}__{sample}.csv'),
             index_col=[0]
@@ -82,7 +83,7 @@ if INIT == 'pca':
                 ]
                 for pretraining in pretrained_samples.values()
             ])
-            par_combo.index = SAMPLES.split('.')
+            par_combo.index = samples
             means = par_combo.mean()
             par_combo -= means
             inputs = [
