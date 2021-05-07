@@ -13,6 +13,7 @@ import fides
 import amici.petab_objective
 
 from pypesto.optimize import FidesOptimizer
+from pypesto.objective.base import FVAL
 
 from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.pretraining import (
@@ -22,7 +23,7 @@ from mEncoder.pretraining import (
 from mEncoder.plotting import plot_cross_samples
 from mEncoder import (
     MODEL_FEATURE_PREFIX, apply_objective_settings,
-    parameter_boundaries_scales
+    parameter_boundaries_scales, pretrain_dir
 )
 
 MODEL = sys.argv[1]
@@ -39,7 +40,6 @@ mae = MechanisticAutoEncoder(N_HIDDEN, (
 ), MODEL, SAMPLES.split('.'))
 
 problem = generate_cross_sample_pretraining_problem(mae)
-pretraindir = 'pretraining'
 pretrained_samples = {}
 
 prefix = f'{mae.pathway_name}__{mae.data_name}'
@@ -48,7 +48,8 @@ output_prefix = f'{prefix}__{SAMPLES}__{INIT}__{N_HIDDEN}__{JOB}'
 if INIT == 'pca':
     for sample in SAMPLES.split('.'):
         df = pd.read_csv(
-            os.path.join(pretraindir, f'{prefix}__{sample}.csv'), index_col=[0]
+            os.path.join(pretrain_dir, f'{prefix}__{sample}.csv'),
+            index_col=[0]
         )
         pretrained_samples[sample] = df[[
             col for col in df.columns
@@ -143,7 +144,8 @@ optimizer = FidesOptimizer(
 )
 np.random.seed(JOB)
 result = pretrain(problem, startpoints, 1, optimizer)
-store_and_plot_pretraining(result, pretraindir, output_prefix)
+store_and_plot_pretraining(result, output_prefix,
+                           plot_waterfall=False)
 
 importer = mae.petab_importer
 model = importer.create_model()
@@ -153,14 +155,15 @@ x = problem.get_reduced_vector(result.optimize_result.list[0]['x'],
 simulation = problem.objective(x, return_dict=True)
 
 # Convert the simulation to PEtab format.
-simulation_df = amici.petab_objective.rdatas_to_simulation_df(
-    simulation['rdatas'],
-    model=model,
-    measurement_df=importer.petab_problem.measurement_df,
-)
+if np.isfinite(simulation[FVAL]):
+    simulation_df = amici.petab_objective.rdatas_to_simulation_df(
+        simulation['rdatas'],
+        model=model,
+        measurement_df=importer.petab_problem.measurement_df,
+    )
 
-# Plot with PEtab
-plot_cross_samples(importer.petab_problem.measurement_df,
-                   simulation_df,
-                   'pretraining',
-                   output_prefix)
+    # Plot with PEtab
+    plot_cross_samples(importer.petab_problem.measurement_df,
+                       simulation_df,
+                       pretrain_dir,
+                       output_prefix)

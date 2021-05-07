@@ -18,7 +18,7 @@ from mEncoder.pretraining import (
     store_and_plot_pretraining
 )
 from mEncoder.plotting import plot_single_sample
-from mEncoder import apply_objective_settings
+from mEncoder import apply_objective_settings, pretrain_dir
 
 np.random.seed(0)
 
@@ -33,7 +33,6 @@ mae = MechanisticAutoEncoder(1, (
 ), MODEL, [SAMPLE])
 
 importer = generate_per_sample_pretraining_problems(mae, SAMPLE)
-pretraindir = 'pretraining'
 output_prefix = f'{mae.pathway_name}__{mae.data_name}__{SAMPLE}'
 problem = importer.create_problem()
 model = importer.create_model()
@@ -51,7 +50,7 @@ optimizer = FidesOptimizer(
 )
 result = pretrain(problem, pypesto.startpoint.uniform, 10,
                   optimizer, pypesto.engine.MultiThreadEngine(4))
-store_and_plot_pretraining(result, pretraindir, output_prefix)
+store_and_plot_pretraining(result, output_prefix)
 
 x = problem.get_reduced_vector(result.optimize_result.list[0]['x'],
                                problem.x_free_indices)
@@ -64,5 +63,5 @@ simulation_df = amici.petab_objective.rdatas_to_simulation_df(
 )
 plot_single_sample(importer.petab_problem.measurement_df,
                    simulation_df,
-                   'pretraining',
+                   pretrain_dir,
                    output_prefix)

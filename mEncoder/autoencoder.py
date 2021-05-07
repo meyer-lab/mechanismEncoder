@@ -166,3 +166,5 @@ class MechanisticAutoEncoder(AutoEncoder):
                         (self.n_model_inputs * self.n_samples,))],
             axis=0
         )
+
+        self.embedding_fun = self.encode(self.x)

@@ -18,7 +18,8 @@ from pysb import Model
 
 from .autoencoder import MechanisticAutoEncoder
 from . import (
-    MODEL_FEATURE_PREFIX, load_pathway, parameter_boundaries_scales
+    MODEL_FEATURE_PREFIX, load_pathway, parameter_boundaries_scales,
+    pretrain_dir
 )
 
 basedir = os.path.dirname(os.path.dirname(__file__))
@@ -157,7 +158,8 @@ def pretrain(problem: Problem, startpoint_method: Callable, nstarts: int,
     )
 
 
-def store_and_plot_pretraining(result: Result, pretraindir: str, prefix: str):
+def store_and_plot_pretraining(result: Result, prefix: str,
+                               plot_waterfall: bool = True):
     """
     Store optimziation results in HDF5 as well as csv for later reuse. Also
     saves some visualization for debugging purposes.
@@ -165,15 +167,12 @@ def store_and_plot_pretraining(result: Result, pretraindir: str, prefix: str):
     :param result:
         result from pretraining
 
-    :param pretraindir:
-        directory in which results and plots will be stored
-
     :param prefix:
         prefix for file names that can be used to differentiate between
         different pretraining stages as well as models/datasets.
     """
     # store full results as hdf5
-    rfile = os.path.join(pretraindir, prefix + '.hdf5')
+    rfile = os.path.join(pretrain_dir, prefix + '.hdf5')
     if os.path.exists(rfile):
         # temp bugfix for https://github.com/ICB-DCM/pyPESTO/issues/529
         os.remove(rfile)
@@ -186,14 +185,15 @@ def store_and_plot_pretraining(result: Result, pretraindir: str, prefix: str):
          if r is not None],
         columns=result.problem.x_names
     )
-    parameter_df.to_csv(os.path.join(pretraindir, prefix + '.csv'))
+    parameter_df.to_csv(os.path.join(pretrain_dir, prefix + '.csv'))
 
     # do plotting
-    waterfall(result, scale_y='log10', offset_y=0.0)
-    plt.tight_layout()
-    plt.savefig(os.path.join(pretraindir, prefix + '_waterfall.pdf'))
+    if plot_waterfall:
+        waterfall(result, scale_y='log10', offset_y=0.0)
+        plt.tight_layout()
+        plt.savefig(os.path.join(pretrain_dir, prefix + '_waterfall.pdf'))
 
     if result.problem.dim_full < 2e3:
         parameters(result)
         plt.tight_layout()
-        plt.savefig(os.path.join(pretraindir, prefix + '_parameters.pdf'))
+        plt.savefig(os.path.join(pretrain_dir, prefix + '_parameters.pdf'))

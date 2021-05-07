@@ -11,8 +11,11 @@ import pysb.export
 import matplotlib.pyplot as plt
 from typing import Tuple
 
-basedir = os.path.dirname(os.path.dirname(__file__))
+basedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 figures_path = os.path.join(basedir, 'figures')
+results_dir = os.path.join(basedir, 'results')
+data_dir = os.path.join(basedir, 'data')
+pretrain_dir = os.path.join(basedir, 'pretraining')
 
 
 def load_pathway(pathway_name: str) -> pysb.Model:

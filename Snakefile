@@ -1,10 +1,20 @@
 import os
 
-HIDDEN_LAYERS = [3, 5]
-PATHWAYS = ['EGFR', 'EGFR_MAPK', 'EGFR_MAPK_AKT']
+from mEncoder import data_dir, pretrain_dir, results_dir
+
+HIDDEN_LAYERS = [2, 3, 5]
+PATHWAYS = ['EGFR', 'EGFR_MAPK', 'EGFR_MAPK_AKT', 'EGFR_MAPK_AKT_STAT',
+            'EGFR_MAPK_AKT_STAT_S6']
 DATASETS = ['dream_cytof']
+
 SAMPLES = ['c184A1', 'cBT20', 'cBT474', 'cBT549', 'cCAL148', 'cCAL851',
-           'cCAL51', 'cDU4475', 'cEFM192A', 'cEVSAT']
+           'cCAL51', 'cDU4475', 'cEFM192A', 'cEVSAT', 'HBL100', 'HCC1187',
+           'HCC1395', 'HCC1419', 'HCC1500', 'HCC1569', 'HCC1599', 'HCC1937',
+           'HCC1954', 'HCC2157', 'HCC2185', 'HCC3153', 'HCC38', 'HCC70',
+           'HDQP1', 'JIMT1', 'MCF10A', 'MCF10F', 'MCF7', 'MDAMB134VI',
+           'MDAMB157', 'MDAMB175VII', 'MDAMB361', 'MDAMB415', 'MDAMB453',
+           'MDAkb2', 'MFM223', 'MPE600', 'MX1', 'OCUBM', 'T47D', 'UACC812',
+           'UACC893', 'ZR7530']
 samplestr = '.'.join(SAMPLES)
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
@@ -18,7 +28,7 @@ rule process_data:
         pathway=os.path.join('mEncoder', 'pathways.py')
     output:
         datafiles=expand(
-            os.path.join('data', '{{data}}__{{model}}__{file}.tsv'),
+            os.path.join(data_dir, '{{data}}__{{model}}__{file}.tsv'),
             file=['conditions', 'measurements', 'observables']
         )
     wildcard_constraints:
@@ -55,15 +65,15 @@ rule pretrain_per_sample:
         data=rules.process_data.output.datafiles,
     output:
         pretraining=os.path.join(
-            'pretraining', '{model}__{data}__{model}__{sample}.csv'
+            pretrain_dir, '{model}__{data}__{model}__{sample}.csv'
         ),
         result=os.path.join(
-            'pretraining', '{model}__{data}__{model}__{sample}.hdf5'
+            pretrain_dir, '{model}__{data}__{model}__{sample}.hdf5'
         )
     wildcard_constraints:
         model='[\w_]+',
         data='[\w]+',
-        sample='c[\w_]+',
+        sample='[\w_]+',
     shell:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
         '{wildcards.sample}'
@@ -108,8 +118,8 @@ rule estimate_parameters:
         pretrain_encoder=rules.pretrain_cross_sample.output.pretraining,
         model=rules.compile_mechanistic_model.output.model,
     output:
-        result=os.path.join('results', '{model}', '{data}',
-                            samplestr + '__{n_hidden}__{job}.pickle'),
+        result=os.path.join(results_dir, '{model}', '{data}',
+                            samplestr + '__{n_hidden}__{job}.hdf5'),
     wildcard_constraints:
         model='[\w_]+',
         data='[\w]+',
@@ -123,12 +133,12 @@ rule collect_estimation_results:
     input:
         script='collect_estimation.py',
         trace=expand(os.path.join(
-            'results', '{{model}}', '{{data}}',
+            results_dir, '{{model}}', '{{data}}',
             samplestr + '__{{n_hidden}}__{job}.pickle'
         ), job=STARTS)
     output:
-        result=os.path.join('results', '{model}', '{data}',
-                            samplestr + '__{n_hidden}__full.pickle'),
+        result=os.path.join(results_dir, '{model}', '{data}',
+                            samplestr + '__{n_hidden}__full.hdf5'),
     wildcard_constraints:
         model='[\w_]+',
         data='[\w_]+',
@@ -156,7 +166,7 @@ rule visualize_estimation_results:
         job='[0-9]+',
     shell:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
-        '{wildcards.n_hidden}'
+        '{samplestr} {wildcards.n_hidden}'
 
 rule collect_estimation:
     input:

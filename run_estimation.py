@@ -1,10 +1,11 @@
 import sys
 import os
-import pickle
 
 from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.training import train
+from mEncoder import results_dir
 
+from pypesto.store import OptimizationResultHDF5Writer
 
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
@@ -20,9 +21,11 @@ mae = MechanisticAutoEncoder(
     ), MODEL, SAMPLES.split('.')
 )
 result = train(mae, SAMPLES, n_starts=1, seed=JOB)
-outfile = os.path.join('results', MODEL, DATA,
-                       f'{SAMPLES}__{N_HIDDEN}__{JOB}.pickle')
-os.makedirs(os.path.join('results', MODEL, DATA), exist_ok=True)
-with open(outfile, 'wb') as f:
-    pickle.dump(result.optimize_result, f)
-
+outdir = os.path.join(results_dir, MODEL, DATA)
+outfile = os.path.join(outdir, f'{SAMPLES}__{N_HIDDEN}__{JOB}.hdf5')
+os.makedirs(outdir, exist_ok=True)
+if os.path.exists(outfile):
+    # temp bugfix for https://github.com/ICB-DCM/pyPESTO/issues/529
+    os.remove(outfile)
+writer = OptimizationResultHDF5Writer(outfile)
+writer.write(result)

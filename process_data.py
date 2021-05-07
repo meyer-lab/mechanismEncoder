@@ -13,11 +13,9 @@ import urllib.parse
 import urllib.request
 
 from mEncoder.generate_data import generate_synthetic_data
-from mEncoder import load_pathway
+from mEncoder import load_pathway, data_dir
 
 from phosphoData.phosphoAML_PTRCdata import getAllData
-
-basedir = os.path.dirname(os.path.abspath(__file__))
 
 
 def observable_id_to_model_expr(obs_id: str,
@@ -120,8 +118,7 @@ def convert_time_to_minutes(time_str):
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
 
-datadir = os.path.join(basedir, 'data')
-os.makedirs(datadir, exist_ok=True)
+os.makedirs(data_dir, exist_ok=True)
 
 if DATA == 'synthetic':
     N_HIDDEN = 2
@@ -191,17 +188,36 @@ else:
             ), :
         ]
 
+        measurement_table[petab.PREEQUILIBRATION_CONDITION_ID] = \
+            measurement_table.apply(
+                lambda row: row[petab.PREEQUILIBRATION_CONDITION_ID]
+                if not row.treatment.endswith(('FGF2', 'FLT3'))
+                else f'{row[petab.PREEQUILIBRATION_CONDITION_ID]}_{row.treatment.split(" ")[1]}',
+                axis=1
+            )
+
+        measurement_table.treatment = \
+            measurement_table.treatment.apply(
+                lambda x: x
+                if not x.endswith((' FGF2', ' FLT3', ' None'))
+                else x.split(' ')[0],
+            )
+
         measurement_table.loc[
-            (measurement_table['treatment'] == 'no treatment') |
-            (measurement_table['treatment'] == 'No treatment'),
+            (measurement_table.treatment == 'no treatment') |
+            (measurement_table.treatment == 'No treatment'),
             'treatment'
         ] = 'none'
 
         measurement_table['treatment'] = measurement_table['treatment'].apply(
             lambda x: x.replace(
                 'Trametinib', 'trametinib'
+            ).replace(
+                'Gilteritinib', 'gilteritinib'
             ).replace('+', '__').replace('-', '_').replace(' ', '_')
         )
+
+        measurement_table[measurement_table['treatment'] == 'none'].time = 0.0
 
         measurement_table[petab.SIMULATION_CONDITION_ID] = \
             measurement_table.apply(
@@ -245,13 +261,13 @@ else:
     if DATA in ['cppa_skin', 'cppa_breast']:
         measurement_table = pd.read_csv(
             os.path.join(
-                datadir, f'{DATA}__measurements.tsv'
+                data_dir, f'{DATA}__measurements.tsv'
             ), sep='\t'
         )
 
         condition_table = pd.read_csv(
             os.path.join(
-                datadir, f'{DATA}__conditions.tsv'
+                data_dir, f'{DATA}__conditions.tsv'
             ), sep='\t'
         )
         observable_mode = 'cppa'
@@ -499,19 +515,19 @@ else:
     measurement_table[petab.NOISE_PARAMETERS] = ''
 
     measurement_file = os.path.join(
-            datadir, f'{DATA}__{MODEL}__measurements.tsv'
+            data_dir, f'{DATA}__{MODEL}__measurements.tsv'
         )
     measurement_table.to_csv(measurement_file, sep='\t')
 
     condition_file = os.path.join(
-        datadir, f'{DATA}__{MODEL}__conditions.tsv'
+        data_dir, f'{DATA}__{MODEL}__conditions.tsv'
     )
-    print(datadir)
+    print(data_dir)
     condition_table.set_index(petab.CONDITION_ID, inplace=True)
     condition_table.to_csv(condition_file, sep='\t')
 
     observable_file = os.path.join(
-        datadir, f'{DATA}__{MODEL}__observables.tsv'
+        data_dir, f'{DATA}__{MODEL}__observables.tsv'
     )
     observable_table.set_index(petab.OBSERVABLE_ID, inplace=True)
     observable_table.to_csv(observable_file, sep='\t')

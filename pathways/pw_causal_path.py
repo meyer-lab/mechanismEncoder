@@ -6,7 +6,7 @@ from mEncoder.mechanistic_model import (
     add_monomer_synth_deg, add_activation, add_observables, add_inhibitor
 )
 
-model = Model('FLT3_MAPK_cp')
+model = Model('causal_path')
 
 cp_basedir = os.path.join(
     os.path.dirname(os.path.dirname(__file__)), 'causalPath', 'results',
@@ -26,15 +26,23 @@ df = df[['Source', 'Target', 'Source data ID', 'Target data ID']]
 # remove duplicates
 df.drop_duplicates(inplace=True)
 
-proteins = ['RAF1', 'MAPK3',  'ARAF', 'MYC', 'MAPK1', 'JUND', 'BRAF']
+proteins = ['RAF1', 'MAPK3',  'ARAF', 'MAPK1', 'BRAF',
+            'RPS6KA1', 'STAT5A', 'STAT5B', 'JAK1', 'JAK2', 'KSR1',
+            'RPS6KB1', 'PDPK1', 'AKT1', 'AKT2', 'AKT3', 'SRC']
 
 # filter by proteins
 df = df[df.apply(
-    lambda row: row.Source in proteins and row.Target in proteins,
+    lambda row: row.Target in proteins,
     axis=1
 )]
 
 # filter network sig
+
+df.loc[df['Source data ID'] == 'JAK2-active-by-network-sig',
+       'Source data ID'] = 'JAK2-Y1007'
+df.loc[df['Source data ID'] == 'JAK1-active-by-network-sig',
+       'Source data ID'] = 'JAK1-Y1034'
+
 df = df[
     df['Source data ID'].apply(lambda x: '-by-network-sig' not in x)
 ]
@@ -65,20 +73,30 @@ for target in df['Target data ID'].unique():
             f'{site}_p' for site in activator.split('-')[1:]
         ])
         for activator in df[df['Target data ID'] == target]['Source data ID']
+        if activator.split('-')[0] in proteins
     ]
     add_activation(model, protein, '_'.join(sites),
                    'phosphorylation', activators)
 
+add_monomer_synth_deg('FLT3')
+for protein, sites in {
+    'RAF1': 'S621_S497_S296',
+    'ARAF': 'S257',
+}.items():
+    add_activation(model, protein, sites,
+                   'phosphorylation', ['FLT3'])
+
 add_inhibitor(
     model, 'trametinib', ['ARAF', 'RAF1']
 )
-
-add_monomer_synth_deg('FLT3')
-for raf, sites in {
-    'RAF1': 'S621_S497_S296',
-    'ARAF': 'S257'
-}.items():
-    add_activation(model, raf, sites,
-                   'phosphorylation', ['FLT3'])
+#add_inhibitor(
+#    model, 'ruxolitinib', ['JAK1', 'JAK2']
+#)
+add_inhibitor(
+    model, 'dasatinib', ['SRC']
+)
+add_inhibitor(
+    model, 'gilteritinib', ['FLT3']
+)
 
 add_observables(model)

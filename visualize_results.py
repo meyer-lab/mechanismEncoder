@@ -1,115 +1,83 @@
 import sys
 import os
-import pickle
 import pypesto
-import matplotlib.pyplot as plt
-import seaborn as sns
+import amici.petab_objective
 import numpy as np
-import pandas as pd
-import theano
+import aesara
+import matplotlib.pyplot as plt
 
 from mEncoder.autoencoder import MechanisticAutoEncoder
 from mEncoder.training import create_pypesto_problem
-from mEncoder import plot_and_save_fig
-from mEncoder.generate_data import plot_embedding
+from mEncoder import plot_and_save_fig, results_dir, basedir
+from mEncoder.plotting import plot_cross_samples
 
-from pypesto.visualize import waterfall, optimizer_history, \
-    optimizer_convergence, parameters
+from pypesto.visualize import waterfall, optimizer_convergence
+from pypesto.store import OptimizationResultHDF5Reader
+from pypesto.objective.constants import FVAL
 
 MODEL = sys.argv[1]
 DATA = sys.argv[2]
-N_HIDDEN = int(sys.argv[3])
-OPTIMIZER = sys.argv[4]
+SAMPLES = sys.argv[3]
+N_HIDDEN = int(sys.argv[4])
 
 N_STARTS = 5
 
-outfile = os.path.join('results', MODEL, DATA,
-                       f'{OPTIMIZER}__{N_HIDDEN}__full.pickle')
+result_path = os.path.join(results_dir, MODEL, DATA)
+outfile = os.path.join(result_path, f'{SAMPLES}__{N_HIDDEN}__full.hdf5')
+
 mae = MechanisticAutoEncoder(N_HIDDEN, (
     os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
-), MODEL)
+), MODEL, SAMPLES.split('.'))
 problem = create_pypesto_problem(mae)
 
-with open(outfile, 'rb') as f:
-    optimizer_result, par_names = pickle.load(f)
-
+reader = OptimizationResultHDF5Reader(outfile)
 result = pypesto.Result(problem)
-for opt_result, names in zip(optimizer_result, par_names):
-    sorted_par_idx = [
-        names.index(name)
-        for name in problem.x_names
-    ]
-    x_sorted = [opt_result['x'][sorted_par_idx[ix]] for ix in
-                range(len(problem.x_names))]
-    opt_result['x'] = x_sorted
-    result.optimize_result.append(opt_result)
+result.optimize_result = reader.read().optimize_result
 
-result.optimize_result.sort()
-
-
-prefix = '__'.join([MODEL, DATA, str(N_HIDDEN), OPTIMIZER])
+output_prefix = '__'.join([MODEL, DATA, SAMPLES, str(N_HIDDEN)])
 
 waterfall(result, scale_y='log10', offset_y=0.0)
-plot_and_save_fig(prefix + '__waterfall.pdf')
-
-optimizer_history(result, scale_y='log10')
-plot_and_save_fig(prefix + '__optimizer_trace.pdf')
-
-parameters(result)
-plot_and_save_fig(prefix + '__parameters.pdf')
+plot_and_save_fig(os.path.join(basedir, 'figures',
+                               output_prefix + '__waterfall.pdf'))
 
 optimizer_convergence(result)
-plot_and_save_fig(prefix + '__optimizer_convergence.pdf')
+plot_and_save_fig(os.path.join(basedir, 'figures',
+                               output_prefix + '__optimizer_convergence.pdf'))
 
-fig_embedding, axes_embedding = plt.subplots(1, N_STARTS,
+x = problem.get_reduced_vector(result.optimize_result.list[0]['x'],
+                               problem.x_free_indices)
+simulation = problem.objective(x, return_dict=True)
+
+importer = mae.petab_importer
+model = importer.create_model()
+
+# Convert the simulation to PEtab format.
+if np.isfinite(simulation[FVAL]):
+    simulation_df = amici.petab_objective.rdatas_to_simulation_df(
+        simulation['rdatas'],
+        model=model,
+        measurement_df=importer.petab_problem.measurement_df,
+    )
+
+    # Plot with PEtab
+    plot_cross_samples(importer.petab_problem.measurement_df,
+                       simulation_df,
+                       os.path.join(basedir, 'figures'),
+                       output_prefix)
+
+embedding_fun = aesara.function(
+    [mae.x], mae.embedding_fun
+)
+
+embedding = embedding_fun(result.optimize_result.list[0]['x'])
+
+
+fig_embedding, axes_embedding = plt.subplots(1, 1,
                                              figsize=(18.5, 10.5))
 
-embedding_fun = theano.function(
-    [mae.encoder_pars],
-    mae.encode(mae.encoder_pars)
-)
-inflate_fun = theano.function(
-    [mae.encoder_pars],
-    mae.encode_params(mae.encoder_pars)
-)
+axes_embedding.plot(embedding[:, 0], embedding[:, 1], 'bo')
+axes_embedding.plot(mae.data_pca[:, 0], mae.data_pca[:, 1], 'rx')
 
-data_dicts = []
-for ir, r in enumerate(result.optimize_result.list[:N_STARTS]):
-    embedding = embedding_fun(r['x'][mae.n_encoder_pars:])
-    middle = int(np.floor(len(embedding) / 2))
-    plot_embedding(embedding, axes_embedding[ir])
-
-    rdatas = mae.pypesto_subproblem.objective(
-        np.hstack([r['x'][mae.n_encoder_pars:],
-                   inflate_fun(r['x'][:mae.n_encoder_pars]).flatten()]),
-        return_dict=True
-    )[
-        pypesto.objective.constants.RDATAS
-    ]
-
-    for idata, rdata in enumerate(rdatas):
-        ym = np.asarray(
-            mae.pypesto_subproblem.objective._objectives[0].edatas[
-                idata].getObservedData()
-        )
-        y = rdata['y']
-
-        for iy, name in enumerate(
-            mae.pypesto_subproblem.objective._objectives[0].
-                    amici_model.getObservableNames()
-        ):
-            data_dicts.append({
-                'start_index': ir,
-                'observable': name,
-                'data': ym[iy],
-                'sim': y[0, iy]
-            })
-
-plot_and_save_fig(prefix + '__embedding.pdf')
-
-df_data = pd.DataFrame(data_dicts)
-g = sns.FacetGrid(df_data, col='observable', col_wrap=5)
-g.map_dataframe(sns.scatterplot, x='data', y='sim')
-plot_and_save_fig(prefix + '__fit.pdf')
+plot_and_save_fig(output_prefix + '__embedding.pdf')
