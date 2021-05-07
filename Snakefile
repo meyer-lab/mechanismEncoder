@@ -86,7 +86,7 @@ rule pretrain_cross_sample:
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
         pretrain_per_sample=expand(
             os.path.join(
-                'pretraining', '{{model}}__{{data}}__{{model}}__{sample}.csv'
+                pretrain_dir, '{{model}}__{{data}}__{{model}}__{sample}.csv'
             ),
             sample=SAMPLES
         ),
@@ -94,7 +94,7 @@ rule pretrain_cross_sample:
         data=rules.process_data.output.datafiles,
     output:
         pretraining=os.path.join(
-            'pretraining',
+            pretrain_dir,
             f'{{model}}__{{data}}__{{model}}__{samplestr}__pca__'
             f'{{n_hidden}}__{{job}}.hdf5'
         )
