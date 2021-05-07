@@ -3,11 +3,10 @@ import os
 from mEncoder import data_dir, pretrain_dir, results_dir
 from mEncoder.training import pretraining_samples_fun
 
-HIDDEN_LAYERS = [2, 3, 5]
-PATHWAYS = ['EGFR', 'EGFR_MAPK', 'EGFR_MAPK_AKT', 'EGFR_MAPK_AKT_STAT',
-            'EGFR_MAPK_AKT_STAT_S6']
+HIDDEN_LAYERS = [2, 5]
+PATHWAYS = ['EGFR', 'EGFR_MAPK_AKT', 'EGFR_MAPK_AKT_STAT_S6']
 DATASETS = ['dream_cytof']
-SPLITS = ['0_5', '1_5', '2_5', '3_5', '4_5']
+SPLITS = ['0_5',]
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
 
