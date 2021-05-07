@@ -16,6 +16,7 @@ from pypesto.optimize import FidesOptimizer
 from pypesto.objective.base import FVAL
 
 from mEncoder.autoencoder import MechanisticAutoEncoder
+from mEncoder.training import training_samples, Wildcards
 from mEncoder.pretraining import (
     generate_cross_sample_pretraining_problem, pretrain,
     store_and_plot_pretraining
@@ -37,7 +38,7 @@ mae = MechanisticAutoEncoder(N_HIDDEN, (
     os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
-), MODEL, SAMPLES.split('.'))
+), MODEL, training_samples(Wildcards(DATA, SAMPLES)))
 
 problem = generate_cross_sample_pretraining_problem(mae)
 pretrained_samples = {}

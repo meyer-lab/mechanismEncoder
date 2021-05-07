@@ -1,21 +1,13 @@
 import os
 
 from mEncoder import data_dir, pretrain_dir, results_dir
+from mEncoder.training import pretraining_samples_fun
 
 HIDDEN_LAYERS = [2, 3, 5]
 PATHWAYS = ['EGFR', 'EGFR_MAPK', 'EGFR_MAPK_AKT', 'EGFR_MAPK_AKT_STAT',
             'EGFR_MAPK_AKT_STAT_S6']
 DATASETS = ['dream_cytof']
-
-SAMPLES = ['c184A1', 'cBT20', 'cBT474', 'cBT549', 'cCAL148', 'cCAL851',
-           'cCAL51', 'cDU4475', 'cEFM192A', 'cEVSAT', 'cHBL100', 'cHCC1187',
-           'cHCC1395', 'cHCC1419', 'cHCC1500', 'cHCC1569', 'cHCC1599',
-           'cHCC1937', 'cHCC1954', 'cHCC2157', 'cHCC2185', 'cHCC3153',
-           'cHCC38', 'cHCC70', 'cHDQP1', 'cJIMT1', 'cMCF10A', 'cMCF10F',
-           'cMCF7', 'cMDAMB134VI', 'cMDAMB157', 'cMDAMB175VII', 'cMDAMB361',
-           'cMDAMB415', 'cMDAMB453', 'cMDAkb2', 'cMFM223', 'cMPE600', 'cMX1',
-           'cOCUBM', 'cT47D', 'cUACC812', 'cUACC893', 'cZR7530']
-samplestr = '.'.join(SAMPLES)
+SPLITS = ['0_5', '1_5', '2_5', '3_5', '4_5']
 
 STARTS = [str(i) for i in range(int(config["num_starts"]))]
 
@@ -67,9 +59,6 @@ rule pretrain_per_sample:
         pretraining=os.path.join(
             pretrain_dir, '{model}__{data}__{model}__{sample}.csv'
         ),
-        result=os.path.join(
-            pretrain_dir, '{model}__{data}__{model}__{sample}.hdf5'
-        )
     wildcard_constraints:
         model='[\w_]+',
         data='[\w]+',
@@ -84,18 +73,13 @@ rule pretrain_cross_sample:
         script='pretrain_cross_samples.py',
         pretraining_code=os.path.join('mEncoder', 'pretraining.py'),
         model_code=os.path.join('mEncoder', 'mechanistic_model.py'),
-        pretrain_per_sample=expand(
-            os.path.join(
-                pretrain_dir, '{{model}}__{{data}}__{{model}}__{sample}.csv'
-            ),
-            sample=SAMPLES
-        ),
+        pretrain_per_sample=pretraining_samples_fun,
         model=rules.compile_mechanistic_model.output.model,
         data=rules.process_data.output.datafiles,
     output:
         pretraining=os.path.join(
             pretrain_dir,
-            f'{{model}}__{{data}}__{{model}}__{samplestr}__pca__'
+            f'{{model}}__{{data}}__{{model}}__{{split}}__pca__'
             f'{{n_hidden}}__{{job}}.hdf5'
         )
     wildcard_constraints:
@@ -103,9 +87,10 @@ rule pretrain_cross_sample:
         data='[\w]+',
         n_hidden='[0-9]+',
         job='[0-9]+',
+        split='[0-9]+_[0-9]+',
     shell:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
-        '{samplestr} pca {wildcards.n_hidden} {wildcards.job}'
+        '{wildcards.split} pca {wildcards.n_hidden} {wildcards.job}'
 
 
 rule estimate_parameters:
@@ -119,34 +104,36 @@ rule estimate_parameters:
         model=rules.compile_mechanistic_model.output.model,
     output:
         result=os.path.join(results_dir, '{model}', '{data}',
-                            samplestr + '__{n_hidden}__{job}.hdf5'),
+                            '{split}__{n_hidden}__{job}.hdf5'),
     wildcard_constraints:
         model='[\w_]+',
         data='[\w]+',
         n_hidden='[0-9]+',
         job='[0-9]+',
+        split='[0-9]+_[0-9]+',
     shell:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
-        '{samplestr} {wildcards.n_hidden} {wildcards.job}'
+        '{wildcards.split} {wildcards.n_hidden} {wildcards.job}'
 
 rule collect_estimation_results:
     input:
         script='collect_estimation.py',
         trace=expand(os.path.join(
             results_dir, '{{model}}', '{{data}}',
-            samplestr + '__{{n_hidden}}__{job}.hdf5'
+            '{{split}}__{{n_hidden}}__{job}.hdf5'
         ), job=STARTS)
     output:
         result=os.path.join(results_dir, '{model}', '{data}',
-                            samplestr + '__{n_hidden}__full.hdf5'),
+                            '{split}__{n_hidden}__full.hdf5'),
     wildcard_constraints:
         model='[\w_]+',
         data='[\w_]+',
         n_hidden='[0-9]+',
         job='[0-9]+',
+        split='[0-9]+_[0-9]+',
     shell:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
-        '{samplestr} {wildcards.n_hidden}'
+        '{wildcards.split} {wildcards.n_hidden}'
 
 rule visualize_estimation_results:
     input:
@@ -155,7 +142,7 @@ rule visualize_estimation_results:
     output:
         plots=expand(os.path.join(
             'figures',
-            '__'.join(['{{model}}', '{{data}}', '{{n_hidden}}'])
+            '__'.join(['{{model}}', '{{data}}', '{{split}}', '{{n_hidden}}'])
             + '__{plot}.pdf'
         ), plot=['waterfall', 'embedding', 'fit'])
     wildcard_constraints:
@@ -164,15 +151,17 @@ rule visualize_estimation_results:
         optimzer='[\w-]+',
         n_hidden='[0-9]+',
         job='[0-9]+',
+        split='[0-9]+_[0-9]+',
     shell:
         'python3 {input.script} {wildcards.model} {wildcards.data} '
-        '{samplestr} {wildcards.n_hidden}'
+        '{wildcards.split} {wildcards.n_hidden}'
 
 rule collect_estimation:
     input:
          expand(
              rules.collect_estimation_results.output.result,
              model=PATHWAYS, data=DATASETS, n_hidden=HIDDEN_LAYERS,
+             split=SPLITS
          )
 
 rule visualize_estimation:
@@ -180,4 +169,5 @@ rule visualize_estimation:
          expand(
              rules.visualize_estimation_results.output.plots,
              model=PATHWAYS, data=DATASETS, n_hidden=HIDDEN_LAYERS,
+             split=SPLITS
          )

@@ -5,7 +5,7 @@ from pypesto.store import (
     OptimizationResultHDF5Reader, OptimizationResultHDF5Writer
 )
 from mEncoder.autoencoder import MechanisticAutoEncoder
-from mEncoder.training import create_pypesto_problem
+from mEncoder.training import create_pypesto_problem, training_samples, Wildcards
 from mEncoder import results_dir
 import pypesto.visualize
 
@@ -18,7 +18,7 @@ mae = MechanisticAutoEncoder(N_HIDDEN, (
     os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
-), MODEL, SAMPLES.split('.'))
+), MODEL, training_samples(Wildcards(DATA, SAMPLES)))
 problem = create_pypesto_problem(mae)
 
 optimizer_results = []

@@ -4,8 +4,10 @@ import os
 import fides
 import logging
 import scipy.linalg as la
+from collections import namedtuple
 
 from .autoencoder import MechanisticAutoEncoder
+from . import pretrain_dir
 
 from pypesto.optimize import (
     FidesOptimizer, minimize, OptimizeOptions
@@ -115,3 +117,49 @@ def train(ae: MechanisticAutoEncoder,
         n_starts=n_starts,
         options=optimize_options,
     )
+
+
+SAMPLES = dict()
+
+SAMPLES['dream_cytof'] = [
+    'c184A1', 'cBT20', 'cBT474', 'cBT549', 'cCAL148', 'cCAL851',
+    'cCAL51', 'cDU4475', 'cEFM192A', 'cEVSAT', 'cHBL100', 'cHCC1187',
+    'cHCC1395', 'cHCC1419', 'cHCC1500', 'cHCC1569', 'cHCC1599',
+    'cHCC1937', 'cHCC1954', 'cHCC2157', 'cHCC2185', 'cHCC3153',
+    'cHCC38', 'cHCC70', 'cHDQP1', 'cJIMT1', 'cMCF10A', 'cMCF10F',
+    'cMCF7', 'cMDAMB134VI', 'cMDAMB157', 'cMDAMB175VII', 'cMDAMB361',
+    'cMDAMB415', 'cMDAMB453', 'cMDAkb2', 'cMFM223', 'cMPE600', 'cMX1',
+    'cOCUBM', 'cT47D', 'cUACC812', 'cUACC893', 'cZR7530'
+]
+
+Wildcards = namedtuple('Wildcards', ['data', 'split'])
+
+
+def training_samples(wildcards):
+    samples = SAMPLES[wildcards.data]
+    split, n_splits = wildcards.split.split('_')
+    split = int(split)
+    n_splits = int(n_splits)
+    n_samples = len(samples)
+    return samples[:int(np.round(n_samples/n_splits*split))] + \
+        samples[int(np.round(n_samples/n_splits*(split+1))):]
+
+
+def test_samples(wildcards):
+    samples = SAMPLES[wildcards.data]
+    split, n_splits = wildcards.split.split('_')
+    split = int(split)
+    n_splits = int(n_splits)
+    n_samples = len(samples)
+    return samples[int(np.round(n_samples/n_splits*split)):
+                   int(np.round(n_samples/n_splits*(split+1))):]
+
+
+def pretraining_samples_fun(wildcards):
+    return [
+        os.path.join(
+            pretrain_dir, f'{{model}}__{{data}}__{{model}}__{sample}.csv'
+        )
+        for sample in training_samples(wildcards)
+    ]
+

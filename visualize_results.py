@@ -7,7 +7,7 @@ import aesara
 import matplotlib.pyplot as plt
 
 from mEncoder.autoencoder import MechanisticAutoEncoder
-from mEncoder.training import create_pypesto_problem
+from mEncoder.training import create_pypesto_problem, training_samples, Wildcards
 from mEncoder import plot_and_save_fig, results_dir, basedir
 from mEncoder.plotting import plot_cross_samples
 
@@ -29,7 +29,7 @@ mae = MechanisticAutoEncoder(N_HIDDEN, (
     os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
     os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
-), MODEL, SAMPLES.split('.'))
+), MODEL, training_samples(Wildcards(DATA, SAMPLES)))
 problem = create_pypesto_problem(mae)
 
 reader = OptimizationResultHDF5Reader(outfile)

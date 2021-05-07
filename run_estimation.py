@@ -2,7 +2,7 @@ import sys
 import os
 
 from mEncoder.autoencoder import MechanisticAutoEncoder
-from mEncoder.training import train
+from mEncoder.training import train, training_samples, Wildcards
 from mEncoder import results_dir
 
 from pypesto.store import OptimizationResultHDF5Writer
@@ -18,7 +18,7 @@ mae = MechanisticAutoEncoder(
         os.path.join('data', f'{DATA}__{MODEL}__measurements.tsv'),
         os.path.join('data', f'{DATA}__{MODEL}__conditions.tsv'),
         os.path.join('data', f'{DATA}__{MODEL}__observables.tsv'),
-    ), MODEL, SAMPLES.split('.')
+    ), MODEL, training_samples(Wildcards(DATA, SAMPLES))
 )
 result = train(mae, SAMPLES, n_starts=1, seed=JOB)
 outdir = os.path.join(results_dir, MODEL, DATA)
