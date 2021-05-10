@@ -12,9 +12,9 @@ def getDataForCancer(ctype):
         dat = cptac.Brca()
     elif ctype.lower() == 'ccrcc':
         dat = cptac.Ccrcc()
-    elif ctype.lower() == 'coad':
+    elif ctype.lower() == 'colon':
         dat = cptac.Colon()
-    elif ctype.lower() == 'ovca':
+    elif ctype.lower() == 'ovarian':
         dat = cptac.Ovarian()
     elif ctype.lower() == 'luad':
         dat = cptac.Luad()
@@ -24,16 +24,17 @@ def getDataForCancer(ctype):
         exit()
     return dat
 
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cancerType', dest='type',\
+    parser.add_argument('--cancerType', dest='type',
                         help='Cancer type to be collected')
-    parser.add_argument('--getData',dest='get', action='store_true',\
-                        default=False,help='Set flag to get all data')
+    parser.add_argument('--getData', dest='get', action='store_true',
+                        default=False, help='Set flag to get all data')
     opts = parser.parse_args()
 
     if opts.get:
-        for ds in ['brca', 'ccrcc', 'colon', 'ovarian','endometrial','luad']:
+        for ds in ['brca', 'ccrcc', 'colon', 'ovarian', 'endometrial', 'luad']:
             cptac.download(dataset=ds)
 
     dat = getDataForCancer(opts.type)
@@ -41,8 +42,9 @@ def main():
     pdf = dat.get_proteomics()
    # df.columns = [' '.join(col).strip() for col in df.columns.values]
 
-    df.to_csv(path_or_buf="phos_file.tsv",sep='\t')
-    pdf.to_csv(path_or_buf='prot_file.tsv',sep='\t')
+    df.to_csv(path_or_buf="phos_file.tsv", sep='\t')
+    pdf.to_csv(path_or_buf='prot_file.tsv', sep='\t')
 
-if  __name__=='__main__':
+
+if __name__ == '__main__':
     main()
