@@ -33,12 +33,14 @@ def getBeatAMLPatientData(syn, normalized = False):
     print (set(ft.Sample))
     return ft
 
-def getCellLinePilotData(syn):
+def getCellLinePilotData(syn, normalized=False):
     '''
     gets some data for calibration of time course data - 30 min, 3hr, 16hr
     '''
-
-    tabid = 'syn22255396'
+    if normalized:
+        tabid = 'syn22255396'
+    else:
+        tabid = 'syn25618653'
     tab = syn.tableQuery('select * from '+tabid).asDataFrame()
     tab = tab.rename(columns={'Sample':'sample', 'LogFoldChange':'logRatio'})
     #we need to update the time points for this to be just minutes
@@ -47,13 +49,16 @@ def getCellLinePilotData(syn):
     return tab
 
 
-def getGiltData(syn):
+def getGiltData(syn, normalized=False):
     '''
     Collect data from gilteritinib time course data treated from MOLM14 cell lines
     Here we have varying ligand treatments of the cells ahead of time
     to simulate early and late resistance
     '''
-    tabid ='syn24189487'
+    if normalized:
+        tabid ='syn24189487'
+    else:
+        tabid = 'syn24189487'
     tab = syn.tableQuery('select * from '+tabid).asDataFrame()
     tab = tab.rename(columns={'Sample':'sample', \
                               'CellType':'cellLine','LogRatio':'logRatio',\
@@ -63,12 +68,15 @@ def getGiltData(syn):
     print(tab)
     return tab
 
-def getTramData(syn):
+def getTramData(syn, normalized=False):
     '''
     Here we have time course treatment of trametinib -
     less interesting because it only has two timepoints
     '''
-    tabid = 'syn24389738'
+    if normalized:
+        tabid = 'syn24389738'
+    else:
+        tabid = 'syn24389738'
     tab = syn.tableQuery('select * from '+tabid).asDataFrame()
     tab = tab.rename(columns={'CellType':'cellLine', "LogRatio":'logRatio',\
                       'TimePoint':'timePoint', 'Treatment':'treatment'})
@@ -78,14 +86,14 @@ def getTramData(syn):
 
 
 
-def getAllData(syn):
+def getAllData(syn, normalized=False):
     '''
     harmonizes data from diverse experimental setups
     to have phospho, treatment, and time data
     '''
-    tram = getTramData(syn)
-    cl = getCellLinePilotData(syn)
-    gl = getGiltData(syn)
+    tram = getTramData(syn, normalized)
+    cl = getCellLinePilotData(syn, normalized)
+    gl = getGiltData(syn, normalized)
     res = pd.concat([tram, cl,gl] ) #TODO if we're printing, get rid of dumb row index
     return res
 

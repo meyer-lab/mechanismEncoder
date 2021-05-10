@@ -6,6 +6,7 @@ import cptac
 import argparse
 from plotnine import *
 import phosphoPDCdata as pdc
+import phosphoAML_PTRCdata as aml
 import pandas as pd
 from matplotlib import pyplot as plt
 
@@ -16,6 +17,20 @@ rtk = ['FLT3']
 def get_prots():
     protlist = mapk + erk + rtk
     return protlist
+
+def get_aml_data():
+    '''
+    Uses the existing data from PTRC
+    '''
+    ##now repeat the analysis for the PTRC data
+    syn = synapseclient.synapse()
+
+    syn.login()
+    res = aml.getBeatAMLPatientData(syn)
+    ##now we have to reshape data to be proper matrix
+
+
+
 
 def get_data(cantype):
     '''

@@ -6,6 +6,7 @@ Collect proteins from model and create heatmap across CPTAC samples
 #from pathways import pw_FLT3_MAPK_AKT_STAT as path
 from phosphoData import phosphoPDCdata as pdc
 import pandas as pd
+from phosphoData import phosphoAML_PTRCdata as aml
 
 #TEMP FIX: enumerate all phosphosites of interest
 path_sites = [('FLT3', 'Y843'),\
@@ -26,7 +27,7 @@ path_sites = [('FLT3', 'Y843'),\
               ('AKT3', 'T308'),\
               ('AKT3', 'S473')]
 
-alltypes = ['brca','ccrcc','colon','ovarian','endometrial','luad']
+alltypes = ['brca', 'ccrcc', 'colon', 'ovarian', 'endometrial', 'luad']
 
 #collect list of all columns
 dlist=[]
@@ -42,6 +43,15 @@ for a in alltypes:
             dlist.append(col)
     ##some how had in cancer types as 3rd index
 print('Have found '+len(dlist)+'values')
-#now create full data frame
 
-#then make clustergram
+
+##now repeat the analysis for the PTRC data
+syn = synapseclient.synapse()
+
+syn.login()
+res = aml.getBeatAMLPatientData(syn)
+##now we have to reshape data to be proper matrix
+genes = set()
+[genes.add(a[0]) for a in path_sites]
+##filter data by gene
+#then spread into heatmap
