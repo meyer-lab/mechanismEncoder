@@ -1,0 +1,3195 @@
+{
+  "nodes" : [ {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(228,233,255)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-T765tS780sR.ESEDSET*QPFDTHLEAYGPCLS*PPR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(244,246,255)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S1570sR.SSVKTPES*IVPIAPELQPSTSR.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,241,238)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-T654tR.ENLTDLVVDTDT*LGESTQPQR.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,179,162)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S485sR.AHS*EKDQPPFGDSDDSVEADKSSPGIHLER.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(235,239,255)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S495sS498sS505sK.DQPPFGDS*DDS*VEADKSS*PGIHLER.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,197,184)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S1296sK.TPEPVVPTAPELRPSTS*TDRPVTPKPTSR.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-T378tR.GPGAPGLAHLQESQAGSDT*DVEEGKAPQAVPLEK.S",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,227,221)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S485sS495sS504sR.AHS*EKDQPPFGDS*DDSVEADKS*SPGIHLER.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,163,142)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S495sS504sS505sR.AHSEKDQPPFGDS*DDSVEADKS*S*PGIHLER.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(213,221,255)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-T1589tR.NQLVT*PEPTSR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,241,237)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-T1297tK.NRSSVKTPEPVVPTAPELRPSTST*DRPVTPKPTSR.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,162,141)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-T1608tR.SSVKT*PEPVVPTAPEPHPTTSTDQPVTPK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S1775sR.AAESLTAIPEPAS*PQLLETPIHASQIQK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,165,145)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S1604sR.S*SVKTPEPVVPTAPEPHPTTSTDQPVTPK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,217,208)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S1294sT1295tK.TPEPVVPTAPELRPS*T*STDRPVTPKPTSR.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(218,225,255)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S1441sR.SS*VKTPETVVPTAPELQPSTSTDQPVTPEPTSQATR.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,88,50)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S1277sT1302tR.SS*VKTPEPVVPTAPELRPSTSTDRPVT*PKPTSR.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,205,193)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S372sR.GPGAPGLAHLQES*QAGSDTDVEEGK.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(234,238,255)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S376sT378tR.GPGAPGLAHLQESQAGS*DT*DVEEGKAPQAVPLEK.S",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,225,218)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S1646sR.SS*VKTPKPVEPAASDLEPFTPTDQSVTPEAIAQGGQSK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,243,240)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S299sS307sR.SQPPGEDS*DTDVDDDS*RPPGRPAEVHLER.A",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-T378tR.GPGAPGLAHLQESQAGSDT*DVEEGK.A",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(219,226,255)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-T1280tT1297tR.SSVKT*PEPVVPTAPELRPSTST*DRPVTPKPTSR.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,212,202)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S1564sR.SS*VKTPESIVPIAPELQPSTSR.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-T1666tR.SSVKTPKPVEPAASDLEPFTPT*DQSVTPEAIAQGGQSK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,241)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-T1548tK.TPETVVPAAPELQPSTSTDQPVT*PEPTSR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,242)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-T404tK.SQASMVINSDT*DDEEEVSAALTLAHLK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(223,229,255)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S1086sR.QDGS*QEAPEAPLSSELEPFHPKPK.I",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "MDC1",
+      "text" : "MDC1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,194,180)",
+        "siteText" : "p",
+        "siteInfo" : "AKT1S1-T246tR.LNT*SDFQK.L",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(239,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "AKT1S1-S203sS212sR.TEARSS*DEENGPPSS*PDLDR.I",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,240,236)",
+        "siteText" : "p",
+        "siteInfo" : "AKT1S1-S88sT90tS92sR.PPAPPPAPQPPS*PT*PS*PPR.P",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(211,219,255)",
+        "siteText" : "p",
+        "siteInfo" : "AKT1S1-S247sR.LNTS*DFQK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "AKT1S1",
+      "text" : "AKT1S1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(243,245,255)",
+        "siteText" : "p",
+        "siteInfo" : "MAF1-S75sK.S*QGGEEEGPLSDK.C",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(218,225,255)",
+        "siteText" : "p",
+        "siteInfo" : "MAF1-S75sR.LSKS*QGGEEEGPLSDK.C",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,231,225)",
+        "siteText" : "p",
+        "siteInfo" : "MAF1-S68sK.QFCQEGQPHVLEALSPPQTSGLS*PSR.L",
+        "siteBorderColor" : "rgb(180,0,20)"
+      } ],
+      "id" : "MAF1",
+      "text" : "MAF1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(240,243,255)",
+        "siteText" : "p",
+        "siteInfo" : "GYS1-Y675yR.Y*DEDEEAAK.D",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,80,40)",
+        "siteText" : "p",
+        "siteInfo" : "GYS1-S710sK.RNS*VDTATSSSLSTPSEPLSPTSSLGEERN.-",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,231,225)",
+        "siteText" : "p",
+        "siteInfo" : "GYS1-S645sS647sR.YPRPASVPPS*PS*LSR.H",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(207,216,255)",
+        "siteText" : "p",
+        "siteInfo" : "GYS1-S657sY675yR.HSSPHQS*EDEEDPRNGPLEEDGERY*DEDEEAAKDRR.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,232,227)",
+        "siteText" : "p",
+        "siteInfo" : "GYS1-S649sR.YPRPASVPPSPSLS*R.H",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(238,241,255)",
+        "siteText" : "p",
+        "siteInfo" : "GYS1-S710sK.RNS*VDTATSSSLSTPSEPLSPTSSLGEER.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(236,240,255)",
+        "siteText" : "p",
+        "siteInfo" : "GYS1-T700tR.RASCT*SSTSGSKR.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,241)",
+        "siteText" : "p",
+        "siteInfo" : "GYS1-S698sR.RAS*CTSSTSGSKR.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "GYS1",
+      "text" : "GYS1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(241,244,255)",
+        "siteText" : "p",
+        "siteInfo" : "NUP153-S380sR.S*VYFKPSLTPSGEFR.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,236,231)",
+        "siteText" : "p",
+        "siteInfo" : "NUP153-S297sK.QLS*AQSYGVTSSTAR.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(243,245,255)",
+        "siteText" : "p",
+        "siteInfo" : "NUP153-S687sK.CIACQAAKLS*PR.D",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,142,117)",
+        "siteText" : "p",
+        "siteInfo" : "NUP153-S219sR.SHSLS*QHTATSSK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(234,238,255)",
+        "siteText" : "p",
+        "siteInfo" : "NUP153-S490sK.ISLPITSSSLPTFNFS*SPEITTSSPSPINSSQALTNK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(241,244,255)",
+        "siteText" : "p",
+        "siteInfo" : "NUP153-S192sR.AS*DKDITVSK.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(236,240,255)",
+        "siteText" : "p",
+        "siteInfo" : "NUP153-T699tK.QTGIET*PNK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,151,127)",
+        "siteText" : "p",
+        "siteInfo" : "NUP153-S143sR.SHLNFSMLES*PALHCQPSTSSAFPIGSSGFSLVK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,242,239)",
+        "siteText" : "p",
+        "siteInfo" : "NUP153-S185sS189sS192sK.DSTSQHDDDNISTTS*GFSS*RAS*DKDITVSK.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(239,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "NUP153-T588tK.KT*PPEDCEGPFRPAEILK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "NUP153-S516sK.VQMTS*PSSTGSPMFK.F",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(240,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "NUP153-S134sR.S*HLNFSMLESPALHCQPSTSSAFPIGSSGFSLVK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "NUP153",
+      "text" : "NUP153"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,143,118)",
+        "siteText" : "p",
+        "siteInfo" : "PRKCD-S647sR.LSYS*DKNLIDSMDQSAFAGFSFVNPK.F",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "PRKCD-T218tR.CTGTAANSRDT*IFQK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(210,218,255)",
+        "siteText" : "p",
+        "siteInfo" : "PRKCD-S304sS307sR.RSDS*ASS*EPVGIYQGFEK.K",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(214,222,255)",
+        "siteText" : "p",
+        "siteInfo" : "PRKCD-S506sR.AS*TFCGTPDYIAPEILQGLK.Y",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(215,222,255)",
+        "siteText" : "p",
+        "siteInfo" : "PRKCD-S306sS307sR.RSDSAS*S*EPVGIYQGFEK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(203,213,255)",
+        "siteText" : "p",
+        "siteInfo" : "PRKCD-Y313yR.RSDSASSEPVGIY*QGFEK.K",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(230,235,255)",
+        "siteText" : "p",
+        "siteInfo" : "PRKCD-T295tK.LLAEALNQVT*QR.A",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,235,230)",
+        "siteText" : "p",
+        "siteInfo" : "PRKCD-S645sK.ARLS*YSDK.N",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "PRKCD-T43tR.GKT*LVQK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "PRKCD-T511tR.DGHIKIADFGMCKENIFGESRASTFCGT*PDYIAPEILQGLK.Y",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "PRKCD",
+      "text" : "PRKCD"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,231,225)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S143sS145sK.NSVQSGES*DS*DEEEESKEPPIK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(123,148,255)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-T3883tK.LISGDAEPT*PEQEEK.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,192,177)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S145sS151sK.NSVQSGESDS*DEEEES*KEPPIKLPK.I",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,239,235)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S3475sR.VNSGDTEVGSS*LLR.H",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,237,233)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S2779sS2782sS2783sR.AESPGPGS*RLS*S*PKPK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,80,40)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S140sS145sS151sK.NSVQS*GESDS*DEEEES*KEPPIK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(240,243,255)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S2795sS2801sK.TLPANRSS*PSGASS*PR.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,241)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-T2837tR.SKSDSYT*LDPDTLRK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,202,190)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S2805sR.SS*SPHDKNLPQK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(160,178,255)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S2749sS2751sR.S*LS*PNHNTLQTLK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S2751sR.SLS*PNHNTLQTLK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(159,177,255)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S3440sR.SYS*VVASEYDKQHSILPAR.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,205,193)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S2967sK.SS*FLFKGDGSKPLEPAK.Q",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(243,245,255)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-T1587tK.QVST*ENDSTLVHR.F",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(240,243,255)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S145sS151sK.NSVQSGESDS*DEEEES*KEPPIK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(241,243,255)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S2806sR.SSS*PHDKNLPQK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,217,208)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S140sS143sS151sK.NSVQS*GES*DSDEEEES*KEPPIK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,237,232)",
+        "siteText" : "p",
+        "siteInfo" : "MYCBP2-S2281sK.KMS*LQQDQAK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "MYCBP2",
+      "text" : "MYCBP2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,140,114)",
+        "siteText" : "p",
+        "siteInfo" : "PAK2-T143tK.QKYLSFT*PPEKDGFPSGTPALNAK.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(224,229,255)",
+        "siteText" : "p",
+        "siteInfo" : "PAK2-S141sK.YLS*FTPPEK.D",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "PAK2-S32sR.MSSTIFSTGGKDPLS*ANHSLKPLPSVPEEK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "PAK2",
+      "text" : "PAK2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,213,204)",
+        "siteText" : "p",
+        "siteInfo" : "RB1-S795sS807sR.SPYKFPSS*PLRIPGGNIYIS*PLKSPYK.I",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(221,227,255)",
+        "siteText" : "p",
+        "siteInfo" : "RB1-T373tR.KSNLDEEVNVIPPHT*PVR.T",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(165,182,255)",
+        "siteText" : "p",
+        "siteInfo" : "RB1-T342tR.LFLDHDKT*LQTDSIDSFETQRTPR.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(182,195,255)",
+        "siteText" : "p",
+        "siteInfo" : "RB1-T356tR.LFLDHDKTLQTDSIDSFETQRT*PR.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,241,237)",
+        "siteText" : "p",
+        "siteInfo" : "RB1-S780sK.TNILQYASTRPPTLS*PIPHIPRSPYKFPSSPLR.I",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,230,224)",
+        "siteText" : "p",
+        "siteInfo" : "RB1-S612sR.EGPTDHLESACPLNLPLQNNHTAADMYLSPVRS*PKK.K",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,80,40)",
+        "siteText" : "p",
+        "siteInfo" : "RB1-S807sR.IPGGNIYIS*PLKSPYK.I",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,241)",
+        "siteText" : "p",
+        "siteInfo" : "RB1-T252tK.TAVIPINGSPRT*PR.R",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "RB1-T373tK.SNLDEEVNVIPPHT*PVR.T",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(184,197,255)",
+        "siteText" : "p",
+        "siteInfo" : "RB1-T826tK.ISEGLPTPTKMT*PR.S",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,232,227)",
+        "siteText" : "p",
+        "siteInfo" : "RB1-T356tK.TLQTDSIDSFETQRT*PRK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,165,145)",
+        "siteText" : "p",
+        "siteInfo" : "RB1-T625tR.VNST*ANAETQATSAFQTQKPLK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "RB1",
+      "text" : "RB1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,240,237)",
+        "siteText" : "p",
+        "siteInfo" : "LSP1-S130sK.EDS*DEVHLEELSLSK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,203,191)",
+        "siteText" : "p",
+        "siteInfo" : "LSP1-S85sK.QEMLLSLKPSEAPELDEDEGFGDWS*QRPEQR.Q",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "LSP1-S252sS262sR.QAS*IELPSMAVAS*TK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,243,240)",
+        "siteText" : "p",
+        "siteInfo" : "LSP1-T175tS177sR.T*PS*PLVLEGTIEQSSPPLSPTTK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,237,232)",
+        "siteText" : "p",
+        "siteInfo" : "LSP1-S177sS188sS189sK.CQQPRTPS*PLVLEGTIEQS*S*PPLSPTTK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "LSP1-S314sK.STPS*GKR.Y",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(184,197,255)",
+        "siteText" : "p",
+        "siteInfo" : "LSP1-S139sK.EDSDEVHLEELS*LSK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "LSP1",
+      "text" : "LSP1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(244,246,255)",
+        "siteText" : "p",
+        "siteInfo" : "RPS3-T221tK.PLPDHVSIVEPKDEILPTT*PISEQK.G",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(200,210,255)",
+        "siteText" : "p",
+        "siteInfo" : "RPS3-S209sK.KPLPDHVS*IVEPKDEILPTTPISEQK.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "RPS3-S35sR.ELAEDGYS*GVEVR.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(213,221,255)",
+        "siteText" : "p",
+        "siteInfo" : "RPS3-T220tK.DEILPT*TPISEQK.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "RPS3",
+      "text" : "RPS3"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,232,226)",
+        "siteText" : "p",
+        "siteInfo" : "GTF3C1-T1873tT1878tR.RASWASENGET*DAEGT*QMTPAKR.P",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,237,233)",
+        "siteText" : "p",
+        "siteInfo" : "GTF3C1-T1064tS1068sR.KNSST*DQGS*DEEGSLQK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(200,210,255)",
+        "siteText" : "p",
+        "siteInfo" : "GTF3C1-S1068sK.NSSTDQGS*DEEGSLQKEQESAMDKHNLER.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,241,237)",
+        "siteText" : "p",
+        "siteInfo" : "GTF3C1-S667sR.NLS*EEGLLR.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(223,229,255)",
+        "siteText" : "p",
+        "siteInfo" : "GTF3C1-S1854sR.EDPQARPLEGSSSEDSPPEGQAPPS*HSPR.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,223,215)",
+        "siteText" : "p",
+        "siteInfo" : "GTF3C1-S751sK.EGPSGSGDS*QLSASSR.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(231,236,255)",
+        "siteText" : "p",
+        "siteInfo" : "GTF3C1-S1865sT1873tR.AS*WASENGET*DAEGTQMTPAK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(244,246,255)",
+        "siteText" : "p",
+        "siteInfo" : "GTF3C1-S1865sS1868sR.RAS*WAS*ENGETDAEGTQMTPAK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(221,228,255)",
+        "siteText" : "p",
+        "siteInfo" : "GTF3C1-S1080sR.KNSSTDQGSDEEGSLQKEQES*AMDKHNLER.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,236,232)",
+        "siteText" : "p",
+        "siteInfo" : "GTF3C1-S1868sT1873tR.RASWAS*ENGET*DAEGTQMTPAKR.P",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,221,213)",
+        "siteText" : "p",
+        "siteInfo" : "GTF3C1-S1068sK.NSSTDQGS*DEEGSLQK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "GTF3C1",
+      "text" : "GTF3C1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(182,196,255)",
+        "siteText" : "p",
+        "siteInfo" : "LMNA-S428sS429sR.KLESTESRS*S*FSQHAR.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "LMNA-S458sR.NKS*NEDQSMGNWQIK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,95,59)",
+        "siteText" : "p",
+        "siteInfo" : "LMNA-S22sR.SGAQASSTPLS*PTR.I",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(232,236,255)",
+        "siteText" : "p",
+        "siteInfo" : "LMNA-S404sT409tR.ASS*HSSQT*QGGGSVTKK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,242)",
+        "siteText" : "p",
+        "siteInfo" : "LMNA-S431sR.SSFS*QHAR.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "LMNA-S404sT409tR.GRASS*HSSQT*QGGGSVTK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,241,237)",
+        "siteText" : "p",
+        "siteInfo" : "LMNA-S463sK.SNEDQS*MGNWQIK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,241)",
+        "siteText" : "p",
+        "siteInfo" : "LMNA-S407sT409tR.GRASSHSS*QT*QGGGSVTK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "LMNA-S404sR.GRASS*HSSQTQGGGSVTK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,197,184)",
+        "siteText" : "p",
+        "siteInfo" : "LMNA-S458sR.NKS*NEDQSMGNWQIKR.Q",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "LMNA",
+      "text" : "LMNA"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,210,200)",
+        "siteText" : "p",
+        "siteInfo" : "SIRT6-S330sR.INGSIPAGPKQEPCAQHNGSEPAS*PKR.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "SIRT6-S310sK.LEPKEESPTRINGS*IPAGPK.Q",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,232,227)",
+        "siteText" : "p",
+        "siteInfo" : "SIRT6-S338sR.ERPTS*PAPHRPPKR.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(237,241,255)",
+        "siteText" : "p",
+        "siteInfo" : "SIRT6-T294tS303sR.ALPPLPRPPT*PKLEPKEES*PTR.I",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(235,239,255)",
+        "siteText" : "p",
+        "siteInfo" : "SIRT6-T294tR.ALPPLPRPPT*PKLEPK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(206,215,255)",
+        "siteText" : "p",
+        "siteInfo" : "SIRT6-T294tR.ALPPLPRPPT*PK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,195,181)",
+        "siteText" : "p",
+        "siteInfo" : "SIRT6-T305tK.LEPKEESPT*RINGSIPAGPK.Q",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "SIRT6",
+      "text" : "SIRT6"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "NBN-S343sS347sK.TTTPGPSLS*QGVS*VDEK.L",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(242,244,255)",
+        "siteText" : "p",
+        "siteInfo" : "NBN-S343sK.TTTPGPSLS*QGVSVDEK.L",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(111,137,255)",
+        "siteText" : "p",
+        "siteInfo" : "NBN-S488sR.IETSCS*LLEQTQPATPSLWK.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(217,224,255)",
+        "siteText" : "p",
+        "siteInfo" : "NBN-S462sR.NYFQPS*TK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(223,229,255)",
+        "siteText" : "p",
+        "siteInfo" : "NBN-S604sR.MDIETNDTFS*DEAVPESSK.I",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "NBN",
+      "text" : "NBN"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(173,188,255)",
+        "siteText" : "p",
+        "siteInfo" : "DNMT1-S714sK.EADDDEEVDDNIPEMPS*PKK.M",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,241)",
+        "siteText" : "p",
+        "siteInfo" : "DNMT1-S189sS192sR.AKS*DES*IKEEDKDQDEK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,237,233)",
+        "siteText" : "p",
+        "siteInfo" : "DNMT1-S154sR.SKSDGEAKPEPSPS*PR.I",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "DNMT1-T342tR.AKT*VMNSK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(220,227,255)",
+        "siteText" : "p",
+        "siteInfo" : "DNMT1-S714sK.EADDDEEVDDNIPEMPS*PK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(240,243,255)",
+        "siteText" : "p",
+        "siteInfo" : "DNMT1-S143sR.SKS*DGEAKPEPSPSPR.I",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "DNMT1",
+      "text" : "DNMT1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,242,239)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1CA-T320tK.YGQFSGLNPGGRPIT*PPR.N",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(205,214,255)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1CA-T320tK.YGQFSGLNPGGRPIT*PPRNSAK.A",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(207,216,255)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1CA-T320tS325sK.YGQFSGLNPGGRPIT*PPRNS*AK.A",
+        "siteBorderColor" : "rgb(180,0,20)"
+      } ],
+      "id" : "PPP1CA",
+      "text" : "PPP1CA"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(243,245,255)",
+        "siteText" : "p",
+        "siteInfo" : "CHEK1-S280sR.VTS*GGVSESPSGFSK.H",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(242,244,255)",
+        "siteText" : "p",
+        "siteInfo" : "CHEK1-S286sR.VTSGGVSES*PSGFSK.H",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "CHEK1",
+      "text" : "CHEK1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(243,245,255)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R12A-S912sR.SGSYS*YLEER.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,237,233)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R12A-S862sS871sR.STGVSFWTQDS*DENEQEQQS*DTEEGSNKK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(191,203,255)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R12A-Y446yR.KTGSY*GALAEITASK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(146,166,255)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R12A-S445sR.KTGS*YGALAEITASK.E",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R12A-T696tR.ST*QGVTLTDLQEAEK.T",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(197,207,255)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R12A-T406tS409sK.TKPLASVTNANTSSTQAAPVAVTTPTVSSGQAT*PTS*PIK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,238,234)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R12A-T305tR.DKKSPLIEST*ANMDNNQSQK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,241,237)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R12A-S422sK.KFPTTATKIS*PKEEERKDESPATWR.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(238,241,255)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R12A-S299sK.KS*PLIESTANMDNNQSQK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,245,242)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R12A-Y901yR.YETSSTSAGDRY*DSLLGR.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(218,225,255)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R12A-S871sR.STGVSFWTQDSDENEQEQQS*DTEEGSNKK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "PPP1R12A",
+      "text" : "PPP1R12A"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(141,162,255)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-T415tK.IVAERPGT*NSTGPAPMAPPR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(209,218,255)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-S440sK.QGSGSS*QPMEVQEGYGFGSGDDPYSSAEPHVSGVKR.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,238,234)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-T418tK.IVAERPGTNST*GPAPMAPPR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,242,240)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-T195tK.DHTVRST*GPAK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,241,238)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-S473sR.S*GEGEVSGLMR.K",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,238,234)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-S489sK.VPRVS*LERLDLDLTADSQPPVFK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(242,245,255)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-T498tK.VPRVSLERLDLDLT*ADSQPPVFK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(241,244,255)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-S596sS600sS601sR.LASPS*GSTS*S*GLEVVAPEGTSAPGGGPGTLDDSATICR.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,219,211)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-T541tR.GAAAAATGQPGTAPAGT*PGAPPLAGMAIVK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,230,225)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-S784sK.LTEDKADVQS*IIGLQR.F",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-S689sK.EEDGSLSLDGADS*TGVVAK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(241,244,255)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-S824sK.FSAVLVEPPPMSLPGAGLSS*QELSGGPGDGP.-",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-S440sK.QGSGSS*QPMEVQEGYGFGSGDDPYSSAEPHVSGVK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "TRIM28",
+      "text" : "TRIM28"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S227sK.GQES*FKK.Q",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S227sR.SKGQES*FKK.Q",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,235,230)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-T199tK.SIRDT*PAKNAQK.S",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(220,226,255)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S227sR.SKGQES*FKKQEK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(214,222,255)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S195sK.LAADEDDDDDDEEDDDEDDDDDDFDDEEAEEKAPVKKS*IRDTPAK.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(242,245,255)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S214sK.SNQNGKDS*KPSSTPR.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,233,228)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S195sK.LAADEDDDDDDEEDDDEDDDDDDFDDEEAEEKAPVKKS*IR.D",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,80,40)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S260sK.GGS*LPKVEAK.F",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(243,246,255)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S227sK.GQES*FKKQEK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,242)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-Y67yK.DELHIVEAEAMNY*EGSPIK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,239,236)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S106sK.CGS*GPVHISGQHLVAVEEDAESEDEEEEDVK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,158,135)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S48sR.TVS*LGAGAKDELHIVEAEAMNYEGSPIKVTLATLK.M",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,218,209)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S125sK.CGSGPVHISGQHLVAVEEDAES*EDEEEEDVKLLSISGKR.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,238,234)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S70sK.DELHIVEAEAMNYEGS*PIK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(243,246,255)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S195sK.S*IRDTPAK.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-Y67yR.TVSLGAGAKDELHIVEAEAMNY*EGSPIK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,202,190)",
+        "siteText" : "p",
+        "siteInfo" : "NPM1-S217sK.DSKPS*STPR.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "NPM1",
+      "text" : "NPM1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,238,234)",
+        "siteText" : "p",
+        "siteInfo" : "FSCN1-S39sK.VNASASS*LK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "FSCN1",
+      "text" : "FSCN1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,220,212)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-T2347tK.SKSPIPGQGYLGT*ERPSSVSSVHSEGDYHR.Q",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,243,240)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S1450sR.HTS*VVSSGPSVLR.S",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,240,237)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S2090sR.NQVSSQTPQQPPTSTFQNSPSALVS*TPVR.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(244,246,255)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S999sR.SSTSPCGTSKS*PNREWEVLQPAPHQVITNLPEGVR.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,80,40)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S1196sR.MPIEDSS*PEKGREEAASK.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(223,229,255)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S2377sR.QTPGWAWEDRPSS*TGSTQFPYNPLTMR.M",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,242,240)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S2315sR.REEGDPS*PHSGGVCKPK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(239,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S70sR.RRPS*LLSEFHPGSDRPQER.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,235,231)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S158sK.KDPAFGGKHEAPSS*PISGQPCGDDQNASPSK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(232,236,255)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S1263sK.QGMSMRES*PVSAPLEGLICR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,242)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S2102sK.TSNRYS*PESQAQSVHHQRPGSR.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,242,239)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S2202sK.LENTS*PMVK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(240,243,255)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S1533sS1545sR.ESIPAKS*PVPGVDPVVSHS*PFDPHHR.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(154,173,255)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S161sK.KDPAFGGKHEAPSSPIS*GQPCGDDQNASPSK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,235,231)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S172sK.HEAPSSPISGQPCGDDQNAS*PSK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,241)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S2337sK.SKS*PIPGQGYLGTERPSSVSSVHSEGDYHR.Q",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(222,228,255)",
+        "siteText" : "p",
+        "siteInfo" : "NCOR1-S2315sR.REEGDPS*PHSGGVCK.P",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "NCOR1",
+      "text" : "NCOR1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,230,224)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4B-S445sK.S*LENETLNKEEDCHSPTSKPPKPDQPLK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4B-S354sR.STPKEDDSSASTSQS*TR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4B-T500tR.SSNPPARSQSSDT*EQQSPTSGGGK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,237,233)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4B-S445sS459sR.ESEKS*LENETLNKEEDCHS*PTSKPPKPDQPLK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(214,221,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4B-S406sS409sR.HPS*WRS*EETQER.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,243,241)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4B-S352sR.STPKEDDSSASTS*QSTR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(240,243,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4B-S497sS498sS504sR.SQS*S*DTEQQS*PTSGGGK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,237,233)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4B-S445sR.ESEKS*LENETLNKEEDCHSPTSKPPKPDQPLK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(175,190,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4B-S445sS462sK.S*LENETLNKEEDCHSPTS*KPPKPDQPLK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "EIF4B",
+      "text" : "EIF4B"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,163,142)",
+        "siteText" : "p",
+        "siteInfo" : "AKT1-S124sR.SGS*PSDNSGAEEMEVSLAKPK.H",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(66,101,255)",
+        "siteText" : "p",
+        "siteInfo" : "AKT1-S124sS129sR.SGS*PSDNS*GAEEMEVSLAKPK.H",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "AKT1",
+      "text" : "AKT1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,243,240)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-S65sT82tR.NS*PVTKTPPRDLPTIPGVT*SPSSDEPPMEASQSHLR.N",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,242,239)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-S101sR.DLPTIPGVTSPSSDEPPMEASQSHLRNS*PEDK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-S83sR.DLPTIPGVTS*PSSDEPPMEASQSHLRNSPEDKR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,230,225)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-S65sT68tT70tR.NS*PVT*KT*PPRDLPTIPGVTSPSSDEPPMEASQSHLRNSPEDK.R",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(198,209,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-Y34yY54yR.RVVLGDGVQLPPGDY*STTPGGTLFSTTPGGTRIIY*DRK.F",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,238,234)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-S44sT45tR.VVLGDGVQLPPGDYSTTPGGTLFS*T*TPGGTRIIYDR.K",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(200,210,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-S65sR.KFLMECRNS*PVTK.T",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,240,236)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-T41tT46tR.VVLGDGVQLPPGDYSTTPGGT*LFSTT*PGGTRIIYDR.K",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(219,226,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-T68tT70tS101sK.FLMECRNSPVT*KT*PPRDLPTIPGVTSPSSDEPPMEASQSHLRNS*PEDKR.A",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(224,230,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-Y34yS35sR.RVVLGDGVQLPPGDY*S*TTPGGTLFSTTPGGTRIIYDRK.F",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,240,237)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-T36tT46tR.VVLGDGVQLPPGDYST*TPGGTLFSTT*PGGTR.I",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,242)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-T46tR.RVVLGDGVQLPPGDYSTTPGGTLFSTT*PGGTR.I",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(235,239,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-S86sK.TPPRDLPTIPGVTSPSS*DEPPMEASQSHLRNSPEDK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(237,240,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-T37tT46tR.VVLGDGVQLPPGDYSTT*PGGTLFSTT*PGGTR.I",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,243,240)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-T82tS83sR.KFLMECRNSPVTKTPPRDLPTIPGVT*S*PSSDEPPMEASQSHLR.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(244,246,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-T41tY54yR.RVVLGDGVQLPPGDYSTTPGGT*LFSTTPGGTRIIY*DRK.F",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,168,148)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-Y34yT41tR.VVLGDGVQLPPGDY*STTPGGT*LFSTTPGGTRIIYDRK.F",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,233,229)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-T46tR.VVLGDGVQLPPGDYSTTPGGTLFSTT*PGGTR.I",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(135,158,255)",
+        "siteText" : "p",
+        "siteInfo" : "EIF4EBP1-S94sR.DLPTIPGVTSPSSDEPPMEAS*QSHLRNSPEDK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "EIF4EBP1",
+      "text" : "EIF4EBP1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,227,221)",
+        "siteText" : "p",
+        "siteInfo" : "RBM14-S215sS220sR.S*PLRRS*PPR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(243,246,255)",
+        "siteText" : "p",
+        "siteInfo" : "RBM14-S220sR.SPLRRS*PPR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(241,244,255)",
+        "siteText" : "p",
+        "siteInfo" : "RBM14-S618sR.RLS*ESQLSFR.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,241)",
+        "siteText" : "p",
+        "siteInfo" : "RBM14-S256sR.AQPSAS*LGVGYR.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(242,244,255)",
+        "siteText" : "p",
+        "siteInfo" : "RBM14-S649sR.YS*GSYNDYLR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,228,222)",
+        "siteText" : "p",
+        "siteInfo" : "RBM14-T572tR.GQPGNAYDGAGQPSAAYLSMSQGAVANANST*PPPYER.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(222,228,255)",
+        "siteText" : "p",
+        "siteInfo" : "RBM14-S278sS280sR.AQPS*VS*LGAPYR.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,236,232)",
+        "siteText" : "p",
+        "siteInfo" : "RBM14-S244sR.AQPSVS*LGAAYR.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "RBM14",
+      "text" : "RBM14"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(142,163,255)",
+        "siteText" : "p",
+        "siteInfo" : "PDCD4-S457sK.RFVS*EGDGGR.L",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,233,228)",
+        "siteText" : "p",
+        "siteInfo" : "PDCD4-S71sK.NSSRDS*GRGDSVSDSGSDALR.S",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,239,235)",
+        "siteText" : "p",
+        "siteInfo" : "PDCD4-S68sR.KNSS*RDSGR.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(201,211,255)",
+        "siteText" : "p",
+        "siteInfo" : "PDCD4-S68sS71sK.NSS*RDS*GRGDSVSDSGSDALR.S",
+        "siteBorderColor" : "rgb(180,0,20)"
+      } ],
+      "id" : "PDCD4",
+      "text" : "PDCD4"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(230,235,255)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S596sS598sS606sR.S*YS*PDGKESPS*DKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-Y597yS598sS606sR.KRSY*S*PDGKESPS*DKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(242,245,255)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S11sK.SFQQSSLS*RDSQGHGR.D",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,231,226)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S596sS598sS604sR.S*YS*PDGKES*PSDKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S615sT618tS620sK.SKTDGS*QKT*ES*STEGKEQEEK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,80,40)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-Y597yS598sR.KRSY*S*PDGKESPSDKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,233,228)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S814sK.NEENTEPGAESSENADDPNKDTSENADGQS*DENK.D",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,242)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S596sS598sS604sR.S*YS*PDGKES*PSDK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,198,185)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S208sR.S*QESGYYDR.M",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,229,223)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S598sS604sR.KRSYS*PDGKES*PSDKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,234,229)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-Y597yK.RSY*SPDGK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(235,239,255)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S604sR.SYSPDGKES*PSDKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S188sS195sR.RDS*FDDRGPS*LNPVLDYDHGSR.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(243,245,255)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S615sK.TDGS*QKTESSTEGK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,227,221)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S596sY597yR.KRS*Y*SPDGKESPSDKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,201,189)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S604sS606sR.KRSYSPDGKES*PS*DKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(172,187,255)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S598sR.SYS*PDGKESPSDKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(228,233,255)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S598sS606sR.SYS*PDGKESPS*DKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(201,211,255)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S99sR.GPLPLSS*QHR.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,239,235)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S796sK.KVDKIEELDQENEAALENGIKNEENTEPGAESS*ENADDPNK.D",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(218,225,255)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S598sR.SYS*PDGK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,226,219)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S598sR.SYS*PDGKESPSDK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(174,189,255)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S606sR.SYSPDGKESPS*DKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(239,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S596sS598sR.S*YS*PDGK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "MATR3-S615sK.SKTDGS*QKTESSTEGK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "MATR3",
+      "text" : "MATR3"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(222,228,255)",
+        "siteText" : "p",
+        "siteInfo" : "MKNK1-S39sR.ATDS*LPGK.F",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "MKNK1",
+      "text" : "MKNK1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,238,234)",
+        "siteText" : "p",
+        "siteInfo" : "HTT-S419sS432sR.SGS*IVELIAGGGSSCS*PVLSR.K",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,243,240)",
+        "siteText" : "p",
+        "siteInfo" : "HTT-S640sR.QPS*DSSVDK.F",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,224,217)",
+        "siteText" : "p",
+        "siteInfo" : "HTT-T405tR.TPPPELLQTLTAVGGIGQLT*AAKEESGGRSR.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "HTT",
+      "text" : "HTT"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,239,235)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R14B-Y60yR.QGKVTVKY*DR.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,80,40)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R14B-Y60yR.QGKVTVKY*DRK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(227,232,255)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R14B-T57tK.VT*VKYDR.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "PPP1R14B-Y60yK.VTVKY*DR.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "PPP1R14B",
+      "text" : "PPP1R14B"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(89,120,255)",
+        "siteText" : "p",
+        "siteInfo" : "ZCCHC8-S658sK.IHS*PIPDMSK.F",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,214,204)",
+        "siteText" : "p",
+        "siteInfo" : "ZCCHC8-S597sK.KSEAGHAS*SPDSEVTSLCQK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(240,243,255)",
+        "siteText" : "p",
+        "siteInfo" : "ZCCHC8-S601sK.SEAGHASSPDS*EVTSLCQK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "ZCCHC8-T479tR.GT*PPPVFTPPLPK.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "ZCCHC8",
+      "text" : "ZCCHC8"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(238,241,255)",
+        "siteText" : "p",
+        "siteInfo" : "RPLP2-S17sR.YVASYLLAALGGNSS*PSAK.D",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,233,228)",
+        "siteText" : "p",
+        "siteInfo" : "RPLP2-S105sK.KDEKKEESEES*DDDMGFGLFD.-",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(216,223,255)",
+        "siteText" : "p",
+        "siteInfo" : "RPLP2-S86sK.LASVPAGGAVAVSAAPGSAAPAAGS*APAAAEEKKDEK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(239,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "RPLP2-S102sS105sK.KEES*EES*DDDMGFGLFD.-",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "RPLP2",
+      "text" : "RPLP2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "HSF1-S314sS320sT323tR.VKEEPPSPPQSPRVEEAS*PGRPSS*VDT*LLSPTALIDSILR.E",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,237,233)",
+        "siteText" : "p",
+        "siteInfo" : "HSF1-S303sS320sR.VKEEPPS*PPQSPRVEEASPGRPSS*VDTLLSPTALIDSILR.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(209,218,255)",
+        "siteText" : "p",
+        "siteInfo" : "HSF1-S303sS307sS314sR.VKEEPPS*PPQS*PRVEEAS*PGRPSSVDTLLSPTALIDSILR.E",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,219,211)",
+        "siteText" : "p",
+        "siteInfo" : "HSF1-S314sS320sT323tK.EEPPSPPQSPRVEEAS*PGRPSS*VDT*LLSPTALIDSILR.E",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,235,231)",
+        "siteText" : "p",
+        "siteInfo" : "HSF1-S303sS307sK.EEPPS*PPQS*PR.V",
+        "siteBorderColor" : "rgb(180,0,20)"
+      } ],
+      "id" : "HSF1",
+      "text" : "HSF1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "SYK-S306sR.KS*SPAQGNR.Q",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,235,230)",
+        "siteText" : "p",
+        "siteInfo" : "SYK-S295sK.S*YSFPK.P",
+        "siteBorderColor" : "rgb(180,0,20)"
+      } ],
+      "id" : "SYK",
+      "text" : "SYK"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(121,146,255)",
+        "siteText" : "p",
+        "siteInfo" : "HIRIP3-S227sK.SLKESEQES*EEEILAQKK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(211,219,255)",
+        "siteText" : "p",
+        "siteInfo" : "HIRIP3-S227sK.ESEQES*EEEILAQK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,190,175)",
+        "siteText" : "p",
+        "siteInfo" : "HIRIP3-S223sK.SLKES*EQESEEEILAQK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "HIRIP3-S159sS160sR.DLPAQRGEES*S*EEEEKGYKGK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(240,243,255)",
+        "siteText" : "p",
+        "siteInfo" : "HIRIP3-T84tS87sK.RPPT*PCS*DPERK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,240,236)",
+        "siteText" : "p",
+        "siteInfo" : "HIRIP3-S160sY167yR.GEESS*EEEEKGY*KGK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,218,209)",
+        "siteText" : "p",
+        "siteInfo" : "HIRIP3-S196sS199sR.KQAREES*EES*EAEPVQR.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(201,211,255)",
+        "siteText" : "p",
+        "siteInfo" : "HIRIP3-S219sK.S*LKESEQESEEEILAQKK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "HIRIP3-S219sS227sK.S*LKESEQES*EEEILAQKK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(232,236,255)",
+        "siteText" : "p",
+        "siteInfo" : "HIRIP3-S104sR.FNSESESGS*EASSPDYFGPPAK.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "HIRIP3",
+      "text" : "HIRIP3"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "TRIP10-S482sR.VLSNRGDS*LSR.H",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,227,221)",
+        "siteText" : "p",
+        "siteInfo" : "TRIP10-S298sS299sR.APSDS*S*LGTPSDGRPELR.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "TRIP10",
+      "text" : "TRIP10"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,101,66)",
+        "siteText" : "p",
+        "siteInfo" : "ZFP36-S197sS212sS218sR.RTS*PPPPGLAGPSLSSSS*FSPSSS*PPPPGDLPLSPSAFSAAPGTPLAR.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,242,239)",
+        "siteText" : "p",
+        "siteInfo" : "ZFP36-S60sR.STS*LVEGR.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "ZFP36-S186sR.QSIS*FSGLPSGR.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(232,236,255)",
+        "siteText" : "p",
+        "siteInfo" : "ZFP36-S113sR.TFS*ESGR.C",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "ZFP36",
+      "text" : "ZFP36"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,137,110)",
+        "siteText" : "p",
+        "siteInfo" : "DDX24-S82sR.KAQAVS*EEEEEEEGKSSSPK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "DDX24-S82sS94sK.AQAVS*EEEEEEEGKSSS*PK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "DDX24-S168sK.GLEPSQS*TAAK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "DDX24-S94sK.AQAVSEEEEEEEGKSSS*PK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(203,213,255)",
+        "siteText" : "p",
+        "siteInfo" : "DDX24-S93sS94sK.AQAVSEEEEEEEGKSS*S*PK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,222,214)",
+        "siteText" : "p",
+        "siteInfo" : "DDX24-S94sR.KAQAVSEEEEEEEGKSSS*PK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,231,225)",
+        "siteText" : "p",
+        "siteInfo" : "DDX24-S82sK.AQAVS*EEEEEEEGKSSSPK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "DDX24",
+      "text" : "DDX24"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "ARHGDIB-Y24yK.APEPHVEEDDDDELDSKLNY*KPPPQK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(227,232,255)",
+        "siteText" : "p",
+        "siteInfo" : "ARHGDIB-S176sK.S*FFTDDDK.Q",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "ARHGDIB-T157tK.ATFMVGSYGPRPEEYEFLT*PVEEAPK.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,230,224)",
+        "siteText" : "p",
+        "siteInfo" : "ARHGDIB-Y153yK.ATFMVGSYGPRPEEY*EFLTPVEEAPK.G",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "ARHGDIB",
+      "text" : "ARHGDIB"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(208,217,255)",
+        "siteText" : "p",
+        "siteInfo" : "DNM1L-S616sK.SKPIPIMPAS*PQKGHAVNLLDVPVPVAR.K",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "DNM1L",
+      "text" : "DNM1L"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(215,222,255)",
+        "siteText" : "p",
+        "siteInfo" : "GSK3A-S21sR.TSS*FAEPGGGGGGGGGGPGGSASGPGGTGGGK.A",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(174,189,255)",
+        "siteText" : "p",
+        "siteInfo" : "GSK3A-S278sR.GEPNVS*YICSR.Y",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "GSK3A",
+      "text" : "GSK3A"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,204,192)",
+        "siteText" : "p",
+        "siteInfo" : "CDK13-S437sS439sR.HSS*IS*PSTLTLK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(239,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "CDK13-S1215sR.ENGSGHEAS*LQLRPPPEPSTPVSGQDDLIQHQDMR.I",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,233,228)",
+        "siteText" : "p",
+        "siteInfo" : "CDK13-S337sS340sR.S*RKS*PSPAGGGSSPYSR.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,241,238)",
+        "siteText" : "p",
+        "siteInfo" : "CDK13-Y870yR.LYSSEESRPY*TNK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,235,230)",
+        "siteText" : "p",
+        "siteInfo" : "CDK13-S409sS411sS413sR.SGKS*RS*RS*PYSSR.H",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "CDK13-T531tK.IEHAPSPSSGGT*LK.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "CDK13-S260sR.RKS*ASATSSSSSSR.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "CDK13",
+      "text" : "CDK13"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,238,235)",
+        "siteText" : "p",
+        "siteInfo" : "RPS6KA4-T542tR.DLKPENILYADDT*PGAPVK.I",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,241,238)",
+        "siteText" : "p",
+        "siteInfo" : "RPS6KA4-S721sK.S*VENAPLAK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(239,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "RPS6KA4-S360sT376tR.IFQGYS*FVAPSILFDHNNAVMT*DGLEAPGAGDRPGR.A",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "RPS6KA4",
+      "text" : "RPS6KA4"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(231,236,255)",
+        "siteText" : "p",
+        "siteInfo" : "IRF3-S175sR.SPS*LDNPTPFPNLGPSENPLKR.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "IRF3",
+      "text" : "IRF3"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,80,40)",
+        "siteText" : "p",
+        "siteInfo" : "NCBP1-S7sR.RRHS*DENDGGQPHK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,227,221)",
+        "siteText" : "p",
+        "siteInfo" : "NCBP1-T27tR.KTSDANET*EDHLESLICK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(214,221,255)",
+        "siteText" : "p",
+        "siteInfo" : "NCBP1-S22sK.TS*DANETEDHLESLICK.V",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "NCBP1",
+      "text" : "NCBP1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,233,228)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM16-S36sS38sR.ATAQPPAPLSPDSGSPSPDSGS*AS*PVEEEDVGSSEK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(232,236,255)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM16-S34sS36sS38sR.ATAQPPAPLSPDSGSPSPDS*GS*AS*PVEEEDVGSSEK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(244,246,255)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM16-S47sR.ATAQPPAPLSPDSGSPSPDSGSASPVEEEDVGS*SEK.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(240,243,255)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM16-S62sK.LGRETEEQDSDS*AEQGDPAGEGK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,114,81)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM16-T55tS62sK.LGRET*EEQDSDS*AEQGDPAGEGK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "TRIM16",
+      "text" : "TRIM16"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,228,222)",
+        "siteText" : "p",
+        "siteInfo" : "GIT2-Y516yR.GSRPMSMY*ETGSGQKPYLPMGEASRPEESR.M",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(235,239,255)",
+        "siteText" : "p",
+        "siteInfo" : "GIT2-S500sR.KQATTNVYQVQTGSEYTDTSNHSS*LK.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,227,221)",
+        "siteText" : "p",
+        "siteInfo" : "GIT2-S415sS421sR.QKS*LDSDLS*DGPVTVQEFMEVK.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(225,231,255)",
+        "siteText" : "p",
+        "siteInfo" : "GIT2-S381sS384sS397sK.TINNQHS*VES*QDNDQPDYDSVAS*DEDTDLETTASK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(231,235,255)",
+        "siteText" : "p",
+        "siteInfo" : "GIT2-S384sS397sK.TINNQHSVES*QDNDQPDYDSVAS*DEDTDLETTASK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "GIT2-S384sY392yS394sK.TINNQHSVES*QDNDQPDY*DS*VASDEDTDLETTASK.T",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,162,140)",
+        "siteText" : "p",
+        "siteInfo" : "GIT2-S500sR.KQATTNVYQVQTGSEYTDTSNHSS*LKR.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(55,92,255)",
+        "siteText" : "p",
+        "siteInfo" : "GIT2-Y492yK.QATTNVYQVQTGSEY*TDTSNHSSLKR.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(244,246,255)",
+        "siteText" : "p",
+        "siteInfo" : "GIT2-S415sS418sK.S*LDS*DLSDGPVTVQEFMEVK.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,237,233)",
+        "siteText" : "p",
+        "siteInfo" : "GIT2-S384sS394sS397sK.TINNQHSVES*QDNDQPDYDS*VAS*DEDTDLETTASK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,223,216)",
+        "siteText" : "p",
+        "siteInfo" : "GIT2-S394sS397sT401tK.TINNQHSVESQDNDQPDYDS*VAS*DEDT*DLETTASK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "GIT2",
+      "text" : "GIT2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(209,218,255)",
+        "siteText" : "p",
+        "siteInfo" : "PTPRA-S187sS189sK.QAGSHS*NS*FR.L",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "PTPRA",
+      "text" : "PTPRA"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,243,240)",
+        "siteText" : "p",
+        "siteInfo" : "PEA15-S116sK.KYKDIIRQPS*EEEIIK.L",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "PEA15",
+      "text" : "PEA15"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,186,170)",
+        "siteText" : "p",
+        "siteInfo" : "TBC1D4-T650tR.AHTFSHPPSST*KR.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(242,244,255)",
+        "siteText" : "p",
+        "siteInfo" : "TBC1D4-S591sS597sR.LGSVDS*FERSNS*LASEK.D",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,233,228)",
+        "siteText" : "p",
+        "siteInfo" : "TBC1D4-S341sR.HAS*APSHVQPSDSEK.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,241,238)",
+        "siteText" : "p",
+        "siteInfo" : "TBC1D4-S341sR.HAS*APSHVQPSDSEKNR.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "TBC1D4",
+      "text" : "TBC1D4"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,244,241)",
+        "siteText" : "p",
+        "siteInfo" : "ITGA4-S1021sR.RDS*WSYINSK.S",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "ITGA4",
+      "text" : "ITGA4"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,210,200)",
+        "siteText" : "p",
+        "siteInfo" : "RPS6KB1-S403sR.QTPVDSPDDSTLSES*ANQVFLGFTYVAPSVLESVK.E",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(40,80,255)",
+        "siteText" : "p",
+        "siteInfo" : "RPS6KB1-S447sR.TPVS*PVK.F",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "RPS6KB1",
+      "text" : "RPS6KB1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,196,182)",
+        "siteText" : "p",
+        "siteInfo" : "MYL9-T19tS20sK.KRPQRAT*S*NVFAMFDQSQIQEFK.E",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "MYL9",
+      "text" : "MYL9"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,239,235)",
+        "siteText" : "p",
+        "siteInfo" : "KIF2C-S192sR.RKS*CLVK.E",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(227,232,255)",
+        "siteText" : "p",
+        "siteInfo" : "KIF2C-S106sK.IPAPKES*LR.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "KIF2C",
+      "text" : "KIF2C"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(243,245,255)",
+        "siteText" : "p",
+        "siteInfo" : "SIRT1-S27sR.EAASS*PAGEPLRK.R",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(239,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "SIRT1-S615sR.TS*VAGTVR.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "SIRT1",
+      "text" : "SIRT1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(196,207,255)",
+        "siteText" : "p",
+        "siteInfo" : "MYL12B-T19tS20sR.AT*S*NVFAMFDQSQIQEFK.E",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,196,182)",
+        "siteText" : "p",
+        "siteInfo" : "MYL12B-T19tS20sK.KRPQRAT*S*NVFAMFDQSQIQEFK.E",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "MYL12B",
+      "text" : "MYL12B"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,172,153)",
+        "siteText" : "p",
+        "siteInfo" : "PRKAR1A-S83sR.TDSREDEIS*PPPPNPVVK.G",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,242,239)",
+        "siteText" : "p",
+        "siteInfo" : "PRKAR1A-S83sR.EDEIS*PPPPNPVVK.G",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "PRKAR1A",
+      "text" : "PRKAR1A"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(211,220,255)",
+        "siteText" : "p",
+        "siteInfo" : "NCF1-S310sR.NAHS*IHQR.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,216,208)",
+        "siteText" : "p",
+        "siteInfo" : "NCF1-S320sK.RLS*QDAYRR.N",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(234,238,255)",
+        "siteText" : "p",
+        "siteInfo" : "NCF1-S345sR.QARPGPQS*PGSPLEEERQTQR.S",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "NCF1",
+      "text" : "NCF1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "CAMKK2-S511sR.SLS*APGNLLTK.K",
+        "siteBorderColor" : "rgb(180,0,20)"
+      } ],
+      "id" : "CAMKK2",
+      "text" : "CAMKK2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(242,244,255)",
+        "siteText" : "p",
+        "siteInfo" : "PFKFB3-S461sR.RNS*VTPLASPEPTK.K",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,237,233)",
+        "siteText" : "p",
+        "siteInfo" : "PFKFB3-T463tR.RNSVT*PLASPEPTKKPR.I",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "PFKFB3",
+      "text" : "PFKFB3"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,223,215)",
+        "siteText" : "p",
+        "siteInfo" : "PDPK1-S241sR.ANS*FVGTAQYVSPELLTEK.S",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,234,229)",
+        "siteText" : "p",
+        "siteInfo" : "PDPK1-S25sR.TTSQLYDAVPIQSSVVLCSCPS*PSMVR.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "PDPK1",
+      "text" : "PDPK1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,218,210)",
+        "siteText" : "p",
+        "siteInfo" : "UNG-S23sR.HAPS*PEPAVQGTGVAGVPEESGDAAAIPAKK.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,229,223)",
+        "siteText" : "p",
+        "siteInfo" : "UNG-T60tS64sK.KAPAGQEEPGT*PPSS*PLSAEQLDR.I",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,80,40)",
+        "siteText" : "p",
+        "siteInfo" : "UNG-S23sR.HAPS*PEPAVQGTGVAGVPEESGDAAAIPAK.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "UNG",
+      "text" : "UNG"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,240,237)",
+        "siteText" : "p",
+        "siteInfo" : "HIST1H3A-T12tK.ST*GGKAPR.K",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "HIST1H3A",
+      "text" : "HIST1H3A"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,234,230)",
+        "siteText" : "p",
+        "siteInfo" : "RPTOR-S859sS863sR.VLDTSSLTQS*APAS*PTNK.G",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,244,242)",
+        "siteText" : "p",
+        "siteInfo" : "RPTOR-S863sR.VLDTSSLTQSAPAS*PTNK.G",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "RPTOR",
+      "text" : "RPTOR"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,218,210)",
+        "siteText" : "p",
+        "siteInfo" : "RPS6-Y84yK.GHSCY*RPR.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,233,227)",
+        "siteText" : "p",
+        "siteInfo" : "RPS6-S236sS240sR.LSS*LRAS*TSKSESSQK.-",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(209,217,255)",
+        "siteText" : "p",
+        "siteInfo" : "RPS6-S236sS240sR.LSS*LRAS*TSK.S",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "RPS6",
+      "text" : "RPS6"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,246,244)",
+        "siteText" : "p",
+        "siteInfo" : "ATF2-T69tT71tR.NDSVIVADQT*PT*PTR.F",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,200,187)",
+        "siteText" : "p",
+        "siteInfo" : "ATF2-S310sS328sR.TQSEES*RPQSLQQPATSTTETPAS*PAHTTPQTQSTSGR.R",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "ATF2",
+      "text" : "ATF2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,151,127)",
+        "siteText" : "p",
+        "siteInfo" : "DNAJC5-S10sR.SLS*TSGESLYHVLGLDKNATSDDIKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,216,208)",
+        "siteText" : "p",
+        "siteInfo" : "DNAJC5-Y17yR.SLSTSGESLY*HVLGLDKNATSDDIKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(235,239,255)",
+        "siteText" : "p",
+        "siteInfo" : "DNAJC5-S12sR.SLSTS*GESLYHVLGLDKNATSDDIKK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "DNAJC5",
+      "text" : "DNAJC5"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,239,235)",
+        "siteText" : "p",
+        "siteInfo" : "LCP2-Y426yT428tR.NFPLPLPNKPRPPSPAEEENSLNEEWYVSY*IT*RPEAEAALR.K",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(238,241,255)",
+        "siteText" : "p",
+        "siteInfo" : "LCP2-S410sR.NFPLPLPNKPRPPS*PAEEENSLNEEWYVSYITRPEAEAALRK.I",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,238,234)",
+        "siteText" : "p",
+        "siteInfo" : "LCP2-S410sT428tR.NFPLPLPNKPRPPS*PAEEENSLNEEWYVSYIT*RPEAEAALRK.I",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "LCP2",
+      "text" : "LCP2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(72,106,255)",
+        "siteText" : "p",
+        "siteInfo" : "GRK2-S670sK.NKPRS*PVVELSKVPLVQR.G",
+        "siteBorderColor" : "rgb(180,0,20)"
+      } ],
+      "id" : "GRK2",
+      "text" : "GRK2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(239,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "PDE3B-S295sS296sS299sR.RRS*S*CVS*LGETAASYYGSCK.I",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,218,210)",
+        "siteText" : "p",
+        "siteInfo" : "PDE3B-S554sR.S*LGNAPNTPDFYQQLR.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "PDE3B",
+      "text" : "PDE3B"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(241,243,255)",
+        "siteText" : "p",
+        "siteInfo" : "MAPKAPK2-T222tK.ETTSHNSLTT*PCYTPYYVAPEVLGPEK.Y",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,245,243)",
+        "siteText" : "p",
+        "siteInfo" : "MAPKAPK2-Y229yK.ETTSHNSLTTPCYTPYY*VAPEVLGPEK.Y",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "MAPKAPK2",
+      "text" : "MAPKAPK2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,238,234)",
+        "siteText" : "p",
+        "siteInfo" : "PAK1-S174sK.AVSETPAVPPVS*EDEDDDDDDATPPPVIAPRPEHTK.S",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "PAK1",
+      "text" : "PAK1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,225,218)",
+        "siteText" : "p",
+        "siteInfo" : "ERF-S531sS542sR.RVS*SDLQHATAQLS*LEHR.D",
+        "siteBorderColor" : "rgb(50,50,50)"
+      }, {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "ERF-S21sK.TPADTGFAFPDWAYKPESS*PGSR.Q",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "ERF",
+      "text" : "ERF"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(240,243,255)",
+        "siteText" : "p",
+        "siteInfo" : "RACGAP1-S203sR.S*IGSAVDQGNESIVAK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "RACGAP1",
+      "text" : "RACGAP1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,246,243)",
+        "siteText" : "p",
+        "siteInfo" : "PLRG1-S119sR.MPS*ESAAQSLAVALPLQTK.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "PLRG1",
+      "text" : "PLRG1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,243,240)",
+        "siteText" : "p",
+        "siteInfo" : "SRC-S17sR.S*LEPAENVHGAGGGAFPASQTPSK.P",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "SRC",
+      "text" : "SRC"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,243,241)",
+        "siteText" : "p",
+        "siteInfo" : "SNIP1-S153sR.RTS*NERPGSGQGQGR.D",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "SNIP1",
+      "text" : "SNIP1"
+    }
+  } ],
+  "edges" : [ {
+    "data" : {
+      "tooltipText" : "RB1_612",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_8f73e86f8115392bc980d8bdca49172d", "", "http://pathwaycommons.org/pc2/Catalysis_aeb060d8b96426f5429969a8ecfee65c" ],
+      "target" : "RB1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "RPS3_6, RPS3_221",
+      "edgeType" : "phosphorylates",
+      "source" : "PRKCD",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_9415a7a40040bec8214dc92bb1c1db14", "", "http://pathwaycommons.org/pc2/BiochemicalReaction_dfa825d6a723a0da87e4b05c3e038d20", "http://pathwaycommons.org/pc2/Catalysis_d001b54908c4b5c1d9466f468dd56d67", "http://pathwaycommons.org/pc2/Catalysis_ec95490c4cf6e5e38d61ab33e7b214f5" ],
+      "target" : "RPS3"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "MATR3_4, MATR3_195, MATR3_150",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_590c17db5fcbf9a5f8aeb4563d28ffa9", "", "http://pathwaycommons.org/pc2/Catalysis_0a8d9303a410da7f6f154e7585f7c8da", "http://pathwaycommons.org/pc2/Catalysis_dbd53a233f719e87653302b79d5b26fd", "http://pathwaycommons.org/pc2/BiochemicalReaction_a78c5aed663da3c2c21927f1387c4784", "http://pathwaycommons.org/pc2/BiochemicalReaction_7d5ae23d46770ec67135b8dd0920f759", "http://pathwaycommons.org/pc2/BiochemicalReaction_858413b200af06e2112621a3b7582e05" ],
+      "target" : "MATR3"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "EIF4B_422, EIF4B_311, EIF4B_420, EIF4B_442, EIF4B_497, EIF4B_418, EIF4B_359, EIF4B_406",
+      "edgeType" : "phosphorylates",
+      "source" : "RPS6KB1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_813e2356c13c58e52ead932ccd4693ca", "http://pathwaycommons.org/pc2/Catalysis_1443a375d60f471b419c4e1e618eee4a", "http://pathwaycommons.org/pc2/BiochemicalReaction_9341f8c43ea44b2f806c15a9c073d292", "http://pathwaycommons.org/pc2/BiochemicalReaction_e76328527ec669d20e3bd7c73833f1f6", "http://pathwaycommons.org/pc2/Catalysis_4f04649e7a6fc1f91e65e0fba1da2dc2", "http://identifiers.org/reactome/R-HSA-165777" ],
+      "target" : "EIF4B"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "ITGA4_1021",
+      "edgeType" : "phosphorylates",
+      "source" : "PRKAR1A",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_49e9442eb0aeff78f0ca268c27e175ca", "http://pathwaycommons.org/pc2/ComplexAssembly_a948fe678d4f28f24c80f99aeff50e50" ],
+      "target" : "ITGA4"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "MYL12B_19, MYL12B_20",
+      "edgeType" : "dephosphorylates",
+      "source" : "PPP1R12A",
+      "pcLinks" : [ "http://identifiers.org/reactome/R-HSA-3928616", "http://pathwaycommons.org/pc2/Catalysis_d8825f4306255f965de0b5666312331f", "http://identifiers.org/reactome/R-HSA-419232", "http://identifiers.org/reactome/R-HSA-8982006", "http://identifiers.org/reactome/R-HSA-8981998" ],
+      "target" : "MYL12B"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "ATF2_71, ATF2_69",
+      "edgeType" : "phosphorylates",
+      "source" : "RB1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_b8f1415bb4daf1f619b287dcee60f6c2", "http://pathwaycommons.org/pc2/Catalysis_5cf7c4c46f52ea79b4603400f2afefbc", "http://pathwaycommons.org/pc2/BiochemicalReaction_01c0c0bca29db31b79a2abeae83ffee5" ],
+      "target" : "ATF2"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "PEA15_116",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_928b25e03afd903850f9c3176cb5e01d", "http://pathwaycommons.org/pc2/BiochemicalReaction_9ca00df4870f9b84ea7b775a96ab7695" ],
+      "target" : "PEA15"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "RPS6_240, RPS6_235, RPS6_236",
+      "edgeType" : "phosphorylates",
+      "source" : "PRKCD",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_440d656daf55ed086eb2e8786693614a", "", "http://pathwaycommons.org/pc2/BiochemicalReaction_fdd9d5640091dabdda9b23c18983d709", "http://pathwaycommons.org/pc2/Catalysis_de74387b3156358ae1b99362e361e67d", "http://pathwaycommons.org/pc2/Catalysis_9b22901333b4b4930f16401dd00e2d3a" ],
+      "target" : "RPS6"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "HSF1_320, HSF1_230",
+      "edgeType" : "phosphorylates",
+      "source" : "RPS6KB1",
+      "pcLinks" : [ "" ],
+      "target" : "HSF1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "TRIM28_824",
+      "edgeType" : "phosphorylates",
+      "source" : "NBN",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_072baca294beaa542affcc8a9d160701", "http://pathwaycommons.org/pc2/TransportWithBiochemicalReaction_ed05a981b818bfbf48dc6c766b9572d6" ],
+      "target" : "TRIM28"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "PRKCD_507, PRKCD_304, PRKCD_43",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "" ],
+      "target" : "PRKCD"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "GSK3A_21",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_b9a41da9426c7ce48630c1d6897f70fa", "http://pathwaycommons.org/pc2/Catalysis_4aa313b064ac00a7950b9d9b3a0a1e54", "http://pathwaycommons.org/pc2/Catalysis_4227b21a84c133d1067f6fdd6dcf3ba5", "http://pathwaycommons.org/pc2/Catalysis_400516b36cbceecade0e329a4ca255b1", "http://pathwaycommons.org/pc2/Catalysis_8a051dd0c64a6a810a38e0b5e1189a95", "http://identifiers.org/reactome/R-HSA-198371", "http://pathwaycommons.org/pc2/Catalysis_f4a9911e652433b2d098373d64b01165", "http://pathwaycommons.org/pc2/BiochemicalReaction_fd660a90cb1fb7091a34990fa126fa73", "http://pathwaycommons.org/pc2/BiochemicalReaction_0e40b6437f8e633209ac4927b65c56be", "http://pathwaycommons.org/pc2/BiochemicalReaction_8d6260b00a7ac83ec5597599f5945e2f", "http://pathwaycommons.org/pc2/BiochemicalReaction_25fa04eaf221fc58dbed220ebf96b8a2", "http://pathwaycommons.org/pc2/Catalysis_3f72385558bb9c329695592071e5ca34" ],
+      "target" : "GSK3A"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "SNIP1_91, SNIP1_74, SNIP1_99, SNIP1_153",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "" ],
+      "target" : "SNIP1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "KIF2C_192, KIF2C_111",
+      "edgeType" : "phosphorylates",
+      "source" : "PAK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_b431ae1b992b8318213a6cc6300b6f8b", "http://pathwaycommons.org/pc2/Catalysis_b97c745926c0347a151e0b2cf549e091", "", "http://pathwaycommons.org/pc2/BiochemicalReaction_dc2d45cda52e028ffa6662cd7c2c740b", "http://pathwaycommons.org/pc2/BiochemicalReaction_558d8f3cdfa900322446eda49a421c12" ],
+      "target" : "KIF2C"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "NUP153_297, NUP153_330",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_7520cda53ddc54f4d6244682161952c4", "", "http://pathwaycommons.org/pc2/Catalysis_44937bc30ed7c277eece450e482cd05a", "http://pathwaycommons.org/pc2/Catalysis_ba0492e6bc62df7ccc74d1ec2d363e5c", "http://pathwaycommons.org/pc2/BiochemicalReaction_7e8b087a4d8a2e1d0258eb07211bbc78" ],
+      "target" : "NUP153"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "HSF1_303",
+      "edgeType" : "phosphorylates",
+      "source" : "GSK3A",
+      "pcLinks" : [ "" ],
+      "target" : "HSF1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "RBM14_618, RBM14_629, RBM14_627",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_6e339d5a8dfb74b55470c3b744cbd8df", "http://pathwaycommons.org/pc2/BiochemicalReaction_e1ba86956b237a0775b3ab9cda63ac28", "http://pathwaycommons.org/pc2/BiochemicalReaction_43c8e96c181ba9aea61ed527153d88c5", "http://pathwaycommons.org/pc2/Catalysis_94e6542dcfc23ef99f4b9c3031bcbf54", "http://pathwaycommons.org/pc2/BiochemicalReaction_046de6a326104b68660cda697ebd496b", "http://pathwaycommons.org/pc2/Catalysis_d11073c5a21bbd1318b63b17b3e5d4a9" ],
+      "target" : "RBM14"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "ZCCHC8_252, ZCCHC8_479",
+      "edgeType" : "phosphorylates",
+      "source" : "PAK1",
+      "pcLinks" : [ "" ],
+      "target" : "ZCCHC8"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "EIF4EBP1_46, EIF4EBP1_37",
+      "edgeType" : "phosphorylates",
+      "source" : "RPTOR",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_54c12954f80da3601b8d3ae468a6e352", "http://pathwaycommons.org/pc2/Catalysis_f86be6df09c029deb91fe0aa88fb0cbf", "http://identifiers.org/reactome/R-HSA-165692", "http://pathwaycommons.org/pc2/Catalysis_eceb342f4f29dfb1d640809c1a7fca20", "http://identifiers.org/reactome/R-HSA-5672887", "http://pathwaycommons.org/pc2/BiochemicalReaction_40b20faf6e3fc6d1b6f55ee090159c9d" ],
+      "target" : "EIF4EBP1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "EIF4EBP1_46, EIF4EBP1_37, EIF4EBP1_65, EIF4EBP1_70",
+      "edgeType" : "phosphorylates",
+      "source" : "RPS6KA4",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_5e78b9b47678b35b760231b524890f13", "http://pathwaycommons.org/pc2/Catalysis_684608378f0040e960c4e9895bf6d275" ],
+      "target" : "EIF4EBP1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "CDK13_437",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_25b5bba7302bcfcc2891c28007fa0292", "http://pathwaycommons.org/pc2/BiochemicalReaction_a97cb24ae5b5ca95b7a3262f3cfb1dfd" ],
+      "target" : "CDK13"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "PPP1CA_320",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_652d6fd2fb3cc2207a8158b85f8db56b", "http://pathwaycommons.org/pc2/Catalysis_67992d03d5386d18d849e69982e89888" ],
+      "target" : "PPP1CA"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "CHEK1_280",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_20495bf38d19dd1fde7962fd416ef061", "http://pathwaycommons.org/pc2/Catalysis_7c941549680b29321c5bfe3661a1694d" ],
+      "target" : "CHEK1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "SIRT1_47, SIRT1_27",
+      "edgeType" : "phosphorylates",
+      "source" : "CAMKK2",
+      "pcLinks" : [ "" ],
+      "target" : "SIRT1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "PLRG1_119",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_2dce5718fca20a3daa19179ba0ac65ca", "http://pathwaycommons.org/pc2/Catalysis_ae8c1a20cd35c5e61c91608babeec661" ],
+      "target" : "PLRG1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "PTPRA_180, PTPRA_213, PTPRA_204, PTPRA_189",
+      "edgeType" : "phosphorylates",
+      "source" : "PRKCD",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_4fc0a1a6ee62db58f3032d731c2e8835", "http://pathwaycommons.org/pc2/Catalysis_2e1587158b6aafae50b0f8afe89a9879", "http://pathwaycommons.org/pc2/BiochemicalReaction_5a8d34fa91f4d59adcf749f84cb4b32e", "http://pathwaycommons.org/pc2/BiochemicalReaction_dd7efecafc7591725f8b02e2a8251345" ],
+      "target" : "PTPRA"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "SYK_295",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_283f0b18baa74224ca88dcc54b2f5305", "http://pathwaycommons.org/pc2/BiochemicalReaction_15b4d3703a116b5a8b0946db5cf95c53" ],
+      "target" : "SYK"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "TRIM28_473",
+      "edgeType" : "phosphorylates",
+      "source" : "PRKCD",
+      "pcLinks" : [ "" ],
+      "target" : "TRIM28"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "NCBP1_7, NCBP1_21, NCBP1_22",
+      "edgeType" : "phosphorylates",
+      "source" : "RPS6KB1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_13e9a22a862df2b2d0a58a7d43971cfd", "http://pathwaycommons.org/pc2/BiochemicalReaction_c9dea01261215366aec6e010955fbeba", "http://pathwaycommons.org/pc2/BiochemicalReaction_12c58b6a47d236ab5ac3a89bdc6dc9ff", "http://pathwaycommons.org/pc2/BiochemicalReaction_f4f89c8356ad3e35dc4692cccdfd4dd4", "http://pathwaycommons.org/pc2/Catalysis_1f2a1c4d0a1fcc0b28e8ab6b75249c3c", "http://pathwaycommons.org/pc2/Catalysis_d60ae94433e7d9ba5041c42a2846af3a" ],
+      "target" : "NCBP1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "IRF3_175",
+      "edgeType" : "phosphorylates",
+      "source" : "RPS6KB1",
+      "pcLinks" : [ "" ],
+      "target" : "IRF3"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "MYL12B_19, MYL12B_20",
+      "edgeType" : "phosphorylates",
+      "source" : "PAK1",
+      "pcLinks" : [ "http://identifiers.org/reactome/R-HSA-419232", "http://identifiers.org/reactome/R-HSA-8981999" ],
+      "target" : "MYL12B"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "DNMT1_143",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_50289f2d3c83c9603de97b71ee75ddcc", "http://pathwaycommons.org/pc2/Catalysis_f89dc70dc94ad0778a080235530a1fc9" ],
+      "target" : "DNMT1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "MYL12B_19",
+      "edgeType" : "phosphorylates",
+      "source" : "PAK2",
+      "pcLinks" : [ "http://identifiers.org/reactome/R-HSA-5668932", "http://pathwaycommons.org/pc2/Catalysis_8b6ef036268f3739a836520ea7d8fd00" ],
+      "target" : "MYL12B"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "TRIP10_298",
+      "edgeType" : "phosphorylates",
+      "source" : "PDPK1",
+      "pcLinks" : [ "" ],
+      "target" : "TRIP10"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "MKNK1_39",
+      "edgeType" : "phosphorylates",
+      "source" : "PAK2",
+      "pcLinks" : [ "" ],
+      "target" : "MKNK1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "GIT2_392, GIT2_592, GIT2_286",
+      "edgeType" : "phosphorylates",
+      "source" : "SRC",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_e2036951c21e06b75a17f57a96daeaa7", "http://pathwaycommons.org/pc2/BiochemicalReaction_0c5ab2f6bd35f3562d17820cc398927f" ],
+      "target" : "GIT2"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "TRIM28_824",
+      "edgeType" : "phosphorylates",
+      "source" : "MDC1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_072baca294beaa542affcc8a9d160701", "http://pathwaycommons.org/pc2/TransportWithBiochemicalReaction_ed05a981b818bfbf48dc6c766b9572d6" ],
+      "target" : "TRIM28"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "PPP1R14B_57",
+      "edgeType" : "phosphorylates",
+      "source" : "PRKCD",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_3ac94ce5dc7346b0a941998f579ada8d", "", "http://pathwaycommons.org/pc2/BiochemicalReaction_bbbc14d57bc0022c4f0e6ef4267dc2f3" ],
+      "target" : "PPP1R14B"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "PDCD4_67, PDCD4_457",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_b16665c15dbd5d684f7b0f6522597db5", "", "http://pathwaycommons.org/pc2/Catalysis_402286fbe8343c43236480b289043fd8", "http://pathwaycommons.org/pc2/BiochemicalReaction_1d13d5aedd8268c71b65aa060a09c208", "http://pathwaycommons.org/pc2/BiochemicalReaction_de97565eb65872c4575a78a97500323a" ],
+      "target" : "PDCD4"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "PDE3B_442, PDE3B_295, PDE3B_318",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "" ],
+      "target" : "PDE3B"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "RPS6_240, RPS6_235, RPS6_236, RPS6_247, RPS6_244",
+      "edgeType" : "phosphorylates",
+      "source" : "RPS6KB1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_440d656daf55ed086eb2e8786693614a", "", "http://pathwaycommons.org/pc2/BiochemicalReaction_16f97d96867d6df27693b89aab53864b", "http://pathwaycommons.org/pc2/Catalysis_d2da85325f3990ffb72d91ad0c765f5d", "http://pathwaycommons.org/pc2/BiochemicalReaction_fdd9d5640091dabdda9b23c18983d709", "http://pathwaycommons.org/pc2/BiochemicalReaction_f0fd304aec4d3bf8c76d5faa87b2caea", "http://pathwaycommons.org/pc2/Catalysis_d236a0eb4bf522277e42037999c36b98", "http://pathwaycommons.org/pc2/BiochemicalReaction_0dc671712ed63136fce0f20644b9e336", "http://pathwaycommons.org/pc2/BiochemicalReaction_a7d8a7ba72751db10146a89ffd481ba2", "http://pathwaycommons.org/pc2/Catalysis_50fca8701b2e5182ae5cab6dcddffba9", "http://pathwaycommons.org/pc2/Catalysis_4002595337c4342754256da3270ddbd7", "http://pathwaycommons.org/pc2/Catalysis_25e7386e45a926661e5697620b516925", "http://pathwaycommons.org/pc2/Catalysis_25ae4e6887f862bfd992329a195fb8ec", "http://pathwaycommons.org/pc2/Catalysis_6f8a5fd13cb6fc40520eea4e811723a2", "http://identifiers.org/reactome/R-HSA-165726", "http://pathwaycommons.org/pc2/BiochemicalReaction_0e76c3aa2bf8444fc9ce5d34a3f7338f", "http://pathwaycommons.org/pc2/BiochemicalReaction_1477336c5f5a2cae529d69490f8126e6", "http://pathwaycommons.org/pc2/Catalysis_e2fde98757344a92dc190d49aa4d9616", "http://pathwaycommons.org/pc2/BiochemicalReaction_b230a3cafa266d2785a508b8927c269b", "http://pathwaycommons.org/pc2/Catalysis_7d34e7f352b3c4407b1991393a2eb9c0", "http://pathwaycommons.org/pc2/Catalysis_a8a68bcba66abd3a2354788f54fd55af", "http://pathwaycommons.org/pc2/Catalysis_7d9f75750e481f3c18ce5b154895abc1" ],
+      "target" : "RPS6"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "MYCBP2_3440",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_6e00cdfb73f76427bb350064ebc345f3", "http://pathwaycommons.org/pc2/BiochemicalReaction_89e30d0b7fa8540f46f36e12885a2c5a" ],
+      "target" : "MYCBP2"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "GTF3C1_667",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_d9b9768c44ed89c97cdf8b9b577ba907", "", "http://pathwaycommons.org/pc2/Catalysis_2aa67ea196aa5897a962707180942492" ],
+      "target" : "GTF3C1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "ARHGDIB_24, ARHGDIB_153",
+      "edgeType" : "phosphorylates",
+      "source" : "SRC",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_252727cc397604a38cd4a8128ff2b347", "http://pathwaycommons.org/pc2/Catalysis_96cc73a37d5481aeeb6509084f6459bc", "http://pathwaycommons.org/pc2/BiochemicalReaction_fd5a4d5111cb1270165fbcb95d49d976", "http://pathwaycommons.org/pc2/BiochemicalReaction_1e7657f59feefce21375481876bd1534" ],
+      "target" : "ARHGDIB"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "DNM1L_579, DNM1L_616",
+      "edgeType" : "phosphorylates",
+      "source" : "PRKCD",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_21badd523a2420c022b61ea9d9efa171", "http://pathwaycommons.org/pc2/BiochemicalReaction_3920438e4b01aed0ba520da93e7491ae" ],
+      "target" : "DNM1L"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "RPS6_242, RPS6_240, RPS6_235, RPS6_236",
+      "edgeType" : "phosphorylates",
+      "source" : "PAK2",
+      "pcLinks" : [ "" ],
+      "target" : "RPS6"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "MAF1_75, MAF1_60, MAF1_68",
+      "edgeType" : "phosphorylates",
+      "source" : "RPTOR",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_09f9809e37a1cbe30ca7a17775e8ed99", "http://identifiers.org/reactome/R-HSA-8944454" ],
+      "target" : "MAF1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "NPM1_199, NPM1_279",
+      "edgeType" : "phosphorylates",
+      "source" : "PRKCD",
+      "pcLinks" : [ "" ],
+      "target" : "NPM1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "GSK3A_21",
+      "edgeType" : "phosphorylates",
+      "source" : "RPS6KB1",
+      "pcLinks" : [ "" ],
+      "target" : "GSK3A"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "EIF4EBP1_46, EIF4EBP1_37, EIF4EBP1_65",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_783efb79a4e406a01d086bfaba34beac", "http://pathwaycommons.org/pc2/BiochemicalReaction_3a95d3f932834a8c0bb6a6b326936213" ],
+      "target" : "EIF4EBP1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "RACGAP1_203",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_cadc029151e643fab0841519aa23c2ce", "", "http://pathwaycommons.org/pc2/Catalysis_a7aa8e2e0126dc0ee8674300cc4cf04f" ],
+      "target" : "RACGAP1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "LMNA_301, LMNA_404",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_e69abe5b806fe0f5722f6ab6b6a01144", "http://pathwaycommons.org/pc2/Catalysis_88ac366de6fdc3d3204bec6caf762bcc", "http://pathwaycommons.org/pc2/BiochemicalReaction_fe0576c1f5434299fe0e2f28ae8ac186", "http://pathwaycommons.org/pc2/BiochemicalReaction_889447d5e14057974f0bcb7dfec74dba" ],
+      "target" : "LMNA"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "DNAJC5_10",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "" ],
+      "target" : "DNAJC5"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "AKT1S1_183, AKT1S1_246",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_71dd863a67834b5a582650e0dbe06d95", "http://pathwaycommons.org/pc2/Catalysis_538150348f8581d355be9602621f15b4", "http://pathwaycommons.org/pc2/Catalysis_958ef3f1d6851352b8f5f8555107d97b", "http://pathwaycommons.org/pc2/BiochemicalReaction_ccfeecffe3caf4ed4c2e295780196283", "http://pathwaycommons.org/pc2/ComplexAssembly_0723f2d7bbbfff1e088d5b30f381b880", "http://pathwaycommons.org/pc2/Catalysis_3aab9a2ac962d28569325065a8999f55", "http://pathwaycommons.org/pc2/Catalysis_292c8629869ce036b798214d684283d4", "http://pathwaycommons.org/pc2/BiochemicalReaction_9ed7d05fd68b199bdc4f849ed4045982", "http://pathwaycommons.org/pc2/Catalysis_88b20f98c4866969f3aa62f03687b474", "http://identifiers.org/reactome/R-HSA-200143", "http://pathwaycommons.org/pc2/Catalysis_4b0dd80e93d2fd91ba3ad4549e400d4d", "http://identifiers.org/reactome/R-HSA-377186" ],
+      "target" : "AKT1S1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "ZFP36_66, ZFP36_257, ZFP36_323, ZFP36_113, ZFP36_186, ZFP36_60, ZFP36_273, ZFP36_184, ZFP36_271",
+      "edgeType" : "phosphorylates",
+      "source" : "MAPKAPK2",
+      "pcLinks" : [ "http://identifiers.org/reactome/R-HSA-450463", "http://pathwaycommons.org/pc2/Catalysis_c6a0abbd994454f5efb7c0c7ee279f9c" ],
+      "target" : "ZFP36"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "MYL9_19, MYL9_20",
+      "edgeType" : "phosphorylates",
+      "source" : "PAK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_1800717b7cbbe1840570ba16072386f5", "http://identifiers.org/reactome/R-HSA-419232", "http://pathwaycommons.org/pc2/BiochemicalReaction_73ca2cc19b118d7d53542ea38a73b4da", "http://identifiers.org/reactome/R-HSA-8981999" ],
+      "target" : "MYL9"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "HIRIP3_357, HIRIP3_136, HIRIP3_84, HIRIP3_98, HIRIP3_370, HIRIP3_196",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "" ],
+      "target" : "HIRIP3"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "GSK3A_21",
+      "edgeType" : "phosphorylates",
+      "source" : "PRKCD",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_8d6260b00a7ac83ec5597599f5945e2f", "http://pathwaycommons.org/pc2/Catalysis_23b8bfab3f2067fc79828da43d78ce3a" ],
+      "target" : "GSK3A"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "DDX24_82",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_bff97aceb5cedfcc9e34dd3b46a608cd", "http://pathwaycommons.org/pc2/Catalysis_09796cf85c6f0eb1964a1d5d6b19346a" ],
+      "target" : "DDX24"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "EIF4EBP1_46, EIF4EBP1_37",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1S1",
+      "pcLinks" : [ "http://identifiers.org/reactome/R-HSA-165692", "http://identifiers.org/reactome/R-HSA-5672887" ],
+      "target" : "EIF4EBP1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "ERF_185, ERF_531, ERF_489",
+      "edgeType" : "phosphorylates",
+      "source" : "PRKCD",
+      "pcLinks" : [ "" ],
+      "target" : "ERF"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "FSCN1_39",
+      "edgeType" : "phosphorylates",
+      "source" : "PRKCD",
+      "pcLinks" : [ "" ],
+      "target" : "FSCN1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "NCOR1_1450",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_90b89240786dbce99545be0111ccae42", "http://pathwaycommons.org/pc2/BiochemicalReaction_60780c9596d9a73a597dce68d249d8f8" ],
+      "target" : "NCOR1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "LSP1_190, LSP1_252, LSP1_142, LSP1_204",
+      "edgeType" : "phosphorylates",
+      "source" : "MAPKAPK2",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_d80d700dc01d56add1876fcfd0f93070", "http://pathwaycommons.org/pc2/BiochemicalReaction_55880b40cdc506c639d35a175c797eac", "http://pathwaycommons.org/pc2/BiochemicalReaction_801ed19f20a98ac168ff45a871a0d23e", "http://pathwaycommons.org/pc2/Catalysis_e83bbed55997c84fa27239517341af83" ],
+      "target" : "LSP1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "PRKCD_507, PRKCD_645, PRKCD_664",
+      "edgeType" : "phosphorylates",
+      "source" : "LCP2",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_40625fb7a07529bdc62ba3087c907efe", "http://pathwaycommons.org/pc2/BiochemicalReaction_2d62137ed93eba71da0b95d352fbf907", "http://identifiers.org/reactome/R-HSA-198314", "http://pathwaycommons.org/pc2/Catalysis_a853662aa6b41da4d64d0084bdfc3700", "http://identifiers.org/reactome/R-HSA-1489502", "http://pathwaycommons.org/pc2/Catalysis_235e537301ae0e71f5655941aff06130", "http://pathwaycommons.org/pc2/SmallMolecule_afc86c4e882d40e7fc7a9f18488c0cb6", "http://identifiers.org/reactome/R-HSA-202407", "http://pathwaycommons.org/pc2/Catalysis_9fe4a46d2370854be278e34a904cc552", "http://pathwaycommons.org/pc2/BiochemicalReaction_650f6fdfab494e70520ae8e7b233a5e0", "http://pathwaycommons.org/pc2/TransportWithBiochemicalReaction_4b9d01e4b4352434cd29a78c77ab75d4", "http://pathwaycommons.org/pc2/Catalysis_648c923d388a412728474ed004c5caa0", "http://pathwaycommons.org/pc2/SmallMolecule_a3087e38e35fbbe125bb3e3280014b3c", "http://pathwaycommons.org/pc2/Catalysis_485848cba10fcd87f0b13851335ad2d9" ],
+      "target" : "PRKCD"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "PFKFB3_461",
+      "edgeType" : "phosphorylates",
+      "source" : "MAPKAPK2",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_f4bf4b9cc46d991722ee92320aff58fa", "http://pathwaycommons.org/pc2/BiochemicalReaction_9d9f6ffc1d2f1204ec86ced5d4459f73" ],
+      "target" : "PFKFB3"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "SIRT6_338",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_00d0a9d17eebaaa04093a8f60bdb9193", "http://pathwaycommons.org/pc2/BiochemicalReaction_5ba99bf3a12c20d3d1cb153dd2026291" ],
+      "target" : "SIRT6"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "TRIM16_55",
+      "edgeType" : "phosphorylates",
+      "source" : "PAK1",
+      "pcLinks" : [ "" ],
+      "target" : "TRIM16"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "MDC1_719, MDC1_4, MDC1_699, MDC1_765, MDC1_752",
+      "edgeType" : "phosphorylates",
+      "source" : "NBN",
+      "pcLinks" : [ "http://identifiers.org/reactome/R-HSA-5693536", "http://pathwaycommons.org/pc2/Catalysis_7992c5ae0fa885d4abbadfe4e3c08507" ],
+      "target" : "MDC1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "NCF1_370, NCF1_328, NCF1_359, NCF1_315, NCF1_304, NCF1_379, NCF1_303, NCF1_320",
+      "edgeType" : "phosphorylates",
+      "source" : "PRKCD",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_7d03d14967223d5882bdd348d34173a0", "http://pathwaycommons.org/pc2/BiochemicalReaction_91aaf119a317c4e5e642ab51a3378d55", "http://pathwaycommons.org/pc2/Catalysis_cf15f1ebb423d88a28b628da3f4c337f", "http://pathwaycommons.org/pc2/BiochemicalReaction_0df137db81e7e6d785ddcfd7a8e4852a", "http://pathwaycommons.org/pc2/Catalysis_fcca548934769004c7005af50c31db12", "http://pathwaycommons.org/pc2/Catalysis_04df2d0de5c052d84b0bd6644ef8110c", "http://pathwaycommons.org/pc2/Catalysis_d0cc4ba57a3752f8c42afed339b3c57b", "http://pathwaycommons.org/pc2/Catalysis_336be813e214ad4ae3a16c693807de39", "http://pathwaycommons.org/pc2/Catalysis_a1042126e70b047eac3776c87c7f628d", "http://pathwaycommons.org/pc2/BiochemicalReaction_1530d5f43d71bdb21ce15a63e104454c", "http://pathwaycommons.org/pc2/Catalysis_887b0effbb16268e8be98e989d054664", "http://pathwaycommons.org/pc2/BiochemicalReaction_2546f5189477c3ab75fbcc906962ef77", "http://pathwaycommons.org/pc2/BiochemicalReaction_7a33247e53e03d728145e35508bb577a", "http://pathwaycommons.org/pc2/BiochemicalReaction_af312a8191341386167a454a8188943e", "http://pathwaycommons.org/pc2/BiochemicalReaction_b19c2c6c1fe0fb8076bf2b48487ebbd7", "http://pathwaycommons.org/pc2/BiochemicalReaction_689326f0fe9c5469f6b82a9b0a9680ce" ],
+      "target" : "NCF1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "TRIM28_473",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_ad27c0a53b5483f1cc808ab190d5f336", "http://pathwaycommons.org/pc2/BiochemicalReaction_1b84a5cb38e5aac2c15ef7b6d1804d82" ],
+      "target" : "TRIM28"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "HIST1H3A_12",
+      "edgeType" : "phosphorylates",
+      "source" : "CHEK1",
+      "pcLinks" : [ "" ],
+      "target" : "HIST1H3A"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "PFKFB3_461",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_967922303ff2aa044446d4587b93e619", "http://pathwaycommons.org/pc2/BiochemicalReaction_9d9f6ffc1d2f1204ec86ced5d4459f73" ],
+      "target" : "PFKFB3"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "TBC1D4_751, TBC1D4_642, TBC1D4_588, TBC1D4_318, TBC1D4_570, TBC1D4_341",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_d9335f9742a62e88763258ea99002ebb", "http://pathwaycommons.org/pc2/Catalysis_a9f19ddd0e4acfd20114ccd548a5ca3f", "http://pathwaycommons.org/pc2/Catalysis_f9563bf156768f3abc4c83571227fce2", "http://pathwaycommons.org/pc2/BiochemicalReaction_1b8242c31b42f7fbf4b018748e59583b", "http://identifiers.org/reactome/R-HSA-1445144", "http://pathwaycommons.org/pc2/Catalysis_4118e09564c9c079617e41757fb354c9", "http://pathwaycommons.org/pc2/Catalysis_cbacadad0ba7eead242f8543e5fd7921", "http://pathwaycommons.org/pc2/BiochemicalReaction_8c25db4791cdac989ce77cc887b72b4b", "http://pathwaycommons.org/pc2/Catalysis_a2705f8f6f3c0166151fef1c979297fe", "http://pathwaycommons.org/pc2/BiochemicalReaction_78a0ce05c9c3b161c366b410a9d7411c" ],
+      "target" : "TBC1D4"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "GYS1_649, GYS1_645, GYS1_641, GYS1_653",
+      "edgeType" : "phosphorylates",
+      "source" : "GSK3A",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_d795d2eb07fd55964e0719b4103cae86", "PMID:25527037", "http://pathwaycommons.org/pc2/Catalysis_aef54599d44118483c003b872240a016" ],
+      "target" : "GYS1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "UNG_60, UNG_64",
+      "edgeType" : "phosphorylates",
+      "source" : "GSK3A",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_c5fbfaf351b9bd55af3a272fbce4d383", "http://pathwaycommons.org/pc2/Catalysis_4241f9b66e1639614df5c1ae8b1713d1", "http://pathwaycommons.org/pc2/BiochemicalReaction_a7f067812ff74d2ab788bf9bbfa0827f", "http://pathwaycommons.org/pc2/Catalysis_a7cdf961bbb3fc1ed801b81a2cd6b851" ],
+      "target" : "UNG"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "RPLP2_105, RPLP2_102",
+      "edgeType" : "phosphorylates",
+      "source" : "GRK2",
+      "pcLinks" : [ "" ],
+      "target" : "RPLP2"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "HTT_419",
+      "edgeType" : "phosphorylates",
+      "source" : "AKT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_8724d6d201e59445bf7fc665b2b3fd41", "http://pathwaycommons.org/pc2/Catalysis_3bfc3fefed536d5ef7ca32902c7d4bbf", "http://pathwaycommons.org/pc2/BiochemicalReaction_4b9ac2213a5df802ca75dfa6c98c8659", "http://pathwaycommons.org/pc2/Catalysis_b0a7f46bad8b2a630e5ae9ded94bad49" ],
+      "target" : "HTT"
+    }
+  } ]
+}
