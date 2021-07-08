@@ -1,0 +1,169 @@
+---
+title: 'Convert Data into the CausalPath Format'
+author: "Will Yashar"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: show
+    number_sections: no
+    theme: lumen
+    toc: yes
+    toc_float:
+      collapsed: yes
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Packages
+```{r}
+library(tidyverse)
+```
+
+# Load data
+```{r}
+data <- read.csv("data/trametinib_processed.tsv", sep='\t')
+metadata <- read.csv("metadata.tsv", sep='\t')
+```
+
+# Make results directory
+```{r}
+dir.create(path = "results", showWarnings = FALSE)
+```
+
+# Create new columns
+
+```{r}
+# Remove duplicated rows
+data <- data %>% distinct()
+
+# Create a function to remove lower case letters (s, t, y) and replace with hyphens
+letter_replace <- function(x) {
+  if (x != "") {
+      new <- str_split(x, "[a-z]")[[1]]
+      new <- paste(new, collapse="-")
+      new <- str_replace(new, pattern = "-$", replacement = "")
+      return(new)
+  } else {
+    return(x)
+  }
+}
+
+# Save as new column
+site_letters_replaced <- lapply(data$site, letter_replace)
+data$site_letters_replaced <- unlist(site_letters_replaced)
+
+# Create a function that adds peptide or proteins to the site to make a unique ID
+# This will become the ID column
+unique_id <- function(x) {
+  
+  # Extract site and gene
+  site <- data[x, "site_letters_replaced"]
+  gene <- data[x, "gene"]
+  
+  # Identify what will be the reference for the ID
+  # The reference will be the site, unless a site isn't present
+  if (site != "") {
+    ref <- site
+  } else {
+    ref <- gene}
+  
+  # Extract and format peptide
+  peptide <- data[x, "peptide"]
+  if(peptide == NaN) {
+    peptide <- ""
+  }
+  
+  # Extract and format protein
+  protein <- data[x, "protein"]
+  if(protein == NaN) {
+    protein <- ""
+  } else {
+    protein <- str_split(protein, "_HUMAN")[[1]][1]
+    protein <- paste(str_split(protein, "[|]")[[1]], collapse = "-")
+  }
+  
+  # Concatenate and return unique ID
+  new <- paste0(ref, peptide, protein, collapse="-")
+  return(new)
+}
+
+# Save as new column
+rows <- seq(1:nrow(data))
+unique_id <- lapply(rows, unique_id)
+data$unique_id <- unlist(unique_id)
+
+# Create a function to remove gene names from sites
+# Replace hyphens with pipe symbols
+# This will become the Site column
+# tests: 719, 875817, 2931649
+remove_genes_add_pipes <- function(x) {
+  
+  # Extract site and gene
+  site <- data[x, "site_letters_replaced"]
+  gene <- data[x, "gene"]
+  
+  if (site != "") {
+    # Remove gene
+    no_genes <- str_split(site, paste0(gene, "-"))[[1]][2]
+    
+    # Replace hypthens with pipes
+    no_genes_with_pipes <- str_replace_all(no_genes, pattern = "-", replacement = "|")
+    
+    return(no_genes_with_pipes)
+  } else {
+    
+    return(site)
+    
+  }
+  
+}
+
+# Save as new column
+site_no_genes_with_pipes <- lapply(rows, remove_genes_add_pipes)
+data$site_no_genes_with_pipes <- unlist(site_no_genes_with_pipes)
+```
+
+# Select and rearrange
+
+```{r}
+# Add an Effect column
+data$Effect <- ""
+
+# Rename and rearrange columns
+prep_cp_format <- data %>% 
+  rename(ID = unique_id,
+         Sites = site_no_genes_with_pipes,
+         Symbols = gene) %>% 
+  select(ID, Sites, Effect, Symbols, sample, logRatio)
+
+# Replace NaN and NA values
+prep_cp_format$ID[( (is.nan(prep_cp_format$ID)) | (is.na(prep_cp_format$ID)) )] <- ""
+prep_cp_format$Sites[( (is.nan(prep_cp_format$Sites)) | (is.na(prep_cp_format$Sites)) )] <- ""
+prep_cp_format$Symbols[( (is.nan(prep_cp_format$Symbols)) | (is.na(prep_cp_format$Symbols)) )] <- ""
+
+# Remove duplicated rows
+prep_cp_format <- prep_cp_format %>% distinct()
+
+# Pivot wider
+cp_format <- pivot_wider(prep_cp_format, 
+                         id_cols = c(ID, Sites, Effect, Symbols),
+                         names_from = sample, 
+                         values_from = logRatio)
+
+# Replace empty values
+cp_format[is.na(cp_format)] <- NaN
+
+# Save as a data.frame
+cp_format <- as.data.frame(cp_format)
+write.table(cp_format, file = "aml_data_cp_format_unnormalized.tsv", sep = "\t", row.names = FALSE, quote = FALSE)
+```
+
+# Session Information
+
+```{r}
+sessionInfo()
+```

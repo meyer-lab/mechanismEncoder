@@ -1,0 +1,573 @@
+{
+  "nodes" : [ {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(235,239,255)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-S473sK.RSRS*GEGEVSGLMR.K",
+        "siteBorderColor" : "rgb(180,0,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,239,235)",
+        "siteText" : "p",
+        "siteInfo" : "TRIM28-S824sK.FSAVLVEPPPMSLPGAGLSS*QELSGGPGDGP.-",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "TRIM28",
+      "text" : "TRIM28"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,239,235)",
+        "siteText" : "p",
+        "siteInfo" : "CLK2-S142sK.S*VEDDAEGHLIYHVGDWLQER.Y",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "CLK2",
+      "text" : "CLK2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,236,231)",
+        "siteText" : "p",
+        "siteInfo" : "BAZ1B-S152sS158sS161sK.VDEEATEKKS*DGACDS*PSS*DK.E",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "BAZ1B",
+      "text" : "BAZ1B"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,233,228)",
+        "siteText" : "p",
+        "siteInfo" : "NCF1-S345sR.RQARPGPQS*PGSPLEEER.Q",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,242,239)",
+        "siteText" : "p",
+        "siteInfo" : "NCF1-S345sR.QARPGPQS*PGSPLEEER.Q",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,242,238)",
+        "siteText" : "p",
+        "siteInfo" : "NCF1-S345sR.QARPGPQS*PGSPLEEERQTQR.S",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "NCF1",
+      "text" : "NCF1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,235,230)",
+        "siteText" : "p",
+        "siteInfo" : "KAT5-S90sS98sK.NGLPGSRPGS*PEREVPAS*AQASGK.T",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(255,238,234)",
+        "siteText" : "p",
+        "siteInfo" : "KAT5-S86sS90sK.NGLPGS*RPGS*PEREVPASAQASGK.T",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "KAT5",
+      "text" : "KAT5"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(239,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "NBN-S397sK.FRMLS*QDAPTVK.E",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "NBN",
+      "text" : "NBN"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(239,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "MDC1-S453sT455tR.SQTTTERDS*DT*DVEEEELPVENREAVLK.D",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "MDC1",
+      "text" : "MDC1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(232,236,255)",
+        "siteText" : "p",
+        "siteInfo" : "BAD-S118sR.RMS*DEFVDSFKK.G",
+        "siteBorderColor" : "rgb(180,0,20)"
+      } ],
+      "id" : "BAD",
+      "text" : "BAD"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,241,238)",
+        "siteText" : "p",
+        "siteInfo" : "FOXO3-S294sK.WPGS*PTSR.S",
+        "siteBorderColor" : "rgb(180,0,20)"
+      } ],
+      "id" : "FOXO3",
+      "text" : "FOXO3"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "MDM4-S367sR.TIS*APVVRPK.D",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "MDM4",
+      "text" : "MDM4"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,242,239)",
+        "siteText" : "p",
+        "siteInfo" : "KAT7-S57sR.LSQSSQDSS*PVRNLQSFGTEEPAYSTR.R",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "KAT7",
+      "text" : "KAT7"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,242,239)",
+        "siteText" : "p",
+        "siteInfo" : "RIOK2-S332sS335sK.EGS*EFS*FSDGEVAEK.A",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "RIOK2",
+      "text" : "RIOK2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(230,235,255)",
+        "siteText" : "p",
+        "siteInfo" : "GIT2-S381sS384sS397sK.TINNQHS*VES*QDNDQPDYDSVAS*DEDTDLETTASK.T",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "GIT2",
+      "text" : "GIT2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(239,242,255)",
+        "siteText" : "p",
+        "siteInfo" : "SIRT1-S47sR.RDGPGLERS*PGEPGGAAPEREVPAAAR.G",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "SIRT1",
+      "text" : "SIRT1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,234,229)",
+        "siteText" : "p",
+        "siteInfo" : "HNRNPU-S59sR.LQAALDDEEAGGRPAMEPGNGS*LDLGGDSAGR.S",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "HNRNPU",
+      "text" : "HNRNPU"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(224,230,255)",
+        "siteText" : "p",
+        "siteInfo" : "ATF2-S62sT69tT73tK.FGPARNDS*VIVADQT*PTPT*RFLK.N",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "ATF2",
+      "text" : "ATF2"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,242,239)",
+        "siteText" : "p",
+        "siteInfo" : "CDC27-S426sK.GGITQPNINDS*LEITK.L",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "CDC27",
+      "text" : "CDC27"
+    }
+  }, {
+    "css" : {
+      "backgroundColor" : "rgb(227,232,255)"
+    },
+    "data" : {
+      "tooltipText" : "BCL2L11R.QLQPAERPPQLRPGAPTSLQTEPQDRS*PAPMSCDK.S, -6.475551384602927",
+      "sites" : [ ],
+      "id" : "BCL2L11",
+      "text" : "BCL2L11"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,238,234)",
+        "siteText" : "p",
+        "siteInfo" : "JUNB-S251sT255tS259sR.S*RDAT*PPVS*PINMEDQER.I",
+        "siteBorderColor" : "rgb(180,0,20)"
+      } ],
+      "id" : "JUNB",
+      "text" : "JUNB"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,239,235)",
+        "siteText" : "p",
+        "siteInfo" : "SMC1A-S957sK.GTMDDISQEEGSS*QGEDSVSGSQR.I",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "SMC1A",
+      "text" : "SMC1A"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,239,235)",
+        "siteText" : "p",
+        "siteInfo" : "ATM-S2996sK.RNLS*DIDQSFNK.V",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "ATM",
+      "text" : "ATM"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(237,240,255)",
+        "siteText" : "p",
+        "siteInfo" : "PBRM1-S948sR.TYS*QDCSFK.N",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "PBRM1",
+      "text" : "PBRM1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(234,238,255)",
+        "siteText" : "p",
+        "siteInfo" : "MAPK14-T180tY182yR.HTDDEMT*GY*VATR.W",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "MAPK14",
+      "text" : "MAPK14"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,238,234)",
+        "siteText" : "p",
+        "siteInfo" : "ETV6-S257sK.PSS*PRQESTR.V",
+        "siteBorderColor" : "rgb(180,0,20)"
+      } ],
+      "id" : "ETV6",
+      "text" : "ETV6"
+    }
+  }, {
+    "css" : {
+      "backgroundColor" : "rgb(255,235,230)"
+    },
+    "data" : {
+      "tooltipText" : "CBFBR.RQQDPS*PGS*NLGGGDDLK.L, 5.700994380502138",
+      "sites" : [ ],
+      "id" : "CBFB",
+      "text" : "CBFB"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,237,233)",
+        "siteText" : "p",
+        "siteInfo" : "BRAF-S446sK.TLGRRDS*SDDWEIPDGQITVGQR.I",
+        "siteBorderColor" : "rgb(0,180,20)"
+      }, {
+        "siteBackgroundColor" : "rgb(233,237,255)",
+        "siteText" : "p",
+        "siteInfo" : "BRAF-S151sK.S*PQKPIVR.V",
+        "siteBorderColor" : "rgb(180,0,20)"
+      } ],
+      "id" : "BRAF",
+      "text" : "BRAF"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(231,235,255)",
+        "siteText" : "p",
+        "siteInfo" : "RBBP8-S327sK.TPPQEELPTRVSS*PVFGATSSIK.S",
+        "siteBorderColor" : "rgb(50,50,50)"
+      } ],
+      "id" : "RBBP8",
+      "text" : "RBBP8"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,242,239)",
+        "siteText" : "p",
+        "siteInfo" : "RAN-S135sK.S*IVFHRK.K",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "RAN",
+      "text" : "RAN"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(255,236,231)",
+        "siteText" : "p",
+        "siteInfo" : "BRCA1-S1524sR.NYPS*QEELIK.V",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "BRCA1",
+      "text" : "BRCA1"
+    }
+  }, {
+    "data" : {
+      "sites" : [ {
+        "siteBackgroundColor" : "rgb(229,234,255)",
+        "siteText" : "p",
+        "siteInfo" : "PLK1-T210tR.KKT*LCGTPNYIAPEVLSK.K",
+        "siteBorderColor" : "rgb(0,180,20)"
+      } ],
+      "id" : "PLK1",
+      "text" : "PLK1"
+    }
+  } ],
+  "edges" : [ {
+    "data" : {
+      "tooltipText" : "",
+      "edgeType" : "upregulates-expression",
+      "source" : "JUNB",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/TemplateReactionRegulation_9904f8384c778497cd761d6429239035", "http://pathwaycommons.org/pc2/TemplateReaction_31a0e8b090e163cb6fb07b51cb95b09d", "http://pathwaycommons.org/pc2/TemplateReactionRegulation_71f3eae5daa6daff365496f2127d6ae2", "http://pathwaycommons.org/pc2/TemplateReaction_bed3e3983343656cf8861ef7e0ff474d" ],
+      "target" : "CBFB"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "MDM4_342, MDM4_367, MDM4_403",
+      "edgeType" : "phosphorylates",
+      "source" : "ATM",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_dbd0c4e2fd44c06fac442d00f64a8800", "http://pathwaycommons.org/pc2/Catalysis_673b8551b57dc0f9688ad543feb0972a", "http://pathwaycommons.org/pc2/Catalysis_a0c06453574581256c3c897ce3cf4cc4", "http://pathwaycommons.org/pc2/BiochemicalReaction_de1a7b4d1ea2e157f2dcd5440589bdec", "http://identifiers.org/reactome/R-HSA-349455", "http://pathwaycommons.org/pc2/BiochemicalReaction_3d2390325cfe0cb6b5f622305260e84a", "http://pathwaycommons.org/pc2/Catalysis_f713c82d1f6a7d859701b09711aeceb1", "http://pathwaycommons.org/pc2/Catalysis_013d718a22a690cb78c57df7ab1d9f84" ],
+      "target" : "MDM4"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "KAT7_57",
+      "edgeType" : "phosphorylates",
+      "source" : "PLK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_27489116ab8dc0869bcc10289b252850", "http://pathwaycommons.org/pc2/Catalysis_69b8c2b4baa38f054064c78f55195597" ],
+      "target" : "KAT7"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "RIOK2_335, RIOK2_548, RIOK2_380",
+      "edgeType" : "phosphorylates",
+      "source" : "PLK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_a7933429db559310b7a647c0bd2117d8", "http://pathwaycommons.org/pc2/Catalysis_71eb8daefc726c604129f56095127a8f", "http://pathwaycommons.org/pc2/Catalysis_c0fd78e417131ceabadd7acc66176b15", "http://pathwaycommons.org/pc2/Catalysis_cfa0aac36d7c6afe6e6dadf4652ad48f", "http://pathwaycommons.org/pc2/BiochemicalReaction_8e3a92476bff5e32491e1f4e39f99e9a", "http://pathwaycommons.org/pc2/BiochemicalReaction_c914c49cb678f8ad44b9254be945df5c" ],
+      "target" : "RIOK2"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "BAD_134, BAD_75, BAD_99, BAD_118",
+      "edgeType" : "phosphorylates",
+      "source" : "BRAF",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_82dd52790c70d2a7d256ccda8dfbe2a6", "", "http://pathwaycommons.org/pc2/Catalysis_aa8d8461774e542d11b26363c85fea6c", "http://pathwaycommons.org/pc2/Catalysis_23ae096cc90e85545b1d0b3bdcfab376", "http://pathwaycommons.org/pc2/Catalysis_853c242a197de6d2c140a23e53820bdb", "http://pathwaycommons.org/pc2/BiochemicalReaction_9c07f2c2dbb60d0b53ceb8fbdfe092bf", "http://pathwaycommons.org/pc2/BiochemicalReaction_ff4beecc549cd9d2a4869b2a616d7bf1", "http://pathwaycommons.org/pc2/BiochemicalReaction_d8190d825e20c4d7f60b11535348dc81", "http://pathwaycommons.org/pc2/Catalysis_a51913e339b0cc7cc66ee4f618582a7b" ],
+      "target" : "BAD"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "ETV6_257, ETV6_22",
+      "edgeType" : "phosphorylates",
+      "source" : "MAPK14",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_c37e0c8c2a76c14f278ca0cb60768531", "", "http://pathwaycommons.org/pc2/BiochemicalReaction_52bf010841a59f6132d83ca46b8fe5e0", "http://pathwaycommons.org/pc2/Catalysis_c8de4799d8ef6ff40afb46b288ff516a", "http://pathwaycommons.org/pc2/Catalysis_2d17806a628b614c6fefced83d6a8186" ],
+      "target" : "ETV6"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "BAZ1B_158",
+      "edgeType" : "phosphorylates",
+      "source" : "MAPK14",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_ccfcd29135048492b3d567c3921fdba8", "http://pathwaycommons.org/pc2/BiochemicalReaction_bc3bdaffac45eed10e504f3fa94ebced" ],
+      "target" : "BAZ1B"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "SMC1A_966, SMC1A_957",
+      "edgeType" : "phosphorylates",
+      "source" : "MDC1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/TransportWithBiochemicalReaction_2501bc2b29116fd9ff712b7154839845", "http://pathwaycommons.org/pc2/Catalysis_911dddc07ba06998023e627c6cdba832" ],
+      "target" : "SMC1A"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "TRIM28_824",
+      "edgeType" : "phosphorylates",
+      "source" : "NBN",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_072baca294beaa542affcc8a9d160701", "http://pathwaycommons.org/pc2/TransportWithBiochemicalReaction_ed05a981b818bfbf48dc6c766b9572d6" ],
+      "target" : "TRIM28"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "FOXO3_294, FOXO3_7, FOXO3_344, FOXO3_12, FOXO3_425",
+      "edgeType" : "phosphorylates",
+      "source" : "MAPK14",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_ca030729c1acbe11968724445e59471c", "http://pathwaycommons.org/pc2/BiochemicalReaction_caff315b548f99f4895bd9a66aa904a0", "http://pathwaycommons.org/pc2/BiochemicalReaction_36e50cce73b8a7585ff8498fd37751da", "http://pathwaycommons.org/pc2/Catalysis_9e1d3bf57eec557e0e8da499b797117a", "http://pathwaycommons.org/pc2/Catalysis_5f0dbf4da8e61fa8b04100e6215ee70e", "http://pathwaycommons.org/pc2/BiochemicalReaction_5025187724f4bb360eaf5a82e8439cea", "http://pathwaycommons.org/pc2/Catalysis_4c10aaab42f979988d56e90b6ddcf507", "http://pathwaycommons.org/pc2/BiochemicalReaction_945a0e4afc95b1a124e336735514e2f9", "http://pathwaycommons.org/pc2/BiochemicalReaction_1d12ba950017d49d63edab33c7a5b36d", "http://pathwaycommons.org/pc2/Catalysis_98460fd963cc6fd551702fd38004aa60" ],
+      "target" : "FOXO3"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "BRCA1_1387, BRCA1_1423, BRCA1_1547, BRCA1_1524",
+      "edgeType" : "phosphorylates",
+      "source" : "MDC1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_fad74869ea976a8e5edd57dc756192c5", "http://identifiers.org/reactome/R-HSA-5693551" ],
+      "target" : "BRCA1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "HNRNPU_59",
+      "edgeType" : "phosphorylates",
+      "source" : "PLK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_bd04d6f061fa7f1462cda6ca946f2c15", "http://pathwaycommons.org/pc2/Catalysis_5983d81efc8462fbc6964bfd44fe7cef" ],
+      "target" : "HNRNPU"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "RBBP8_664, RBBP8_745, RBBP8_327, RBBP8_859, RBBP8_847",
+      "edgeType" : "phosphorylates",
+      "source" : "ATM",
+      "pcLinks" : [ "http://identifiers.org/reactome/R-HSA-5684140", "http://identifiers.org/reactome/R-HSA-5684096", "", "http://pathwaycommons.org/pc2/Catalysis_785ba963838ebe96877f4327855a303b", "http://pathwaycommons.org/pc2/BiochemicalReaction_479defd238d336dfab486ed0925c57c7", "http://pathwaycommons.org/pc2/Catalysis_a5c57eb916115f4113650200fd5c864e", "http://pathwaycommons.org/pc2/ComplexAssembly_60bbbe7013f57953f0cd470f5d0fa93f", "http://pathwaycommons.org/pc2/Catalysis_27943c9cb95416c241f8829955d56f87", "http://pathwaycommons.org/pc2/Catalysis_a17903bd46abea77283cb88aa7bf8200", "http://pathwaycommons.org/pc2/BiochemicalReaction_fdb495d55064e099312ad0a9a8c53f11", "http://pathwaycommons.org/pc2/Catalysis_184bd49913dc7861564a01ac12049910" ],
+      "target" : "RBBP8"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "NCF1_348, NCF1_345",
+      "edgeType" : "phosphorylates",
+      "source" : "MAPK14",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_962039ed91076db2077b6a3aff3029f9", "http://pathwaycommons.org/pc2/BiochemicalReaction_5bb7bdcd8618cec63ee644cf9054e074", "http://pathwaycommons.org/pc2/Catalysis_b85ef778fcfc7e59e0d2262af2dffaaa", "http://pathwaycommons.org/pc2/BiochemicalReaction_1e150fc57fb5ed29d415c4a40e9c89c5" ],
+      "target" : "NCF1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "PBRM1_948",
+      "edgeType" : "phosphorylates",
+      "source" : "ATM",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_ed82eb612292d2ac2a9397d26e130c2a", "http://pathwaycommons.org/pc2/Catalysis_03c66cc2dd657b30ce5ad863c9a6b483" ],
+      "target" : "PBRM1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "RAN_135",
+      "edgeType" : "phosphorylates",
+      "source" : "PLK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_7040096aa033ed791cfdddaa209552c6", "http://pathwaycommons.org/pc2/Catalysis_ac170f6e9c1cdfe04402ca32991e6900" ],
+      "target" : "RAN"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "NBN_343, NBN_397, NBN_278, NBN_615",
+      "edgeType" : "phosphorylates",
+      "source" : "ATM",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_12aa5e69ce8b210d2ad259d0e30fa21f", "", "http://pathwaycommons.org/pc2/Catalysis_d4ab1928f0319e163bf048a2e34824c8", "http://identifiers.org/reactome/R-HSA-5693598", "http://pathwaycommons.org/pc2/BiochemicalReaction_686f2b34d243786177cb6d08ae518eec", "http://pathwaycommons.org/pc2/BiochemicalReaction_d2bf4b323e2f24d1f30c7d5e7ae6afe5", "http://pathwaycommons.org/pc2/BiochemicalReaction_1937c14a4bdfea4438970577e0015681", "http://pathwaycommons.org/pc2/BiochemicalReaction_7acf94487a9bf8e6da93a5fc3fb53792", "http://pathwaycommons.org/pc2/Catalysis_fc974ad740496725e479f3183eb85702", "http://pathwaycommons.org/pc2/Catalysis_e3cec5935695c80ef87f5d9573a184a4", "http://pathwaycommons.org/pc2/Catalysis_479cb42d87a122665b6042512802bdda" ],
+      "target" : "NBN"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "BRCA1_1387, BRCA1_1423, BRCA1_1547, BRCA1_1524",
+      "edgeType" : "phosphorylates",
+      "source" : "NBN",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_fad74869ea976a8e5edd57dc756192c5", "http://identifiers.org/reactome/R-HSA-5693551" ],
+      "target" : "BRCA1"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "",
+      "edgeType" : "downregulates-expression",
+      "source" : "SIRT1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/TemplateReactionRegulation_e5670da36218bcc806657504fb0d2ce1", "http://pathwaycommons.org/pc2/TemplateReaction_4e13bef4b0f543e695de1121b8349f25" ],
+      "target" : "BCL2L11"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "GIT2_195, GIT2_384",
+      "edgeType" : "phosphorylates",
+      "source" : "ATM",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_73d0ee013453a6de2c9da62379571a10", "", "http://pathwaycommons.org/pc2/BiochemicalReaction_43475f1b426a0b0729bdf8004c8d6313", "http://pathwaycommons.org/pc2/Catalysis_bb9ee45c8a21073cdb391305c72bb3ec", "http://pathwaycommons.org/pc2/Catalysis_9f1d7897a44049525ebe06841b96f1a4" ],
+      "target" : "GIT2"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "CDC27_205, CDC27_446, CDC27_435, CDC27_434, CDC27_387, CDC27_430, CDC27_220, CDC27_296, CDC27_209, CDC27_426",
+      "edgeType" : "phosphorylates",
+      "source" : "PLK1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/BiochemicalReaction_5d40bc1cf30c121aebb682cc4ca5aec8", "", "http://pathwaycommons.org/pc2/Catalysis_101bcbb14fc64f2c31c60f3626c5369d", "http://pathwaycommons.org/pc2/BiochemicalReaction_950445c51521401c42af651c49eb4f7c", "http://pathwaycommons.org/pc2/Catalysis_7107051cb9a3b1b9b5fd0427cd31fc61", "http://pathwaycommons.org/pc2/BiochemicalReaction_e7f43e1b77de9821e0a625c2fc952897", "http://pathwaycommons.org/pc2/Catalysis_47db016b3bafefcc947d3575cf1f0aa8", "http://pathwaycommons.org/pc2/BiochemicalReaction_5cac2716a038b60e4aeb47280b829a22", "http://pathwaycommons.org/pc2/BiochemicalReaction_94f13d20dc1aeafc8954b998a54d5db7", "http://pathwaycommons.org/pc2/Catalysis_c30243d6154f44688e70c4e19bc223fd", "http://pathwaycommons.org/pc2/Catalysis_0801f45003bd2d52b058b34993848732", "http://pathwaycommons.org/pc2/Catalysis_e52ae6e4b7758f2129c7e29eed3fecb0", "http://pathwaycommons.org/pc2/Catalysis_27fc44388e0d6e0c8b518174d33af0ae", "http://pathwaycommons.org/pc2/BiochemicalReaction_6ebe981d48babdab17392b63f35ea8fd", "http://pathwaycommons.org/pc2/BiochemicalReaction_3d636f28ca29c50d9bf86e33d176eae4" ],
+      "target" : "CDC27"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "RBBP8_327, RBBP8_859, RBBP8_847",
+      "edgeType" : "phosphorylates",
+      "source" : "KAT5",
+      "pcLinks" : [ "http://identifiers.org/reactome/R-HSA-5684140", "http://identifiers.org/reactome/R-HSA-5684096", "http://pathwaycommons.org/pc2/Catalysis_a5c57eb916115f4113650200fd5c864e", "http://pathwaycommons.org/pc2/Catalysis_27943c9cb95416c241f8829955d56f87" ],
+      "target" : "RBBP8"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "SMC1A_966, SMC1A_957",
+      "edgeType" : "phosphorylates",
+      "source" : "NBN",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/TransportWithBiochemicalReaction_2501bc2b29116fd9ff712b7154839845", "http://pathwaycommons.org/pc2/Catalysis_911dddc07ba06998023e627c6cdba832" ],
+      "target" : "SMC1A"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "TRIM28_824",
+      "edgeType" : "phosphorylates",
+      "source" : "MDC1",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/Catalysis_072baca294beaa542affcc8a9d160701", "http://pathwaycommons.org/pc2/TransportWithBiochemicalReaction_ed05a981b818bfbf48dc6c766b9572d6" ],
+      "target" : "TRIM28"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "TRIM28_599, TRIM28_473, TRIM28_26, TRIM28_683, TRIM28_471, TRIM28_612, TRIM28_50",
+      "edgeType" : "phosphorylates",
+      "source" : "CLK2",
+      "pcLinks" : [ "" ],
+      "target" : "TRIM28"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "JUNB_79, JUNB_255, JUNB_102, JUNB_104, JUNB_259",
+      "edgeType" : "phosphorylates",
+      "source" : "MAPK14",
+      "pcLinks" : [ "" ],
+      "target" : "JUNB"
+    }
+  }, {
+    "data" : {
+      "tooltipText" : "",
+      "edgeType" : "upregulates-expression",
+      "source" : "ATF2",
+      "pcLinks" : [ "http://pathwaycommons.org/pc2/TemplateReactionRegulation_9904f8384c778497cd761d6429239035", "http://pathwaycommons.org/pc2/TemplateReaction_31a0e8b090e163cb6fb07b51cb95b09d" ],
+      "target" : "CBFB"
+    }
+  } ]
+}
