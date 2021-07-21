@@ -1,4 +1,5 @@
 import argparse
+import gc
 
 import numpy as np
 import torch
@@ -40,12 +41,14 @@ def run_encoder(train, test, epochs, width, depth, dropout_prob=0.2, reg_coef=0)
 
     # Instances PyTorch Lightning trainer
     trainer = Trainer(
-        gpus=1,
-        max_epochs=epochs,
+        auto_scale_batch_size=True,
+        auto_select_gpus=True,
         checkpoint_callback=False,
+        gpus=1,
         logger=False,
+        max_epochs=epochs,
+        # progress_bar_refresh_rate=0,
         weights_summary=None,
-        progress_bar_refresh_rate=0,
     )
 
     # Performs model fitting on training set
@@ -53,30 +56,45 @@ def run_encoder(train, test, epochs, width, depth, dropout_prob=0.2, reg_coef=0)
 
     # Performs test on testing set
     performance = trainer.test(encoder, DataLoader(dataset=data_test))
+    loss = performance[0]["test_loss"]
+    latent = performance[0]["latent"]
 
-    return performance[0]["test_loss"]
+    return loss, latent
 
 
 def main(parser):
-    sample_id = "sample"  # Name of sample ID field
-    descriptor_ids = ["Protein", "Peptide", "site"]  # Name of sample descriptors
-    value_id = "logRatio"  # Name of sample value field
-    data = reformat_csv(parser.input, sample_id, descriptor_ids, value_id, drop_axis=1)
+    sample_id = "Sample"  # Name of sample ID field
+    descriptor_ids = ["Gene", "Peptide", "site"]  # Name of sample descriptors
+    value_id = "LogFoldChange"  # Name of sample value field
+    data = reformat_csv(
+        parser.input, sample_id, descriptor_ids, value_id, drop_axis=1, drop_thresh=0.5
+    )
 
     width = parser.width  # Width of latent attribute layer
     depth = parser.layers  # Layers in encoder and decoder
     dropout_prob = parser.dropout  # Dropout probability of dropout layers
     reg_coef = parser.reg_coef  # L2 Regularization coefficient
+    epochs = parser.epochs
 
     fold_means = []
     kf = KFold(n_splits=parser.folds)
     for train_index, test_index in kf.split(data):
         test = data.iloc[test_index, :]
         train = data.iloc[train_index, :]
+
         loss = run_encoder(
-            train, test, width, 20, depth, dropout_prob=dropout_prob, reg_coef=reg_coef
+            train,
+            test,
+            epochs,
+            width,
+            depth,
+            dropout_prob=dropout_prob,
+            reg_coef=reg_coef,
         )
         fold_means.append(loss)
+
+        gc.collect()
+        torch.cuda.empty_cache()
 
     print(np.mean(fold_means))
 
@@ -97,7 +115,7 @@ def _parse_args():
         "-i", "--input", dest="input", required=True, help="Path to AML data"
     )
     parser.add_argument(
-        "-e", "--epochs", dest="epochs", default=10, type=int, help="Training epochs"
+        "-e", "--epochs", dest="epochs", default=20, type=int, help="Training epochs"
     )
     parser.add_argument(
         "-f",

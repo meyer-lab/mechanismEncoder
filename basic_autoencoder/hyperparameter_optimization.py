@@ -1,14 +1,13 @@
 import argparse
 import gc
-import logging
 import pickle
-import time
 from functools import partial
 
 import numpy as np
 import pandas as pd
 import torch
 from hyperopt import Trials, fmin, hp, tpe
+from hyperopt.base import STATUS_OK
 from hyperopt.pyll import scope
 from sklearn.model_selection import KFold
 
@@ -36,16 +35,28 @@ def obj_func(params, data):
     reg_coef = params["reg_coef"]
 
     fold_means = []
-    kf = KFold(n_splits=CV_FOLDS)
+    kf = KFold(n_splits=data.shape[0])
+    latent_spaces = pd.DataFrame(index=data.index, columns=range(width))
     for train_index, test_index in kf.split(data):
         test = data.iloc[test_index, :]
         train = data.iloc[train_index, :]
-        loss = run_encoder(
-            train, test, width, 20, depth, dropout_prob=dropout_prob, reg_coef=reg_coef
+
+        loss, latent = run_encoder(
+            train,
+            test,
+            CV_FOLDS,
+            width,
+            depth,
+            dropout_prob=dropout_prob,
+            reg_coef=reg_coef,
         )
         fold_means.append(loss)
+        latent_spaces.iloc[test_index, :] = latent
 
-    return np.mean(fold_means)
+        gc.collect()
+        torch.cuda.empty_cache()
+
+    return {"loss": np.mean(fold_means), "latent": latent_spaces, "status": STATUS_OK}
 
 
 def main(parser):
@@ -59,15 +70,17 @@ def main(parser):
         trials = Trials()
 
     # Loads data and converts to wide, samples v. features format
-    sample_id = "sample"  # Name of sample ID field
-    descriptor_ids = ["Protein", "Peptide", "site"]  # Name of sample descriptors
-    value_id = "logRatio"  # Name of sample value field
-    data = reformat_csv(parser.data, sample_id, descriptor_ids, value_id, drop_axis=1)
+    sample_id = "Sample"  # Name of sample ID field
+    descriptor_ids = ["site", "Peptide"]  # Name of sample descriptors
+    value_id = "LogFoldChange"  # Name of sample value field
+    data = reformat_csv(
+        parser.data, sample_id, descriptor_ids, value_id, drop_axis=1, drop_thresh=0.5
+    )
 
     # Hyperparameter search space
     params = {
-        "width": scope.int(hp.quniform("width", 10, 5000, q=1)),
-        "depth": scope.int(hp.quniform("depth", 1, 6, q=1)),
+        "width": scope.int(hp.quniform("width", 2, 100, q=1)),
+        "depth": scope.int(hp.quniform("depth", 1, 2, q=1)),
         "dropout_prob": hp.uniform("dropout_prob", 0, 1),
         "reg_coef": hp.uniform("reg_coef", 0, 1),
     }
@@ -86,11 +99,8 @@ def main(parser):
             max_evals=evals,
             trials=trials,
         )
-        torch.cuda.empty_cache()
-        with open("hp_aml_trials.pkl", "wb") as handle:
+        with open(parser.trials_pkl, "wb") as handle:
             pickle.dump(trials, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-        time.sleep(0.01)  # Gives time for garbage collection
 
 
 def _read_args():
