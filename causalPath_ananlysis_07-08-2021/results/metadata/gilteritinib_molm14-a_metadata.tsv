@@ -1,0 +1,6 @@
+"sample"	"timePoint"	"treatment"	"cellLine"
+"P1"	0	"none"	"MOLM14-a"
+"P3"	30	"Gilteritinib"	"MOLM14-a"
+"P2"	30	"none"	"MOLM14-a"
+"P5"	180	"Gilteritinib"	"MOLM14-a"
+"P4"	180	"none"	"MOLM14-a"
