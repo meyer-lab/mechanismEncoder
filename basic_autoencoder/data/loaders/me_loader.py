@@ -1,9 +1,10 @@
+import warnings
+
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import scale
 import torch
+from sklearn.preprocessing import scale
 from torch.utils.data import Dataset
-import warnings
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -12,6 +13,7 @@ class MELoader(Dataset):
     """
     Basic PyTorch DataLoader designed for importing simulated mechanistic data.
     """
+
     def __init__(self, data, normalize=False):
         """
         Args:
@@ -35,8 +37,9 @@ class MELoader(Dataset):
         return np.array(sample)
 
 
-def reformat_csv(filepath, sample_id, descriptor_id, value_id, drop_axis=None,
-                 drop_thresh=0.5):
+def reformat_csv(
+    filepath, sample_id, descriptor_id, value_id, drop_axis=None, drop_thresh=0.5
+):
     """
     Re-formats .csv of simulated mechanism data into a pandas DataFrame
 
@@ -66,9 +69,9 @@ def reformat_csv(filepath, sample_id, descriptor_id, value_id, drop_axis=None,
     for col in descriptor_id[1:]:
         uid_col += csv_df[col]
 
-    csv_df.insert(0, 'UID', uid_col)
-    csv_df = csv_df.drop_duplicates(subset=['UID'] + [sample_id])
-    df = csv_df.pivot(index=sample_id, columns='UID', values=value_id)
+    csv_df.insert(0, "UID", uid_col)
+    csv_df = csv_df.drop_duplicates(subset=["UID"] + [sample_id])
+    df = csv_df.pivot(index=sample_id, columns="UID", values=value_id)
 
     df.columns = np.arange(df.shape[1])
 

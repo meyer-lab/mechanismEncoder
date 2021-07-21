@@ -36,16 +36,19 @@ def obj_func(params, data):
 
     fold_means = []
     kf = KFold(n_splits=data.shape[0])
-    latent_spaces = pd.DataFrame(
-        index=data.index,
-        columns=range(width)
-    )
+    latent_spaces = pd.DataFrame(index=data.index, columns=range(width))
     for train_index, test_index in kf.split(data):
         test = data.iloc[test_index, :]
         train = data.iloc[train_index, :]
 
         loss, latent = run_encoder(
-            train, test, CV_FOLDS, width, depth, dropout_prob=dropout_prob, reg_coef=reg_coef
+            train,
+            test,
+            CV_FOLDS,
+            width,
+            depth,
+            dropout_prob=dropout_prob,
+            reg_coef=reg_coef,
         )
         fold_means.append(loss)
         latent_spaces.iloc[test_index, :] = latent
@@ -53,7 +56,7 @@ def obj_func(params, data):
         gc.collect()
         torch.cuda.empty_cache()
 
-    return {'loss': np.mean(fold_means), 'latent': latent_spaces, 'status': STATUS_OK}
+    return {"loss": np.mean(fold_means), "latent": latent_spaces, "status": STATUS_OK}
 
 
 def main(parser):
@@ -68,7 +71,7 @@ def main(parser):
 
     # Loads data and converts to wide, samples v. features format
     sample_id = "Sample"  # Name of sample ID field
-    descriptor_ids = ['site', 'Peptide']  # Name of sample descriptors
+    descriptor_ids = ["site", "Peptide"]  # Name of sample descriptors
     value_id = "LogFoldChange"  # Name of sample value field
     data = reformat_csv(
         parser.data, sample_id, descriptor_ids, value_id, drop_axis=1, drop_thresh=0.5

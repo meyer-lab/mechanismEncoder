@@ -31,7 +31,7 @@ class NMEncoder(pl.LightningModule):
             n_features (int): Number of features in dataset
             n_hidden (int): Width of hidden layers in autoencoder
         """
-        assert n_layers > 0, 'n_layers must be greater than 0'
+        assert n_layers > 0, "n_layers must be greater than 0"
 
         super().__init__()
         self.n_features = n_features
@@ -46,10 +46,20 @@ class NMEncoder(pl.LightningModule):
             widths.insert(-1, self.n_features - (layer * diff))
 
         for layer in range(n_layers):
-            setattr(self, f'encoder_{layer}', torch.nn.Linear(in_features=widths[layer],
-                                                                    out_features=widths[layer + 1]))
-            setattr(self, f'decoder_{layer}', torch.nn.Linear(in_features=widths[-1 - layer],
-                                                                    out_features=widths[-2 - layer]))
+            setattr(
+                self,
+                f"encoder_{layer}",
+                torch.nn.Linear(
+                    in_features=widths[layer], out_features=widths[layer + 1]
+                ),
+            )
+            setattr(
+                self,
+                f"decoder_{layer}",
+                torch.nn.Linear(
+                    in_features=widths[-1 - layer], out_features=widths[-2 - layer]
+                ),
+            )
 
         self.metric = torch.nn.MSELoss()
 
@@ -61,21 +71,21 @@ class NMEncoder(pl.LightningModule):
             Adam optimizer for training
         """
         return Adam(self.parameters(), lr=1e-3, weight_decay=self.reg_coef)
-        
+
     def encode_decode(self, x, return_latent=False):
         """
         Runs autoencoder.
 
         Parameters:
             x (pytorch.Tensor): Tensor containing data to autoencode
-            return_latent (bool): Whether to return latent 
+            return_latent (bool): Whether to return latent
                 attributes (default: False)
 
         Return:
             Output tensor following encoding and decoding of input
         """
         for i in range(self.n_layers):
-            x = getattr(self, f'encoder_{i}')(x)
+            x = getattr(self, f"encoder_{i}")(x)
             if i != self.n_layers - 1:
                 x = F.sigmoid(x)
             x = self.dropout(x)
@@ -84,10 +94,10 @@ class NMEncoder(pl.LightningModule):
             latent = x.detach().cpu().numpy()
 
         for i in range(self.n_layers):
-            x = getattr(self, f'decoder_{i}')(x)
+            x = getattr(self, f"decoder_{i}")(x)
             x = F.sigmoid(x)
             x = self.dropout(x)
-        
+
         if return_latent:
             return x, latent
         else:
@@ -115,7 +125,7 @@ class NMEncoder(pl.LightningModule):
             x, latent = self.encode_decode(original, True)
         else:
             x = self.encode_decode(original)
-        
+
         if return_latent:
             return x, latent
         else:

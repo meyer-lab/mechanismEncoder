@@ -50,7 +50,7 @@ def run_encoder(train, test, epochs, width, depth, dropout_prob=0.2, reg_coef=0)
         # progress_bar_refresh_rate=0,
         weights_summary=None,
     )
-    
+
     # Performs model fitting on training set
     trainer.fit(encoder, DataLoader(dataset=data_train))
 
@@ -83,7 +83,13 @@ def main(parser):
         train = data.iloc[train_index, :]
 
         loss = run_encoder(
-            train, test, epochs, width, depth, dropout_prob=dropout_prob, reg_coef=reg_coef
+            train,
+            test,
+            epochs,
+            width,
+            depth,
+            dropout_prob=dropout_prob,
+            reg_coef=reg_coef,
         )
         fold_means.append(loss)
 
