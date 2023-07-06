@@ -1,5 +1,5 @@
 numpy==1.20.1
-scipy==1.6.1
+scipy==1.10.0
 pytest==6.2.2
 pytest-cov==2.11.1
 manubot==0.5.0
